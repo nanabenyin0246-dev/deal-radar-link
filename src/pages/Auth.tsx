@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useToast } from "@/hooks/use-toast";
@@ -20,6 +21,7 @@ const Auth = () => {
   const [whatsappNumber, setWhatsappNumber] = useState("");
   const [city, setCity] = useState("");
   const [country, setCountry] = useState("Ghana");
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [loading, setLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
   const navigate = useNavigate();
@@ -62,6 +64,10 @@ const Auth = () => {
       toast({ title: "Missing fields", description: "Business name and WhatsApp number are required.", variant: "destructive" });
       return;
     }
+    if (!agreedToTerms) {
+      toast({ title: "Agreement required", description: "You must accept the Vendor Agreement to register.", variant: "destructive" });
+      return;
+    }
     setLoading(true);
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email,
@@ -77,11 +83,12 @@ const Auth = () => {
       return;
     }
 
-    // After email verification, vendor record + role will be created on first login
-    // Store vendor info in localStorage temporarily
     if (authData.user) {
       localStorage.setItem("pending_vendor", JSON.stringify({
         businessName, whatsappNumber, city, country, email,
+        agreement_version: "1.0",
+        agreed_at: new Date().toISOString(),
+        user_agent: navigator.userAgent,
       }));
     }
 
@@ -126,7 +133,6 @@ const Auth = () => {
           </p>
         </div>
 
-        {/* Mode tabs */}
         <div className="flex rounded-xl bg-muted p-1 mb-6">
           {(["login", "signup", "vendor-signup"] as AuthMode[]).map((m) => (
             <button
@@ -197,16 +203,27 @@ const Auth = () => {
                   <Input id="country" value={country} onChange={(e) => setCountry(e.target.value)} />
                 </div>
               </div>
-              <p className="text-xs text-muted-foreground">
-                By registering, you agree to our{" "}
-                <a href="/vendor-agreement" className="text-primary hover:underline">Vendor Agreement</a>
-                {" "}and{" "}
-                <a href="/terms" className="text-primary hover:underline">Terms of Service</a>.
-              </p>
+
+              <div className="flex items-start gap-3 p-3 bg-muted rounded-lg">
+                <Checkbox
+                  id="agree"
+                  checked={agreedToTerms}
+                  onCheckedChange={(v) => setAgreedToTerms(v === true)}
+                />
+                <label htmlFor="agree" className="text-xs text-muted-foreground leading-relaxed cursor-pointer">
+                  I have read and agree to the{" "}
+                  <a href="/vendor-agreement" target="_blank" className="text-primary hover:underline">Vendor Agreement (v1.0)</a>
+                  {", "}
+                  <a href="/terms" target="_blank" className="text-primary hover:underline">Terms of Service</a>
+                  {", and "}
+                  <a href="/privacy" target="_blank" className="text-primary hover:underline">Privacy Policy</a>.
+                  I understand that RobCompare is a marketplace intermediary and I am solely responsible for my products.
+                </label>
+              </div>
             </>
           )}
 
-          <Button type="submit" className="w-full" disabled={loading}>
+          <Button type="submit" className="w-full" disabled={loading || (mode === "vendor-signup" && !agreedToTerms)}>
             {loading ? "Please wait..." : mode === "login" ? "Sign In" : mode === "signup" ? "Create Account" : "Register as Vendor"}
           </Button>
         </form>
