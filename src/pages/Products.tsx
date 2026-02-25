@@ -1,13 +1,11 @@
 import { useState, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Search, SlidersHorizontal, X } from "lucide-react";
-import { mockProducts } from "@/data/mockProducts";
-import { categories } from "@/data/mockProducts";
-import ProductCard from "@/components/ProductCard";
+import { useProducts, useCategories } from "@/hooks/useProducts";
+import LiveProductCard from "@/components/LiveProductCard";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 
 const Products = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -18,13 +16,8 @@ const Products = () => {
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const [showFilters, setShowFilters] = useState(false);
 
-  const filtered = useMemo(() => {
-    return mockProducts.filter((p) => {
-      const matchesQuery = !query || p.name.toLowerCase().includes(query.toLowerCase()) || p.brand.toLowerCase().includes(query.toLowerCase());
-      const matchesCategory = !selectedCategory || categories.find(c => c.id === selectedCategory)?.name === p.category;
-      return matchesQuery && matchesCategory;
-    });
-  }, [query, selectedCategory]);
+  const { data: products, isLoading } = useProducts(query || undefined, selectedCategory || undefined);
+  const { data: categories } = useCategories();
 
   const clearFilters = () => {
     setQuery("");
@@ -37,7 +30,6 @@ const Products = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-
       <div className="container py-8">
         {/* Search bar */}
         <div className="flex items-center gap-3 mb-6">
@@ -56,25 +48,20 @@ const Products = () => {
               </button>
             )}
           </div>
-          <Button
-            variant="outline"
-            size="icon"
-            className="shrink-0 h-11 w-11"
-            onClick={() => setShowFilters(!showFilters)}
-          >
+          <Button variant="outline" size="icon" className="shrink-0 h-11 w-11" onClick={() => setShowFilters(!showFilters)}>
             <SlidersHorizontal className="w-4 h-4" />
           </Button>
         </div>
 
         {/* Category filters */}
-        {showFilters && (
+        {showFilters && categories && (
           <div className="flex flex-wrap gap-2 mb-6 animate-fade-in">
             {categories.map((cat) => (
               <button
                 key={cat.id}
-                onClick={() => setSelectedCategory(selectedCategory === cat.id ? "" : cat.id)}
+                onClick={() => setSelectedCategory(selectedCategory === cat.slug ? "" : cat.slug)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
-                  selectedCategory === cat.id
+                  selectedCategory === cat.slug
                     ? "bg-primary text-primary-foreground border-primary"
                     : "bg-card text-muted-foreground border-border hover:border-primary/30"
                 }`}
@@ -85,38 +72,38 @@ const Products = () => {
           </div>
         )}
 
-        {/* Results info */}
+        {/* Results */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2">
             <p className="text-sm text-muted-foreground">
-              {filtered.length} product{filtered.length !== 1 ? "s" : ""} found
+              {isLoading ? "Searching..." : `${products?.length || 0} product${(products?.length || 0) !== 1 ? "s" : ""} found`}
             </p>
             {hasFilters && (
-              <button onClick={clearFilters} className="text-xs text-primary hover:underline">
-                Clear all
-              </button>
+              <button onClick={clearFilters} className="text-xs text-primary hover:underline">Clear all</button>
             )}
           </div>
         </div>
 
-        {/* Product grid */}
-        {filtered.length > 0 ? (
+        {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filtered.map((product) => (
-              <ProductCard key={product.id} product={product} />
+            {[1,2,3].map(i => (
+              <div key={i} className="bg-card border border-border rounded-xl h-96 animate-pulse" />
+            ))}
+          </div>
+        ) : products && products.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {products.map((product) => (
+              <LiveProductCard key={product.id} product={product} />
             ))}
           </div>
         ) : (
           <div className="text-center py-20">
-            <p className="text-lg font-heading font-semibold text-foreground">No products found</p>
+            <p className="text-lg font-heading font-semibold">No products found</p>
             <p className="text-sm text-muted-foreground mt-2">Try adjusting your search or filters</p>
-            <Button variant="outline" className="mt-4" onClick={clearFilters}>
-              Clear Filters
-            </Button>
+            <Button variant="outline" className="mt-4" onClick={clearFilters}>Clear Filters</Button>
           </div>
         )}
       </div>
-
       <Footer />
     </div>
   );

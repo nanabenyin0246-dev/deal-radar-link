@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Store } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const VendorCTA = () => {
   return (
@@ -22,9 +23,11 @@ const VendorCTA = () => {
                 Reach millions of buyers across Africa. List your products for free, receive orders via WhatsApp, and grow your business.
               </p>
               <div className="flex flex-wrap gap-3 pt-2">
-                <Button variant="hero-outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground hover:text-primary">
-                  Register as Vendor
-                  <ArrowRight className="w-4 h-4" />
+                <Button variant="hero-outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground hover:text-primary" asChild>
+                  <Link to="/auth">
+                    Register as Vendor
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
                 </Button>
               </div>
             </div>

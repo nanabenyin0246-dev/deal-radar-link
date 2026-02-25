@@ -1,10 +1,12 @@
-import { Search, Menu, X, ShoppingBag } from "lucide-react";
+import { Search, Menu, X, ShoppingBag, User, Store } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { user, isVendor, signOut } = useAuth();
 
   return (
     <nav className="sticky top-0 z-50 bg-card/80 backdrop-blur-lg border-b border-border">
@@ -19,48 +21,49 @@ const Navbar = () => {
         </Link>
 
         <div className="hidden md:flex items-center gap-6">
-          <Link to="/products" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-            Browse Products
-          </Link>
-          <a href="#how-it-works" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-            How It Works
-          </a>
-          <a href="#vendors" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-            For Vendors
-          </a>
+          <Link to="/products" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Browse Products</Link>
+          <a href="/#how-it-works" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">How It Works</a>
+          {isVendor && (
+            <Link to="/vendor/dashboard" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
+              <Store className="w-3.5 h-3.5" /> Dashboard
+            </Link>
+          )}
         </div>
 
         <div className="hidden md:flex items-center gap-3">
-          <Button variant="ghost" size="sm">
-            Sign In
-          </Button>
-          <Button size="sm">
-            Get Started
-          </Button>
+          {user ? (
+            <>
+              <span className="text-xs text-muted-foreground">{user.email}</span>
+              <Button variant="ghost" size="sm" onClick={signOut}>Sign Out</Button>
+            </>
+          ) : (
+            <>
+              <Button variant="ghost" size="sm" asChild><Link to="/auth">Sign In</Link></Button>
+              <Button size="sm" asChild><Link to="/auth">Get Started</Link></Button>
+            </>
+          )}
         </div>
 
-        <button
-          className="md:hidden p-2 text-foreground"
-          onClick={() => setMobileOpen(!mobileOpen)}
-        >
+        <button className="md:hidden p-2 text-foreground" onClick={() => setMobileOpen(!mobileOpen)}>
           {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
       </div>
 
       {mobileOpen && (
         <div className="md:hidden border-t border-border bg-card p-4 space-y-3 animate-fade-in">
-          <Link to="/products" className="block text-sm font-medium text-muted-foreground py-2" onClick={() => setMobileOpen(false)}>
-            Browse Products
-          </Link>
-          <a href="#how-it-works" className="block text-sm font-medium text-muted-foreground py-2" onClick={() => setMobileOpen(false)}>
-            How It Works
-          </a>
-          <a href="#vendors" className="block text-sm font-medium text-muted-foreground py-2" onClick={() => setMobileOpen(false)}>
-            For Vendors
-          </a>
+          <Link to="/products" className="block text-sm font-medium text-muted-foreground py-2" onClick={() => setMobileOpen(false)}>Browse Products</Link>
+          {isVendor && (
+            <Link to="/vendor/dashboard" className="block text-sm font-medium text-muted-foreground py-2" onClick={() => setMobileOpen(false)}>Vendor Dashboard</Link>
+          )}
           <div className="flex gap-2 pt-2">
-            <Button variant="outline" size="sm" className="flex-1">Sign In</Button>
-            <Button size="sm" className="flex-1">Get Started</Button>
+            {user ? (
+              <Button variant="outline" size="sm" className="flex-1" onClick={() => { signOut(); setMobileOpen(false); }}>Sign Out</Button>
+            ) : (
+              <>
+                <Button variant="outline" size="sm" className="flex-1" asChild><Link to="/auth" onClick={() => setMobileOpen(false)}>Sign In</Link></Button>
+                <Button size="sm" className="flex-1" asChild><Link to="/auth" onClick={() => setMobileOpen(false)}>Get Started</Link></Button>
+              </>
+            )}
           </div>
         </div>
       )}
