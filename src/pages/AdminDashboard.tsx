@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Shield, Package, AlertTriangle, Users, DollarSign, FileText, Download, Flag } from "lucide-react";
+import { Shield, Package, AlertTriangle, Users, DollarSign, FileText, Download, Flag, BarChart3 } from "lucide-react";
+import AnalyticsTab from "@/components/admin/AnalyticsTab";
 
 const AdminDashboard = () => {
   const { user, loading: authLoading } = useAuth();
@@ -63,14 +64,20 @@ const AdminDashboard = () => {
           ))}
         </div>
 
-        <Tabs defaultValue="orders">
-          <TabsList className="mb-4">
+        <Tabs defaultValue="analytics">
+          <TabsList className="mb-4 flex-wrap">
+            <TabsTrigger value="analytics"><BarChart3 className="w-3 h-3 mr-1" />Analytics</TabsTrigger>
             <TabsTrigger value="orders">Orders</TabsTrigger>
             <TabsTrigger value="disputes">Disputes</TabsTrigger>
             <TabsTrigger value="vendors">Vendors</TabsTrigger>
             <TabsTrigger value="commissions">Commissions</TabsTrigger>
             <TabsTrigger value="audit">Audit Log</TabsTrigger>
           </TabsList>
+
+          {/* Analytics Tab */}
+          <TabsContent value="analytics">
+            <AnalyticsTab />
+          </TabsContent>
 
           {/* Orders Tab */}
           <TabsContent value="orders">
