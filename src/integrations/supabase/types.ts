@@ -287,6 +287,48 @@ export type Database = {
           },
         ]
       }
+      payment_providers: {
+        Row: {
+          config: Json
+          created_at: string
+          display_name: string
+          id: string
+          is_active: boolean
+          name: string
+          priority: number
+          provider_type: string
+          supported_countries: string[]
+          supported_currencies: string[]
+          updated_at: string
+        }
+        Insert: {
+          config?: Json
+          created_at?: string
+          display_name: string
+          id?: string
+          is_active?: boolean
+          name: string
+          priority?: number
+          provider_type?: string
+          supported_countries?: string[]
+          supported_currencies?: string[]
+          updated_at?: string
+        }
+        Update: {
+          config?: Json
+          created_at?: string
+          display_name?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          priority?: number
+          provider_type?: string
+          supported_countries?: string[]
+          supported_currencies?: string[]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       price_history: {
         Row: {
           currency: string
