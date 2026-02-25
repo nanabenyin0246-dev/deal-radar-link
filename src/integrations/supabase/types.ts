@@ -361,6 +361,50 @@ export type Database = {
           },
         ]
       }
+      product_translations: {
+        Row: {
+          approved: boolean | null
+          auto_translated: boolean | null
+          created_at: string
+          description: string | null
+          id: string
+          language_code: string
+          name: string
+          product_id: string
+          updated_at: string
+        }
+        Insert: {
+          approved?: boolean | null
+          auto_translated?: boolean | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          language_code?: string
+          name: string
+          product_id: string
+          updated_at?: string
+        }
+        Update: {
+          approved?: boolean | null
+          auto_translated?: boolean | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          language_code?: string
+          name?: string
+          product_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_translations_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           brand: string | null
