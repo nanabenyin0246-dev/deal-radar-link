@@ -37,8 +37,8 @@ const App = () => (
             <Route path="/vendor-agreement" element={<VendorAgreement />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
+          <CookieConsent />
         </BrowserRouter>
-        <CookieConsent />
       </TooltipProvider>
     </AuthProvider>
   </QueryClientProvider>
