@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Navigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useBuyerOrders, useCreateDispute } from "@/hooks/useOrders";
+import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -20,6 +21,7 @@ import {
   XCircle,
   ShoppingBag,
   X,
+  CreditCard,
 } from "lucide-react";
 
 const statusConfig: Record<string, { icon: typeof Clock; label: string; className: string }> = {
@@ -210,6 +212,26 @@ const BuyerOrders = () => {
                             >
                               <MessageCircle className="w-3 h-3" /> Contact Vendor
                             </a>
+                          </Button>
+                        )}
+                        {order.status === "pending" && (
+                          <Button
+                            variant="default"
+                            size="sm"
+                            onClick={async () => {
+                              try {
+                                const { data, error } = await supabase.functions.invoke("paystack-initialize", {
+                                  body: { order_id: order.id },
+                                });
+                                if (error) throw error;
+                                if (data?.error) throw new Error(data.error);
+                                window.location.href = data.authorization_url;
+                              } catch (err: any) {
+                                toast({ title: "Payment Error", description: err.message, variant: "destructive" });
+                              }
+                            }}
+                          >
+                            <CreditCard className="w-3 h-3" /> Pay Now
                           </Button>
                         )}
                         {!["disputed", "refunded", "cancelled", "completed"].includes(order.status) && (

@@ -4,11 +4,42 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MessageCircle, Shield, Star, ArrowLeft, Truck, ExternalLink } from "lucide-react";
+import { MessageCircle, Shield, Star, ArrowLeft, Truck, ExternalLink, CreditCard } from "lucide-react";
+import PriceHistoryChart from "@/components/PriceHistoryChart";
+import SEOHead from "@/components/SEOHead";
+import { useCreateOrder } from "@/hooks/useOrders";
+import { useInitializePayment } from "@/hooks/usePaystack";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 
 const ProductDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const { data: product, isLoading, error } = useProduct(slug || "");
+  const { user } = useAuth();
+  const createOrder = useCreateOrder();
+  const initPayment = useInitializePayment();
+  const { toast } = useToast();
+
+  const handlePaystackPay = async (offer: any) => {
+    if (!user) {
+      toast({ title: "Please sign in", description: "You need to be logged in to pay online.", variant: "destructive" });
+      return;
+    }
+    try {
+      const order = await createOrder.mutateAsync({
+        vendor_offer_id: offer.id,
+        vendor_id: offer.vendor.id,
+        product_id: product!.id,
+        unit_price: offer.price,
+        currency: offer.currency,
+        payment_method: "paystack",
+      });
+      const payment = await initPayment.mutateAsync(order.id);
+      window.location.href = payment.authorization_url;
+    } catch (err: any) {
+      toast({ title: "Payment Error", description: err.message, variant: "destructive" });
+    }
+  };
 
   if (isLoading) {
     return (
@@ -49,8 +80,37 @@ const ProductDetail = () => {
     return `https://wa.me/${offer.vendor.whatsapp_number}?text=${encodeURIComponent(msg)}`;
   };
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    description: product.description,
+    image: product.image_url,
+    brand: product.brand ? { "@type": "Brand", name: product.brand } : undefined,
+    aggregateRating: product.rating ? {
+      "@type": "AggregateRating",
+      ratingValue: product.rating,
+      reviewCount: product.review_count || 0,
+    } : undefined,
+    offers: offers.map((o) => ({
+      "@type": "Offer",
+      price: o.price,
+      priceCurrency: o.currency,
+      availability: o.in_stock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+      seller: { "@type": "Organization", name: o.vendor.business_name },
+    })),
+  };
+
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title={product.name}
+        description={product.description || `Compare prices for ${product.name} from ${offers.length} vendors`}
+        path={`/product/${slug}`}
+        image={product.image_url || undefined}
+        type="product"
+        jsonLd={jsonLd}
+      />
       <Navbar />
       <div className="container py-8 max-w-5xl">
         {/* Breadcrumb */}
@@ -69,6 +129,7 @@ const ProductDetail = () => {
               src={product.image_url || "/placeholder.svg"}
               alt={product.name}
               className="w-full h-full object-cover"
+              loading="lazy"
             />
           </div>
 
@@ -100,11 +161,21 @@ const ProductDetail = () => {
                   {cheapest.vendor.verified && <Shield className="w-3 h-3 text-primary" />}
                   <span className="text-sm text-muted-foreground">from {cheapest.vendor.business_name}</span>
                 </div>
-                <Button variant="whatsapp" className="w-full mt-4" asChild>
-                  <a href={getWhatsAppLink(cheapest)} target="_blank" rel="noopener noreferrer">
-                    <MessageCircle className="w-4 h-4" /> Buy on WhatsApp
-                  </a>
-                </Button>
+                <div className="flex gap-2 mt-4">
+                  <Button variant="whatsapp" className="flex-1" asChild>
+                    <a href={getWhatsAppLink(cheapest)} target="_blank" rel="noopener noreferrer">
+                      <MessageCircle className="w-4 h-4" /> Buy on WhatsApp
+                    </a>
+                  </Button>
+                  <Button
+                    className="flex-1"
+                    onClick={() => handlePaystackPay(cheapest)}
+                    disabled={createOrder.isPending || initPayment.isPending}
+                  >
+                    <CreditCard className="w-4 h-4" />
+                    {createOrder.isPending || initPayment.isPending ? "Processing..." : "Pay Online"}
+                  </Button>
+                </div>
               </div>
             )}
 
@@ -115,6 +186,11 @@ const ProductDetail = () => {
               </div>
             )}
           </div>
+        </div>
+
+        {/* Price History Chart */}
+        <div className="mb-12">
+          <PriceHistoryChart productId={product.id} currency={cheapest?.currency} />
         </div>
 
         {/* Vendor Comparison Table */}
@@ -175,13 +251,14 @@ const ProductDetail = () => {
                         </td>
                         <td className="p-4 text-right">
                           <div className="flex items-center justify-end gap-2">
-                            {offer.payment_link && (
-                              <Button variant="outline" size="sm" asChild>
-                                <a href={offer.payment_link} target="_blank" rel="noopener noreferrer">
-                                  <ExternalLink className="w-3 h-3" /> Pay
-                                </a>
-                              </Button>
-                            )}
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handlePaystackPay(offer)}
+                              disabled={createOrder.isPending || initPayment.isPending}
+                            >
+                              <CreditCard className="w-3 h-3" /> Pay
+                            </Button>
                             <Button variant="whatsapp" size="sm" asChild>
                               <a href={getWhatsAppLink(offer)} target="_blank" rel="noopener noreferrer">
                                 <MessageCircle className="w-3 h-3" /> Buy
