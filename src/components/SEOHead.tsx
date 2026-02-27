@@ -85,7 +85,9 @@ const SEOHead = ({ title, description, path = "", image, type = "website", jsonL
       const link = document.createElement("link");
       link.setAttribute("rel", "alternate");
       link.setAttribute("hreflang", loc.code);
-      link.setAttribute("href", `${baseUrl}${path}`);
+      // For product pages, use language-prefixed URLs
+      const langPath = path.startsWith("/") ? `/${loc.code}${path.replace(/^\/[a-z]{2}\//, "/")}` : `/${loc.code}/${path}`;
+      link.setAttribute("href", `${baseUrl}${langPath}`);
       document.head.appendChild(link);
     });
 
