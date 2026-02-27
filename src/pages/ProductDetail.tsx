@@ -1,5 +1,7 @@
 import { useParams, Link } from "react-router-dom";
+import { useEffect } from "react";
 import { useProduct } from "@/hooks/useProducts";
+import { useProductTranslations } from "@/hooks/useTranslation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -11,14 +13,32 @@ import { useCreateOrder } from "@/hooks/useOrders";
 import { useInitializePayment } from "@/hooks/usePaystack";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import { useI18n } from "@/i18n/I18nContext";
+import { SUPPORTED_LOCALES, Locale } from "@/i18n/translations";
 
 const ProductDetail = () => {
-  const { slug } = useParams<{ slug: string }>();
+  const { slug, lang } = useParams<{ slug: string; lang?: string }>();
+  const { locale, setLocale, t } = useI18n();
   const { data: product, isLoading, error } = useProduct(slug || "");
+  const { data: translations } = useProductTranslations(product?.id || "");
   const { user } = useAuth();
   const createOrder = useCreateOrder();
   const initPayment = useInitializePayment();
   const { toast } = useToast();
+
+  // If URL has a language prefix, sync locale
+  useEffect(() => {
+    if (lang && SUPPORTED_LOCALES.some(l => l.code === lang) && lang !== locale) {
+      setLocale(lang as Locale);
+    }
+  }, [lang]);
+
+  // Get translated product content
+  const activeTranslation = translations?.find(
+    (tr: any) => tr.language_code === locale && tr.approved
+  );
+  const productName = activeTranslation?.name || product?.name || "";
+  const productDescription = activeTranslation?.description || product?.description || "";
 
   const handlePaystackPay = async (offer: any) => {
     if (!user) {
@@ -83,8 +103,8 @@ const ProductDetail = () => {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Product",
-    name: product.name,
-    description: product.description,
+    name: productName,
+    description: productDescription,
     image: product.image_url,
     brand: product.brand ? { "@type": "Brand", name: product.brand } : undefined,
     aggregateRating: product.rating ? {
@@ -104,9 +124,9 @@ const ProductDetail = () => {
   return (
     <div className="min-h-screen bg-background">
       <SEOHead
-        title={product.name}
-        description={product.description || `Compare prices for ${product.name} from ${offers.length} vendors`}
-        path={`/product/${slug}`}
+        title={productName}
+        description={productDescription || `Compare prices for ${productName} from ${offers.length} vendors`}
+        path={`/${locale}/products/${slug}`}
         image={product.image_url || undefined}
         type="product"
         jsonLd={jsonLd}
@@ -117,9 +137,9 @@ const ProductDetail = () => {
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
           <Link to="/" className="hover:text-foreground">Home</Link>
           <span>/</span>
-          <Link to="/products" className="hover:text-foreground">Products</Link>
+          <Link to="/products" className="hover:text-foreground">{t("nav.browse")}</Link>
           <span>/</span>
-          <span className="text-foreground truncate">{product.name}</span>
+          <span className="text-foreground truncate">{productName}</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
@@ -127,7 +147,7 @@ const ProductDetail = () => {
           <div className="aspect-square bg-muted rounded-xl overflow-hidden">
             <img
               src={product.image_url || "/placeholder.svg"}
-              alt={product.name}
+              alt={productName}
               className="w-full h-full object-cover"
               loading="lazy"
             />
@@ -139,7 +159,7 @@ const ProductDetail = () => {
               {product.category && (
                 <Badge variant="outline" className="mb-2">{product.category.icon} {product.category.name}</Badge>
               )}
-              <h1 className="font-heading text-2xl md:text-3xl font-bold">{product.name}</h1>
+              <h1 className="font-heading text-2xl md:text-3xl font-bold">{productName}</h1>
               {product.brand && <p className="text-muted-foreground mt-1">{product.brand}</p>}
             </div>
 
@@ -153,18 +173,18 @@ const ProductDetail = () => {
 
             {cheapest && (
               <div className="bg-accent rounded-xl p-4">
-                <p className="text-sm text-accent-foreground font-medium">Best Price</p>
+                <p className="text-sm text-accent-foreground font-medium">{t("products.bestPrice")}</p>
                 <p className="font-heading text-3xl font-bold text-foreground mt-1">
                   {cheapest.currency} {cheapest.price.toLocaleString()}
                 </p>
                 <div className="flex items-center gap-1 mt-1">
                   {cheapest.vendor.verified && <Shield className="w-3 h-3 text-primary" />}
-                  <span className="text-sm text-muted-foreground">from {cheapest.vendor.business_name}</span>
+                  <span className="text-sm text-muted-foreground">{t("common.from")} {cheapest.vendor.business_name}</span>
                 </div>
                 <div className="flex gap-2 mt-4">
                   <Button variant="whatsapp" className="flex-1" asChild>
                     <a href={getWhatsAppLink(cheapest)} target="_blank" rel="noopener noreferrer">
-                      <MessageCircle className="w-4 h-4" /> Buy on WhatsApp
+                      <MessageCircle className="w-4 h-4" /> {t("products.buyWhatsapp")}
                     </a>
                   </Button>
                   <Button
@@ -173,16 +193,16 @@ const ProductDetail = () => {
                     disabled={createOrder.isPending || initPayment.isPending}
                   >
                     <CreditCard className="w-4 h-4" />
-                    {createOrder.isPending || initPayment.isPending ? "Processing..." : "Pay Online"}
+                    {createOrder.isPending || initPayment.isPending ? t("common.loading") : "Pay Online"}
                   </Button>
                 </div>
               </div>
             )}
 
-            {product.description && (
+            {productDescription && (
               <div>
                 <h3 className="font-heading font-semibold mb-2">Description</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{product.description}</p>
+                <p className="text-sm text-muted-foreground leading-relaxed">{productDescription}</p>
               </div>
             )}
           </div>
