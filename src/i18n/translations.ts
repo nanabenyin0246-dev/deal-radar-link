@@ -90,6 +90,24 @@ type TranslationKeys = {
   "auth.signUp": string;
   "auth.vendor": string;
   "auth.checkEmail": string;
+  // ProductDetail
+  "detail.description": string;
+  "detail.compareVendors": string;
+  "detail.lowest": string;
+  "detail.payOnline": string;
+  "detail.pay": string;
+  "detail.buy": string;
+  "detail.vendor": string;
+  "detail.price": string;
+  "detail.trust": string;
+  "detail.shipping": string;
+  "detail.stock": string;
+  "detail.action": string;
+  "detail.days": string;
+  "detail.notFound": string;
+  "detail.notFoundDesc": string;
+  "detail.reviews": string;
+  "detail.home": string;
   // Common
   "common.loading": string;
   "common.save": string;
@@ -172,6 +190,23 @@ const translations: Record<Locale, TranslationKeys> = {
     "auth.signUp": "Sign Up",
     "auth.vendor": "Vendor",
     "auth.checkEmail": "Check your email",
+    "detail.description": "Description",
+    "detail.compareVendors": "Compare {count} Vendor{plural}",
+    "detail.lowest": "Lowest",
+    "detail.payOnline": "Pay Online",
+    "detail.pay": "Pay",
+    "detail.buy": "Buy",
+    "detail.vendor": "Vendor",
+    "detail.price": "Price",
+    "detail.trust": "Trust",
+    "detail.shipping": "Shipping",
+    "detail.stock": "Stock",
+    "detail.action": "Action",
+    "detail.days": "days",
+    "detail.notFound": "Product not found",
+    "detail.notFoundDesc": "This product may have been removed or doesn't exist.",
+    "detail.reviews": "reviews",
+    "detail.home": "Home",
     "common.loading": "Loading...",
     "common.save": "Save",
     "common.cancel": "Cancel",
@@ -251,6 +286,23 @@ const translations: Record<Locale, TranslationKeys> = {
     "auth.signUp": "Inscription",
     "auth.vendor": "Vendeur",
     "auth.checkEmail": "Vérifiez votre email",
+    "detail.description": "Description",
+    "detail.compareVendors": "Comparer {count} Vendeur{plural}",
+    "detail.lowest": "Le moins cher",
+    "detail.payOnline": "Payer en ligne",
+    "detail.pay": "Payer",
+    "detail.buy": "Acheter",
+    "detail.vendor": "Vendeur",
+    "detail.price": "Prix",
+    "detail.trust": "Confiance",
+    "detail.shipping": "Livraison",
+    "detail.stock": "Stock",
+    "detail.action": "Action",
+    "detail.days": "jours",
+    "detail.notFound": "Produit introuvable",
+    "detail.notFoundDesc": "Ce produit a peut-être été supprimé ou n'existe pas.",
+    "detail.reviews": "avis",
+    "detail.home": "Accueil",
     "common.loading": "Chargement...",
     "common.save": "Enregistrer",
     "common.cancel": "Annuler",
@@ -330,6 +382,23 @@ const translations: Record<Locale, TranslationKeys> = {
     "auth.signUp": "Registrarse",
     "auth.vendor": "Vendedor",
     "auth.checkEmail": "Revisa tu email",
+    "detail.description": "Descripción",
+    "detail.compareVendors": "Comparar {count} Vendedor{plural}",
+    "detail.lowest": "Más bajo",
+    "detail.payOnline": "Pagar en línea",
+    "detail.pay": "Pagar",
+    "detail.buy": "Comprar",
+    "detail.vendor": "Vendedor",
+    "detail.price": "Precio",
+    "detail.trust": "Confianza",
+    "detail.shipping": "Envío",
+    "detail.stock": "Stock",
+    "detail.action": "Acción",
+    "detail.days": "días",
+    "detail.notFound": "Producto no encontrado",
+    "detail.notFoundDesc": "Este producto puede haber sido eliminado o no existe.",
+    "detail.reviews": "reseñas",
+    "detail.home": "Inicio",
     "common.loading": "Cargando...",
     "common.save": "Guardar",
     "common.cancel": "Cancelar",
@@ -409,6 +478,23 @@ const translations: Record<Locale, TranslationKeys> = {
     "auth.signUp": "Registrar",
     "auth.vendor": "Vendedor",
     "auth.checkEmail": "Verifique seu email",
+    "detail.description": "Descrição",
+    "detail.compareVendors": "Comparar {count} Vendedor{plural}",
+    "detail.lowest": "Mais baixo",
+    "detail.payOnline": "Pagar online",
+    "detail.pay": "Pagar",
+    "detail.buy": "Comprar",
+    "detail.vendor": "Vendedor",
+    "detail.price": "Preço",
+    "detail.trust": "Confiança",
+    "detail.shipping": "Envio",
+    "detail.stock": "Estoque",
+    "detail.action": "Ação",
+    "detail.days": "dias",
+    "detail.notFound": "Produto não encontrado",
+    "detail.notFoundDesc": "Este produto pode ter sido removido ou não existe.",
+    "detail.reviews": "avaliações",
+    "detail.home": "Início",
     "common.loading": "Carregando...",
     "common.save": "Salvar",
     "common.cancel": "Cancelar",
@@ -488,6 +574,23 @@ const translations: Record<Locale, TranslationKeys> = {
     "auth.signUp": "إنشاء حساب",
     "auth.vendor": "بائع",
     "auth.checkEmail": "تحقق من بريدك",
+    "detail.description": "الوصف",
+    "detail.compareVendors": "مقارنة {count} بائع{plural}",
+    "detail.lowest": "الأقل",
+    "detail.payOnline": "ادفع عبر الإنترنت",
+    "detail.pay": "ادفع",
+    "detail.buy": "اشترِ",
+    "detail.vendor": "البائع",
+    "detail.price": "السعر",
+    "detail.trust": "الثقة",
+    "detail.shipping": "الشحن",
+    "detail.stock": "المخزون",
+    "detail.action": "الإجراء",
+    "detail.days": "أيام",
+    "detail.notFound": "المنتج غير موجود",
+    "detail.notFoundDesc": "ربما تم حذف هذا المنتج أو أنه غير موجود.",
+    "detail.reviews": "تقييمات",
+    "detail.home": "الرئيسية",
     "common.loading": "جاري التحميل...",
     "common.save": "حفظ",
     "common.cancel": "إلغاء",

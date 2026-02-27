@@ -77,8 +77,8 @@ const ProductDetail = () => {
       <div className="min-h-screen bg-background">
         <Navbar />
         <div className="container py-20 text-center">
-          <h1 className="font-heading text-2xl font-bold">Product not found</h1>
-          <p className="text-muted-foreground mt-2">This product may have been removed or doesn't exist.</p>
+          <h1 className="font-heading text-2xl font-bold">{t("detail.notFound")}</h1>
+          <p className="text-muted-foreground mt-2">{t("detail.notFoundDesc")}</p>
           <Button asChild className="mt-4">
             <Link to="/products"><ArrowLeft className="w-4 h-4" /> Browse Products</Link>
           </Button>
@@ -135,7 +135,7 @@ const ProductDetail = () => {
       <div className="container py-8 max-w-5xl">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
-          <Link to="/" className="hover:text-foreground">Home</Link>
+          <Link to="/" className="hover:text-foreground">{t("detail.home")}</Link>
           <span>/</span>
           <Link to="/products" className="hover:text-foreground">{t("nav.browse")}</Link>
           <span>/</span>
@@ -167,7 +167,7 @@ const ProductDetail = () => {
               <div className="flex items-center gap-1.5">
                 <Star className="w-4 h-4 fill-secondary text-secondary" />
                 <span className="font-medium">{product.rating}</span>
-                <span className="text-sm text-muted-foreground">({product.review_count || 0} reviews)</span>
+                <span className="text-sm text-muted-foreground">({product.review_count || 0} {t("detail.reviews")})</span>
               </div>
             )}
 
@@ -193,7 +193,7 @@ const ProductDetail = () => {
                     disabled={createOrder.isPending || initPayment.isPending}
                   >
                     <CreditCard className="w-4 h-4" />
-                    {createOrder.isPending || initPayment.isPending ? t("common.loading") : "Pay Online"}
+                    {createOrder.isPending || initPayment.isPending ? t("common.loading") : t("detail.payOnline")}
                   </Button>
                 </div>
               </div>
@@ -201,7 +201,7 @@ const ProductDetail = () => {
 
             {productDescription && (
               <div>
-                <h3 className="font-heading font-semibold mb-2">Description</h3>
+                <h3 className="font-heading font-semibold mb-2">{t("detail.description")}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">{productDescription}</p>
               </div>
             )}
@@ -217,19 +217,19 @@ const ProductDetail = () => {
         {offers.length > 0 && (
           <div className="mb-12">
             <h2 className="font-heading text-xl font-bold mb-4">
-              Compare {offers.length} Vendor{offers.length > 1 ? "s" : ""}
+              {t("detail.compareVendors").replace("{count}", String(offers.length)).replace("{plural}", offers.length > 1 ? "s" : "")}
             </h2>
             <div className="bg-card border border-border rounded-xl overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-border bg-muted/50">
-                      <th className="text-left p-4 font-medium text-muted-foreground">Vendor</th>
-                      <th className="text-left p-4 font-medium text-muted-foreground">Price</th>
-                      <th className="text-left p-4 font-medium text-muted-foreground hidden sm:table-cell">Trust</th>
-                      <th className="text-left p-4 font-medium text-muted-foreground hidden sm:table-cell">Shipping</th>
-                      <th className="text-left p-4 font-medium text-muted-foreground hidden md:table-cell">Stock</th>
-                      <th className="text-right p-4 font-medium text-muted-foreground">Action</th>
+                      <th className="text-left p-4 font-medium text-muted-foreground">{t("detail.vendor")}</th>
+                      <th className="text-left p-4 font-medium text-muted-foreground">{t("detail.price")}</th>
+                      <th className="text-left p-4 font-medium text-muted-foreground hidden sm:table-cell">{t("detail.trust")}</th>
+                      <th className="text-left p-4 font-medium text-muted-foreground hidden sm:table-cell">{t("detail.shipping")}</th>
+                      <th className="text-left p-4 font-medium text-muted-foreground hidden md:table-cell">{t("detail.stock")}</th>
+                      <th className="text-right p-4 font-medium text-muted-foreground">{t("detail.action")}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -248,7 +248,7 @@ const ProductDetail = () => {
                           <p className={`font-heading font-bold ${i === 0 ? "text-primary" : ""}`}>
                             {offer.currency} {offer.price.toLocaleString()}
                           </p>
-                          {i === 0 && <Badge className="bg-secondary text-secondary-foreground text-[10px] mt-1">Lowest</Badge>}
+                          {i === 0 && <Badge className="bg-secondary text-secondary-foreground text-[10px] mt-1">{t("detail.lowest")}</Badge>}
                         </td>
                         <td className="p-4 hidden sm:table-cell">
                           <div className="flex items-center gap-1">
@@ -261,12 +261,12 @@ const ProductDetail = () => {
                         <td className="p-4 hidden sm:table-cell">
                           <div className="flex items-center gap-1 text-muted-foreground">
                             <Truck className="w-3 h-3" />
-                            <span>{offer.shipping_days || 3} days</span>
+                            <span>{offer.shipping_days || 3} {t("detail.days")}</span>
                           </div>
                         </td>
                         <td className="p-4 hidden md:table-cell">
                           <Badge variant={offer.in_stock ? "default" : "outline"} className={offer.in_stock ? "bg-success text-success-foreground" : ""}>
-                            {offer.in_stock ? "In Stock" : "Out of Stock"}
+                            {offer.in_stock ? t("products.inStock") : t("products.outOfStock")}
                           </Badge>
                         </td>
                         <td className="p-4 text-right">
@@ -277,11 +277,11 @@ const ProductDetail = () => {
                               onClick={() => handlePaystackPay(offer)}
                               disabled={createOrder.isPending || initPayment.isPending}
                             >
-                              <CreditCard className="w-3 h-3" /> Pay
+                              <CreditCard className="w-3 h-3" /> {t("detail.pay")}
                             </Button>
                             <Button variant="whatsapp" size="sm" asChild>
                               <a href={getWhatsAppLink(offer)} target="_blank" rel="noopener noreferrer">
-                                <MessageCircle className="w-3 h-3" /> Buy
+                                <MessageCircle className="w-3 h-3" /> {t("detail.buy")}
                               </a>
                             </Button>
                           </div>
