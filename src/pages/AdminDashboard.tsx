@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { Shield, Package, AlertTriangle, Users, DollarSign, FileText, Download, Flag, BarChart3 } from "lucide-react";
 import AnalyticsTab from "@/components/admin/AnalyticsTab";
+import MilestoneProgress from "@/components/admin/MilestoneProgress";
 
 const AdminDashboard = () => {
   const { user, loading: authLoading } = useAuth();
@@ -63,6 +64,8 @@ const AdminDashboard = () => {
             </div>
           ))}
         </div>
+
+        <MilestoneProgress />
 
         <Tabs defaultValue="analytics">
           <TabsList className="mb-4 flex-wrap">

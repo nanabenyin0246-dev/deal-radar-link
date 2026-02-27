@@ -77,6 +77,36 @@ export type Database = {
         }
         Relationships: []
       }
+      commission_config: {
+        Row: {
+          activation_threshold: number
+          commission_activated_at: string | null
+          commission_active: boolean
+          commission_rate: number
+          created_at: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          activation_threshold?: number
+          commission_activated_at?: string | null
+          commission_active?: boolean
+          commission_rate?: number
+          created_at?: string
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          activation_threshold?: number
+          commission_activated_at?: string | null
+          commission_active?: boolean
+          commission_rate?: number
+          created_at?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       commissions: {
         Row: {
           commission_amount: number
@@ -720,6 +750,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_user_count: { Args: never; Returns: number }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

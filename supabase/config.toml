@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.translate-product]
 verify_jwt = false
+
+[functions.check-commission-milestone]
+verify_jwt = false
