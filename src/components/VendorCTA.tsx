@@ -1,11 +1,25 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Store } from "lucide-react";
+import { ArrowRight, Store, PartyPopper } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useCommissionConfig } from "@/hooks/useCommissionConfig";
 
 const VendorCTA = () => {
+  const { data: config } = useCommissionConfig();
+  const isGrowthMode = !config?.commission_active;
+  const commissionLabel = isGrowthMode ? "0%" : `${(Number(config?.commission_rate || 0.03) * 100).toFixed(0)}%`;
+
   return (
     <section id="vendors" className="py-20 bg-background">
       <div className="container">
+        {isGrowthMode && (
+          <div className="max-w-4xl mx-auto mb-4 bg-gradient-to-r from-secondary/10 to-primary/10 border border-secondary/20 rounded-xl p-4 text-center">
+            <p className="font-heading font-bold text-sm flex items-center justify-center gap-2">
+              <PartyPopper className="w-4 h-4 text-secondary" />
+              🎉 Founding Vendor Program – 0% Commission Until 1,000 Users
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">Join now and keep 100% of your revenue!</p>
+          </div>
+        )}
         <div className="max-w-4xl mx-auto bg-gradient-to-br from-primary to-primary/80 rounded-2xl p-8 md:p-14 text-primary-foreground relative overflow-hidden">
           <div className="absolute inset-0 opacity-10" style={{
             backgroundImage: "radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)",
@@ -34,7 +48,7 @@ const VendorCTA = () => {
             <div className="grid grid-cols-2 gap-4 text-center shrink-0">
               {[
                 { value: "Free", label: "To List" },
-                { value: "8%", label: "Commission" },
+                { value: commissionLabel, label: "Commission" },
                 { value: "24h", label: "Approval" },
                 { value: "0", label: "Monthly Fee" },
               ].map((s) => (

@@ -12,7 +12,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Package, Plus, Eye, MousePointer, Store, MessageCircle, X } from "lucide-react";
+import { Package, Plus, Eye, MousePointer, Store, MessageCircle, X, Languages } from "lucide-react";
+import FoundingVendorBanner from "@/components/FoundingVendorBanner";
+import TranslationManager from "@/components/vendor/TranslationManager";
 
 const VendorDashboard = () => {
   const { user, isVendor, vendorId, loading: authLoading } = useAuth();
@@ -24,6 +26,7 @@ const VendorDashboard = () => {
   const updateOffer = useUpdateOffer();
   const { toast } = useToast();
   const [showForm, setShowForm] = useState(false);
+  const [expandedTranslation, setExpandedTranslation] = useState<string | null>(null);
 
   // Form state
   const [name, setName] = useState("");
@@ -81,6 +84,9 @@ const VendorDashboard = () => {
             <Plus className="w-4 h-4" /> Add Product
           </Button>
         </div>
+
+        {/* Founding Vendor Banner */}
+        <FoundingVendorBanner />
 
         {/* Stats */}
         <div className="grid grid-cols-3 gap-4 mb-8">
@@ -171,26 +177,39 @@ const VendorDashboard = () => {
         ) : (
           <div className="space-y-3">
             {products.map((offer: any) => (
-              <div key={offer.id} className="bg-card border border-border rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                {offer.product?.image_url && (
-                  <img src={offer.product.image_url} alt={offer.product?.name} className="w-16 h-16 rounded-lg object-cover bg-muted" />
+              <div key={offer.id} className="bg-card border border-border rounded-xl p-4">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                  {offer.product?.image_url && (
+                    <img src={offer.product.image_url} alt={offer.product?.name} className="w-16 h-16 rounded-lg object-cover bg-muted" />
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-heading font-semibold text-sm truncate">{offer.product?.name}</h3>
+                    <p className="text-xs text-muted-foreground">{offer.product?.brand} · {offer.product?.category?.name}</p>
+                    <p className="font-heading font-bold text-lg mt-1">{offer.currency} {offer.price?.toLocaleString()}</p>
+                  </div>
+                  <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                    <span className="flex items-center gap-1"><Eye className="w-3 h-3" /> {offer.views || 0}</span>
+                    <span className="flex items-center gap-1"><MousePointer className="w-3 h-3" /> {offer.clicks || 0}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-7 text-xs"
+                      onClick={() => setExpandedTranslation(expandedTranslation === offer.product?.id ? null : offer.product?.id)}
+                    >
+                      <Languages className="w-3 h-3" /> Translations
+                    </Button>
+                    <Switch
+                      checked={offer.is_visible}
+                      onCheckedChange={(v) => toggleVisibility.mutate({ offerId: offer.id, visible: v })}
+                    />
+                    <span className="text-xs text-muted-foreground">{offer.is_visible ? "Visible" : "Hidden"}</span>
+                  </div>
+                </div>
+                {expandedTranslation === offer.product?.id && offer.product?.id && (
+                  <TranslationManager productId={offer.product.id} productName={offer.product.name} />
                 )}
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-heading font-semibold text-sm truncate">{offer.product?.name}</h3>
-                  <p className="text-xs text-muted-foreground">{offer.product?.brand} · {offer.product?.category?.name}</p>
-                  <p className="font-heading font-bold text-lg mt-1">{offer.currency} {offer.price?.toLocaleString()}</p>
-                </div>
-                <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                  <span className="flex items-center gap-1"><Eye className="w-3 h-3" /> {offer.views || 0}</span>
-                  <span className="flex items-center gap-1"><MousePointer className="w-3 h-3" /> {offer.clicks || 0}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Switch
-                    checked={offer.is_visible}
-                    onCheckedChange={(v) => toggleVisibility.mutate({ offerId: offer.id, visible: v })}
-                  />
-                  <span className="text-xs text-muted-foreground">{offer.is_visible ? "Visible" : "Hidden"}</span>
-                </div>
               </div>
             ))}
           </div>
