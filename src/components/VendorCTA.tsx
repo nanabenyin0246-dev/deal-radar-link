@@ -2,9 +2,14 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Store, PartyPopper } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useCommissionConfig } from "@/hooks/useCommissionConfig";
+import { useAuth } from "@/contexts/AuthContext";
 
 const VendorCTA = () => {
   const { data: config } = useCommissionConfig();
+  const { isVendor } = useAuth();
+
+  // Hide entire CTA if user is already a vendor
+  if (isVendor) return null;
   const isGrowthMode = !config?.commission_active;
   const commissionLabel = isGrowthMode ? "0%" : `${(Number(config?.commission_rate || 0.03) * 100).toFixed(0)}%`;
 
