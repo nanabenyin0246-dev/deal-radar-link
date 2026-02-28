@@ -124,3 +124,60 @@ export const useUpdateOffer = () => {
     },
   });
 };
+
+export const useUpdateProduct = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ productId, data }: { productId: string; data: { name?: string; brand?: string; description?: string; image_url?: string; category_id?: string } }) => {
+      const { error } = await supabase
+        .from("products")
+        .update(data)
+        .eq("id", productId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["vendor-products"] });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+    },
+  });
+};
+
+export const useDeleteProduct = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ offerId, productId }: { offerId: string; productId: string }) => {
+      // Delete vendor offer first
+      const { error: oErr } = await supabase
+        .from("vendor_offers")
+        .delete()
+        .eq("id", offerId);
+      if (oErr) throw oErr;
+      // Deactivate product (don't hard delete, other vendors might reference it)
+      await supabase
+        .from("products")
+        .update({ is_active: false })
+        .eq("id", productId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["vendor-products"] });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+    },
+  });
+};
+
+export const useUploadProductImage = () => {
+  return useMutation({
+    mutationFn: async (file: File) => {
+      const ext = file.name.split(".").pop();
+      const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      const { error } = await supabase.storage
+        .from("product-images")
+        .upload(path, file, { upsert: true });
+      if (error) throw error;
+      const { data: urlData } = supabase.storage
+        .from("product-images")
+        .getPublicUrl(path);
+      return urlData.publicUrl;
+    },
+  });
+};
