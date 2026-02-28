@@ -1,6 +1,10 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useVendorProducts, useVendorProfile, useCreateProduct, useToggleOfferVisibility, useUpdateOffer } from "@/hooks/useVendorDashboard";
+import {
+  useVendorProducts, useVendorProfile, useCreateProduct,
+  useToggleOfferVisibility, useUpdateOffer, useUpdateProduct,
+  useDeleteProduct, useUploadProductImage
+} from "@/hooks/useVendorDashboard";
 import { useCategories } from "@/hooks/useProducts";
 import { Navigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
@@ -12,9 +16,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Package, Plus, Eye, MousePointer, Store, MessageCircle, X, Languages } from "lucide-react";
+import {
+  Package, Plus, Eye, MousePointer, Store, X, Languages,
+  Trash2, Pencil, Upload, Mail, Check, ImageIcon
+} from "lucide-react";
 import FoundingVendorBanner from "@/components/FoundingVendorBanner";
 import TranslationManager from "@/components/vendor/TranslationManager";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel,
+  AlertDialogContent, AlertDialogDescription, AlertDialogFooter,
+  AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const VendorDashboard = () => {
   const { user, isVendor, vendorId, loading: authLoading } = useAuth();
@@ -24,9 +36,14 @@ const VendorDashboard = () => {
   const createProduct = useCreateProduct();
   const toggleVisibility = useToggleOfferVisibility();
   const updateOffer = useUpdateOffer();
+  const updateProduct = useUpdateProduct();
+  const deleteProduct = useDeleteProduct();
+  const uploadImage = useUploadProductImage();
   const { toast } = useToast();
   const [showForm, setShowForm] = useState(false);
   const [expandedTranslation, setExpandedTranslation] = useState<string | null>(null);
+  const [editingOffer, setEditingOffer] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Form state
   const [name, setName] = useState("");
@@ -38,10 +55,27 @@ const VendorDashboard = () => {
   const [currency, setCurrency] = useState("GHS");
   const [whatsappMsg, setWhatsappMsg] = useState("");
   const [paymentLink, setPaymentLink] = useState("");
+  const [inStock, setInStock] = useState(true);
+
+  // Edit state
+  const [editPrice, setEditPrice] = useState("");
+  const [editStock, setEditStock] = useState(true);
 
   if (authLoading) return <div className="min-h-screen flex items-center justify-center"><p>Loading...</p></div>;
   if (!user) return <Navigate to="/auth" />;
   if (!isVendor) return <Navigate to="/" />;
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const url = await uploadImage.mutateAsync(file);
+      setImageUrl(url);
+      toast({ title: "Image uploaded" });
+    } catch (err: any) {
+      toast({ title: "Upload failed", description: err.message, variant: "destructive" });
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,9 +87,38 @@ const VendorDashboard = () => {
       toast({ title: "Product created!" });
       setShowForm(false);
       setName(""); setBrand(""); setDescription(""); setImageUrl(""); setPrice(""); setWhatsappMsg(""); setPaymentLink("");
+      setInStock(true);
     } catch (err: any) {
       toast({ title: "Error", description: err.message, variant: "destructive" });
     }
+  };
+
+  const handleDelete = async (offerId: string, productId: string) => {
+    try {
+      await deleteProduct.mutateAsync({ offerId, productId });
+      toast({ title: "Product deleted" });
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    }
+  };
+
+  const handleSaveEdit = async (offerId: string) => {
+    try {
+      await updateOffer.mutate({
+        offerId,
+        data: { price: parseFloat(editPrice), in_stock: editStock },
+      });
+      setEditingOffer(null);
+      toast({ title: "Product updated" });
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    }
+  };
+
+  const startEdit = (offer: any) => {
+    setEditingOffer(offer.id);
+    setEditPrice(String(offer.price));
+    setEditStock(offer.in_stock ?? true);
   };
 
   const totalViews = products?.reduce((s, o) => s + (o.views || 0), 0) || 0;
@@ -103,6 +166,15 @@ const VendorDashboard = () => {
           ))}
         </div>
 
+        {/* Contact Section */}
+        <div className="bg-card border border-border rounded-xl p-4 mb-8 flex items-center gap-3">
+          <Mail className="w-5 h-5 text-primary" />
+          <div>
+            <p className="text-sm font-medium">Support Contact</p>
+            <a href="mailto:nanabenyinq@gmail.com" className="text-sm text-primary hover:underline">nanabenyinq@gmail.com</a>
+          </div>
+        </div>
+
         {/* Add Product Form */}
         {showForm && (
           <div className="bg-card border border-border rounded-xl p-6 mb-8 animate-fade-in">
@@ -124,8 +196,33 @@ const VendorDashboard = () => {
                 <Textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Product description..." />
               </div>
               <div className="space-y-2">
-                <Label>Image URL</Label>
-                <Input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} placeholder="https://..." />
+                <Label>Product Image</Label>
+                <div className="flex gap-2">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploadImage.isPending}
+                    className="flex-1"
+                  >
+                    {uploadImage.isPending ? "Uploading..." : (
+                      <><Upload className="w-4 h-4" /> Upload Image</>
+                    )}
+                  </Button>
+                  {imageUrl && (
+                    <div className="w-10 h-10 rounded-md overflow-hidden border border-border">
+                      <img src={imageUrl} alt="preview" className="w-full h-full object-cover" />
+                    </div>
+                  )}
+                </div>
+                <Input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} placeholder="Or paste image URL" className="mt-1" />
               </div>
               <div className="space-y-2">
                 <Label>Category</Label>
@@ -145,6 +242,13 @@ const VendorDashboard = () => {
                 </select>
               </div>
               <div className="space-y-2">
+                <Label>Stock Status</Label>
+                <div className="flex items-center gap-3 h-10">
+                  <Switch checked={inStock} onCheckedChange={setInStock} />
+                  <span className="text-sm">{inStock ? "In Stock" : "Out of Stock"}</span>
+                </div>
+              </div>
+              <div className="space-y-2">
                 <Label>WhatsApp Message (optional)</Label>
                 <Input value={whatsappMsg} onChange={(e) => setWhatsappMsg(e.target.value)} placeholder="Custom buy message" />
               </div>
@@ -162,7 +266,7 @@ const VendorDashboard = () => {
         )}
 
         {/* Product List */}
-        <h2 className="font-heading font-semibold text-lg mb-4">Your Products</h2>
+        <h2 className="font-heading font-semibold text-lg mb-4">Your Products ({products?.length || 0})</h2>
         {isLoading ? (
           <p className="text-muted-foreground">Loading...</p>
         ) : !products?.length ? (
@@ -179,13 +283,45 @@ const VendorDashboard = () => {
             {products.map((offer: any) => (
               <div key={offer.id} className="bg-card border border-border rounded-xl p-4">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                  {offer.product?.image_url && (
+                  {offer.product?.image_url ? (
                     <img src={offer.product.image_url} alt={offer.product?.name} className="w-16 h-16 rounded-lg object-cover bg-muted" />
+                  ) : (
+                    <div className="w-16 h-16 rounded-lg bg-muted flex items-center justify-center">
+                      <ImageIcon className="w-6 h-6 text-muted-foreground" />
+                    </div>
                   )}
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-heading font-semibold text-sm truncate">{offer.product?.name}</h3>
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-heading font-semibold text-sm truncate">{offer.product?.name}</h3>
+                      <Badge variant={offer.in_stock ? "default" : "outline"} className={`text-[10px] ${offer.in_stock ? "bg-success text-success-foreground" : ""}`}>
+                        {offer.in_stock ? "In Stock" : "Out of Stock"}
+                      </Badge>
+                    </div>
                     <p className="text-xs text-muted-foreground">{offer.product?.brand} · {offer.product?.category?.name}</p>
-                    <p className="font-heading font-bold text-lg mt-1">{offer.currency} {offer.price?.toLocaleString()}</p>
+
+                    {editingOffer === offer.id ? (
+                      <div className="flex items-center gap-2 mt-2">
+                        <Input
+                          type="number"
+                          step="0.01"
+                          value={editPrice}
+                          onChange={(e) => setEditPrice(e.target.value)}
+                          className="w-28 h-8 text-sm"
+                        />
+                        <div className="flex items-center gap-1">
+                          <Switch checked={editStock} onCheckedChange={setEditStock} />
+                          <span className="text-xs">{editStock ? "In Stock" : "Out"}</span>
+                        </div>
+                        <Button size="sm" className="h-7" onClick={() => handleSaveEdit(offer.id)}>
+                          <Check className="w-3 h-3" /> Save
+                        </Button>
+                        <Button size="sm" variant="outline" className="h-7" onClick={() => setEditingOffer(null)}>
+                          Cancel
+                        </Button>
+                      </div>
+                    ) : (
+                      <p className="font-heading font-bold text-lg mt-1">{offer.currency} {offer.price?.toLocaleString()}</p>
+                    )}
                   </div>
                   <div className="flex items-center gap-4 text-xs text-muted-foreground">
                     <span className="flex items-center gap-1"><Eye className="w-3 h-3" /> {offer.views || 0}</span>
@@ -196,10 +332,39 @@ const VendorDashboard = () => {
                       size="sm"
                       variant="outline"
                       className="h-7 text-xs"
+                      onClick={() => startEdit(offer)}
+                    >
+                      <Pencil className="w-3 h-3" /> Edit
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-7 text-xs"
                       onClick={() => setExpandedTranslation(expandedTranslation === offer.product?.id ? null : offer.product?.id)}
                     >
-                      <Languages className="w-3 h-3" /> Translations
+                      <Languages className="w-3 h-3" /> Translate
                     </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button size="sm" variant="outline" className="h-7 text-xs text-destructive border-destructive/30 hover:bg-destructive/10">
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete Product</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This will remove "{offer.product?.name}" from your listings. This action cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => handleDelete(offer.id, offer.product?.id)}>
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                     <Switch
                       checked={offer.is_visible}
                       onCheckedChange={(v) => toggleVisibility.mutate({ offerId: offer.id, visible: v })}
