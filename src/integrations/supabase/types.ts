@@ -750,6 +750,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_orders_by_status: {
+        Args: never
+        Returns: {
+          count: number
+          status: string
+          total_revenue: number
+        }[]
+      }
+      get_products_count: { Args: never; Returns: number }
       get_user_count: { Args: never; Returns: number }
       has_role: {
         Args: {

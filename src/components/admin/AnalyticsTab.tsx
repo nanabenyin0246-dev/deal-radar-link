@@ -1,5 +1,5 @@
 import { useAnalyticsMetrics } from "@/hooks/useAnalytics";
-import { TrendingUp, Eye, MousePointer, ShoppingCart, Users, Package, DollarSign, Percent } from "lucide-react";
+import { TrendingUp, Eye, MousePointer, ShoppingCart, Users, Package, DollarSign, Percent, Store, BarChart3 } from "lucide-react";
 
 const MetricCard = ({ icon: Icon, label, value, sublabel, alert }: { icon: any; label: string; value: string | number; sublabel?: string; alert?: boolean }) => (
   <div className={`bg-card border rounded-xl p-4 ${alert ? "border-secondary" : "border-border"}`}>
@@ -18,6 +18,35 @@ const AnalyticsTab = () => {
 
   return (
     <div className="space-y-6">
+      {/* Overview */}
+      <div>
+        <h3 className="font-heading font-semibold text-sm text-muted-foreground uppercase tracking-wider mb-3">Platform Overview</h3>
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          <MetricCard icon={Users} label="Total Users" value={metrics.overview.totalUsers} />
+          <MetricCard icon={Store} label="Total Vendors" value={metrics.overview.totalVendors} />
+          <MetricCard icon={Package} label="Total Products" value={metrics.overview.totalProducts} />
+          <MetricCard icon={ShoppingCart} label="Total Orders" value={metrics.overview.totalOrders} />
+          <MetricCard icon={DollarSign} label="Total Revenue" value={`GHS ${metrics.overview.totalRevenue.toLocaleString()}`} alert />
+        </div>
+      </div>
+
+      {/* Orders by Status */}
+      <div>
+        <h3 className="font-heading font-semibold text-sm text-muted-foreground uppercase tracking-wider mb-3">Orders by Status</h3>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {metrics.overview.ordersByStatus.map((s) => (
+            <MetricCard
+              key={s.status}
+              icon={BarChart3}
+              label={s.status.charAt(0).toUpperCase() + s.status.slice(1)}
+              value={s.count}
+              sublabel={`GHS ${Number(s.total_revenue).toLocaleString()}`}
+              alert={s.status === "disputed"}
+            />
+          ))}
+        </div>
+      </div>
+
       {/* Acquisition */}
       <div>
         <h3 className="font-heading font-semibold text-sm text-muted-foreground uppercase tracking-wider mb-3">Acquisition (30 days)</h3>
