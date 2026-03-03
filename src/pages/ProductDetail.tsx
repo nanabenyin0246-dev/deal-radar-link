@@ -250,6 +250,7 @@ const ProductDetail = () => {
                           <p className={`font-heading font-bold ${i === 0 ? "text-primary" : ""}`}>
                             {offer.currency} {offer.price.toLocaleString()}
                           </p>
+                          <ConvertedPrice amount={offer.price} currency={offer.currency} />
                           {i === 0 && <Badge className="bg-secondary text-secondary-foreground text-[10px] mt-1">{t("detail.lowest")}</Badge>}
                         </td>
                         <td className="p-4 hidden sm:table-cell">
