@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MessageCircle, Shield, Star, ArrowLeft, Truck, ExternalLink, CreditCard } from "lucide-react";
 import PriceHistoryChart from "@/components/PriceHistoryChart";
+import ConvertedPrice from "@/components/ConvertedPrice";
 import SEOHead from "@/components/SEOHead";
 import { useCreateOrder } from "@/hooks/useOrders";
 import { useInitializePayment } from "@/hooks/usePaystack";
@@ -177,6 +178,7 @@ const ProductDetail = () => {
                 <p className="font-heading text-3xl font-bold text-foreground mt-1">
                   {cheapest.currency} {cheapest.price.toLocaleString()}
                 </p>
+                <ConvertedPrice amount={cheapest.price} currency={cheapest.currency} className="text-sm" />
                 <div className="flex items-center gap-1 mt-1">
                   {cheapest.vendor.verified && <Shield className="w-3 h-3 text-primary" />}
                   <span className="text-sm text-muted-foreground">{t("common.from")} {cheapest.vendor.business_name}</span>

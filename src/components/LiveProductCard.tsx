@@ -3,6 +3,7 @@ import { LiveProduct } from "@/hooks/useProducts";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
+import ConvertedPrice from "@/components/ConvertedPrice";
 
 const LiveProductCard = ({ product }: { product: LiveProduct }) => {
   const offers = product.vendor_offers.sort((a, b) => a.price - b.price);
@@ -63,6 +64,7 @@ const LiveProductCard = ({ product }: { product: LiveProduct }) => {
           <div>
             <p className="text-xs text-muted-foreground">Best price from</p>
             <p className="font-heading text-xl font-bold">{cheapest.currency} {cheapest.price.toLocaleString()}</p>
+            <ConvertedPrice amount={cheapest.price} currency={cheapest.currency} />
             <div className="flex items-center gap-1 mt-0.5">
               {cheapest.vendor.verified && <Shield className="w-3 h-3 text-primary" />}
               <span className="text-xs text-muted-foreground">{cheapest.vendor.business_name}</span>
