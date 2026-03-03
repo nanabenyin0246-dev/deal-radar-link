@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useI18n } from "@/i18n/I18nContext";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import CurrencySelector from "@/components/CurrencySelector";
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -39,6 +40,7 @@ const Navbar = () => {
         </div>
 
         <div className="hidden md:flex items-center gap-2">
+          <CurrencySelector />
           <LanguageSwitcher />
           {user ? (
             <>
@@ -68,6 +70,7 @@ const Navbar = () => {
             <Link to="/vendor/dashboard" className="block text-sm font-medium text-muted-foreground py-2" onClick={() => setMobileOpen(false)}>{t("nav.dashboard")}</Link>
           )}
           <div className="flex items-center gap-2 py-2">
+            <CurrencySelector />
             <LanguageSwitcher />
           </div>
           <div className="flex gap-2 pt-2">
