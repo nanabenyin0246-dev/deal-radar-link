@@ -6,6 +6,8 @@ import LiveProductCard from "@/components/LiveProductCard";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
+import BarcodeScanner from "@/components/BarcodeScanner";
+import ProductSummary from "@/components/ProductSummary";
 
 const Products = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -52,6 +54,17 @@ const Products = () => {
             <SlidersHorizontal className="w-4 h-4" />
           </Button>
         </div>
+
+        {/* Barcode Scanner + DuckDuckGo Summary */}
+        <div className="flex flex-col sm:flex-row gap-3 mb-6">
+          <BarcodeScanner onProductFound={(p) => setQuery(p.title)} />
+        </div>
+
+        {query && query.length >= 3 && (
+          <div className="mb-6">
+            <ProductSummary productName={query} />
+          </div>
+        )}
 
         {/* Category filters */}
         {showFilters && categories && (

@@ -8,6 +8,39 @@ const corsHeaders = {
 
 const SUPPORTED_LANGS = ["en", "fr", "es", "pt", "ar"];
 
+// MyMemory Translation API (5,000 chars/day free, no key)
+async function translateMyMemory(text: string, from: string, to: string): Promise<string> {
+  const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${from}|${to}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("MyMemory failed");
+  const data = await res.json();
+  if (data.responseStatus !== 200) throw new Error(data.responseDetails || "MyMemory error");
+  return data.responseData.translatedText;
+}
+
+// Lingva Translate (unlimited, open source fallback)
+async function translateLingva(text: string, from: string, to: string): Promise<string> {
+  const url = `https://lingva.ml/api/v1/${from}/${to}/${encodeURIComponent(text)}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("Lingva failed");
+  const data = await res.json();
+  return data.translation;
+}
+
+// Translate with fallback chain: MyMemory → Lingva → AI
+async function translateText(text: string, from: string, to: string): Promise<string> {
+  if (!text.trim()) return "";
+  try {
+    return await translateMyMemory(text, from, to);
+  } catch {
+    try {
+      return await translateLingva(text, from, to);
+    } catch {
+      throw new Error("Free translation APIs unavailable");
+    }
+  }
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -45,7 +78,6 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Fetch the product
     const { data: product, error: prodErr } = await supabase
       .from("products")
       .select("name, description")
@@ -59,102 +91,21 @@ Deno.serve(async (req) => {
       });
     }
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) {
-      return new Response(JSON.stringify({ error: "AI not configured" }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
     const targetLangs = SUPPORTED_LANGS.filter((l) => l !== source_lang);
+    const translations: Record<string, { name: string; description: string }> = {};
 
-    const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: [
-          {
-            role: "system",
-            content: `You are a product translator for an e-commerce marketplace. Translate the product name and description accurately and naturally. Preserve brand names. Return JSON only.`,
-          },
-          {
-            role: "user",
-            content: `Translate the following product from ${source_lang} to these languages: ${targetLangs.join(", ")}.
-
-Product name: "${product.name}"
-Description: "${product.description || ""}"
-
-Return a JSON object with language codes as keys, each containing "name" and "description". Example:
-{"fr": {"name": "...", "description": "..."}, "es": {"name": "...", "description": "..."}}`,
-          },
-        ],
-        tools: [
-          {
-            type: "function",
-            function: {
-              name: "save_translations",
-              description: "Save translated product information",
-              parameters: {
-                type: "object",
-                properties: {
-                  translations: {
-                    type: "object",
-                    additionalProperties: {
-                      type: "object",
-                      properties: {
-                        name: { type: "string" },
-                        description: { type: "string" },
-                      },
-                      required: ["name", "description"],
-                    },
-                  },
-                },
-                required: ["translations"],
-              },
-            },
-          },
-        ],
-        tool_choice: { type: "function", function: { name: "save_translations" } },
-      }),
-    });
-
-    if (!aiResponse.ok) {
-      const status = aiResponse.status;
-      const text = await aiResponse.text();
-      console.error("AI error:", status, text);
-      if (status === 429) {
-        return new Response(JSON.stringify({ error: "Rate limited, please try again" }), {
-          status: 429,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+    for (const lang of targetLangs) {
+      try {
+        const [name, description] = await Promise.all([
+          translateText(product.name, source_lang, lang),
+          product.description ? translateText(product.description, source_lang, lang) : Promise.resolve(""),
+        ]);
+        translations[lang] = { name, description };
+      } catch (err) {
+        console.error(`Translation to ${lang} failed:`, err);
+        // Skip this language
       }
-      if (status === 402) {
-        return new Response(JSON.stringify({ error: "AI credits exhausted" }), {
-          status: 402,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      return new Response(JSON.stringify({ error: "Translation failed" }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
     }
-
-    const aiData = await aiResponse.json();
-    const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
-    if (!toolCall) {
-      return new Response(JSON.stringify({ error: "AI did not return translations" }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    const { translations } = JSON.parse(toolCall.function.arguments);
 
     // Save translations using service role
     const adminClient = createClient(
@@ -162,7 +113,7 @@ Return a JSON object with language codes as keys, each containing "name" and "de
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    const upserts = Object.entries(translations).map(([lang, t]: [string, any]) => ({
+    const upserts = Object.entries(translations).map(([lang, t]) => ({
       product_id,
       language_code: lang,
       name: t.name,
@@ -205,7 +156,12 @@ Return a JSON object with language codes as keys, each containing "name" and "de
     }
 
     return new Response(
-      JSON.stringify({ success: true, translations, languages: Object.keys(translations) }),
+      JSON.stringify({
+        success: true,
+        translations,
+        languages: Object.keys(translations),
+        source: "mymemory+lingva",
+      }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (err) {
