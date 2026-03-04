@@ -7,6 +7,8 @@ export interface GeoData {
   currencyCode: string;
   currencySymbol: string;
   timezone: string;
+  latitude: number;
+  longitude: number;
 }
 
 export const useGeoLocation = () => {
@@ -25,6 +27,8 @@ export const useGeoLocation = () => {
           currencyCode: data.currency?.code || "GHS",
           currencySymbol: data.currency?.symbol || "GH₵",
           timezone: data.timezone?.id || "Africa/Accra",
+          latitude: data.latitude || 5.6,
+          longitude: data.longitude || -0.19,
         };
       } catch {
         // Fallback to IPWhois
@@ -38,6 +42,8 @@ export const useGeoLocation = () => {
           currencyCode: data.currency_code || "GHS",
           currencySymbol: data.currency_symbol || "GH₵",
           timezone: data.timezone || "Africa/Accra",
+          latitude: data.latitude || 5.6,
+          longitude: data.longitude || -0.19,
         };
       }
     },

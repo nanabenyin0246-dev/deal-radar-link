@@ -9,6 +9,8 @@ import { Badge } from "@/components/ui/badge";
 import { MessageCircle, Shield, Star, ArrowLeft, Truck, ExternalLink, CreditCard } from "lucide-react";
 import PriceHistoryChart from "@/components/PriceHistoryChart";
 import ConvertedPrice from "@/components/ConvertedPrice";
+import ProductSummary from "@/components/ProductSummary";
+import DeliveryWeather from "@/components/DeliveryWeather";
 import SEOHead from "@/components/SEOHead";
 import { useCreateOrder } from "@/hooks/useOrders";
 import { useInitializePayment } from "@/hooks/usePaystack";
@@ -210,6 +212,11 @@ const ProductDetail = () => {
           </div>
         </div>
 
+        {/* DuckDuckGo Product Summary */}
+        <div className="mb-8">
+          <ProductSummary productName={productName} brand={product.brand || undefined} />
+        </div>
+
         {/* Price History Chart */}
         <div className="mb-12">
           <PriceHistoryChart productId={product.id} currency={cheapest?.currency} />
@@ -262,9 +269,12 @@ const ProductDetail = () => {
                           </div>
                         </td>
                         <td className="p-4 hidden sm:table-cell">
-                          <div className="flex items-center gap-1 text-muted-foreground">
-                            <Truck className="w-3 h-3" />
-                            <span>{offer.shipping_days || 3} {t("detail.days")}</span>
+                          <div className="flex flex-col gap-1">
+                            <div className="flex items-center gap-1 text-muted-foreground">
+                              <Truck className="w-3 h-3" />
+                              <span>{offer.shipping_days || 3} {t("detail.days")}</span>
+                            </div>
+                            <DeliveryWeather shippingDays={offer.shipping_days || 3} />
                           </div>
                         </td>
                         <td className="p-4 hidden md:table-cell">
