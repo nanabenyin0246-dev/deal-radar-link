@@ -217,6 +217,9 @@ const ProductDetail = () => {
                     {createOrder.isPending || initPayment.isPending ? t("common.loading") : t("detail.payOnline")}
                   </Button>
                 </div>
+                <div className="mt-3">
+                  <PriceAlertButton productId={product.id} currentPrice={cheapest.price} currency={cheapest.currency} />
+                </div>
               </div>
             )}
 
