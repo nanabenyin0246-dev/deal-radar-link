@@ -1,9 +1,10 @@
-import { MessageCircle, Shield, Star } from "lucide-react";
+import { MessageCircle, Star } from "lucide-react";
 import { LiveProduct } from "@/hooks/useProducts";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import ConvertedPrice from "@/components/ConvertedPrice";
+import VendorBadge from "@/components/VendorBadge";
 import { formatPrice } from "@/utils/currency";
 
 const LiveProductCard = ({ product }: { product: LiveProduct }) => {
