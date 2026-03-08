@@ -26,9 +26,23 @@ const Auth = () => {
   const [loading, setLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
   const [resetSent, setResetSent] = useState(false);
+  const [referrerName, setReferrerName] = useState<string | null>(null);
   const { isVendor } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
+
+  // Handle referral param
+  useEffect(() => {
+    const ref = searchParams.get("ref");
+    if (ref) {
+      localStorage.setItem("robcompare_referrer", ref);
+      // Fetch referrer name
+      supabase.from("vendors").select("business_name").eq("id", ref).maybeSingle().then(({ data }) => {
+        if (data) setReferrerName(data.business_name);
+      });
+    }
+  }, [searchParams]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
