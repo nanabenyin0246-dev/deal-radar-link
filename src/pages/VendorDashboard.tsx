@@ -486,6 +486,75 @@ const VendorDashboard = () => {
             ))}
           </div>
         )}
+
+        {/* Submit New Product Section */}
+        <div className="mt-10">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-heading font-semibold text-lg">Submit New Product</h2>
+            <Button variant="outline" onClick={() => setShowSubmitForm(!showSubmitForm)}>
+              <Plus className="w-4 h-4" /> Submit Product for Review
+            </Button>
+          </div>
+
+          {showSubmitForm && (
+            <div className="bg-card border border-border rounded-xl p-6 mb-6 animate-fade-in">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-heading font-semibold">New Product Submission</h3>
+                <button onClick={() => setShowSubmitForm(false)}><X className="w-5 h-5 text-muted-foreground" /></button>
+              </div>
+              <form onSubmit={(e) => { e.preventDefault(); submitProduct.mutate(); }} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Product Name *</Label>
+                  <Input value={subName} onChange={(e) => setSubName(e.target.value)} required placeholder="e.g. iPhone 15 Pro" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Brand (optional)</Label>
+                  <Input value={subBrand} onChange={(e) => setSubBrand(e.target.value)} placeholder="e.g. Apple" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Category</Label>
+                  <select value={subCategory} onChange={(e) => setSubCategory(e.target.value)} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
+                    <option value="">Select category</option>
+                    {categories?.map((c) => <option key={c.id} value={c.name}>{c.name}</option>)}
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Image URL (optional)</Label>
+                  <Input value={subImageUrl} onChange={(e) => setSubImageUrl(e.target.value)} placeholder="https://..." />
+                </div>
+                <div className="space-y-2 md:col-span-2">
+                  <Label>Description (max 300 chars)</Label>
+                  <Textarea value={subDescription} onChange={(e) => setSubDescription(e.target.value.slice(0, 300))} placeholder="Brief product description..." maxLength={300} />
+                  <p className="text-xs text-muted-foreground">{subDescription.length}/300</p>
+                </div>
+                <div className="md:col-span-2">
+                  <Button type="submit" disabled={submitProduct.isPending || !subName}>
+                    {submitProduct.isPending ? "Submitting..." : "Submit for Review"}
+                  </Button>
+                </div>
+              </form>
+            </div>
+          )}
+
+          {/* Pending Submissions */}
+          {submissions && submissions.length > 0 && (
+            <div className="space-y-2">
+              {submissions.map((sub: any) => (
+                <div key={sub.id} className={`bg-card border rounded-xl p-3 flex items-center gap-3 ${
+                  sub.status === "pending" ? "border-secondary/50" : sub.status === "approved" ? "border-success/50" : "border-destructive/30"
+                }`}>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-sm truncate">{sub.name}</p>
+                    <p className="text-xs text-muted-foreground">{sub.brand} {sub.category ? `· ${sub.category}` : ""}</p>
+                  </div>
+                  <Badge variant={sub.status === "pending" ? "outline" : sub.status === "approved" ? "default" : "destructive"} className="text-xs">
+                    {sub.status === "pending" ? "Under Review" : sub.status === "approved" ? "Approved" : "Rejected"}
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
       <Footer />
     </div>
