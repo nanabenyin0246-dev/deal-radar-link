@@ -34,6 +34,7 @@ const ProductDetail = () => {
   const createOrder = useCreateOrder();
   const initPayment = useInitializePayment();
   const { toast } = useToast();
+  const { recentProducts, addProduct } = useRecentlyViewed();
 
   useEffect(() => {
     if (lang && SUPPORTED_LOCALES.some(l => l.code === lang) && lang !== locale) {
