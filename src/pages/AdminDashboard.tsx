@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { useIsAdmin, useAdminOrders, useAdminDisputes, useAdminVendors, useUpdateVendorStatus, useResolveDispute, useAdminCommissions, useAdminAuditLog, useToggleFraudFlag } from "@/hooks/useAdmin";
+import { useIsAdmin, useAdminOrders, useAdminDisputes, useAdminVendors, useUpdateVendorStatus, useResolveDispute, useAdminCommissions, useAdminAuditLog, useToggleFraudFlag, useAdminSubmissions, useApproveSubmission, useRejectSubmission } from "@/hooks/useAdmin";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Shield, Package, AlertTriangle, Users, DollarSign, FileText, Download, Flag, BarChart3 } from "lucide-react";
+import { Shield, Package, AlertTriangle, Users, DollarSign, FileText, Download, Flag, BarChart3, Inbox, CheckCircle, XCircle } from "lucide-react";
 import AnalyticsTab from "@/components/admin/AnalyticsTab";
 import MilestoneProgress from "@/components/admin/MilestoneProgress";
 
@@ -23,6 +23,9 @@ const AdminDashboard = () => {
   const updateVendorStatus = useUpdateVendorStatus();
   const resolveDispute = useResolveDispute();
   const toggleFraudFlag = useToggleFraudFlag();
+  const { data: submissions } = useAdminSubmissions();
+  const approveSubmission = useApproveSubmission();
+  const rejectSubmission = useRejectSubmission();
   const { toast } = useToast();
 
   if (authLoading || adminLoading) return <div className="min-h-screen flex items-center justify-center"><p>Loading...</p></div>;
@@ -70,6 +73,7 @@ const AdminDashboard = () => {
         <Tabs defaultValue="analytics">
           <TabsList className="mb-4 flex-wrap">
             <TabsTrigger value="analytics"><BarChart3 className="w-3 h-3 mr-1" />Analytics</TabsTrigger>
+            <TabsTrigger value="submissions"><Inbox className="w-3 h-3 mr-1" />Submissions{submissions?.filter((s: any) => s.status === "pending").length ? ` (${submissions.filter((s: any) => s.status === "pending").length})` : ""}</TabsTrigger>
             <TabsTrigger value="orders">Orders</TabsTrigger>
             <TabsTrigger value="disputes">Disputes</TabsTrigger>
             <TabsTrigger value="vendors">Vendors</TabsTrigger>
@@ -80,6 +84,46 @@ const AdminDashboard = () => {
           {/* Analytics Tab */}
           <TabsContent value="analytics">
             <AnalyticsTab />
+          </TabsContent>
+
+          {/* Submissions Tab */}
+          <TabsContent value="submissions">
+            <div className="space-y-3">
+              {submissions?.map((sub: any) => (
+                <div key={sub.id} className={`bg-card border rounded-xl p-4 ${sub.status === "pending" ? "border-secondary/50" : "border-border"}`}>
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1 min-w-0">
+                      <p className="font-heading font-semibold">{sub.name}</p>
+                      <p className="text-sm text-muted-foreground">{sub.brand} {sub.category ? `· ${sub.category}` : ""}</p>
+                      {sub.description && <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{sub.description}</p>}
+                      <p className="text-xs text-muted-foreground mt-2">
+                        Vendor: {(sub.vendor as any)?.business_name} · {new Date(sub.created_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <Badge variant={sub.status === "pending" ? "outline" : sub.status === "approved" ? "default" : "destructive"}>{sub.status}</Badge>
+                      {sub.status === "pending" && (
+                        <>
+                          <Button size="sm" variant="outline" onClick={() => {
+                            approveSubmission.mutate({ submission: sub });
+                            toast({ title: "Product approved and added" });
+                          }}>
+                            <CheckCircle className="w-3 h-3" /> Approve
+                          </Button>
+                          <Button size="sm" variant="destructive" onClick={() => {
+                            rejectSubmission.mutate({ submissionId: sub.id });
+                            toast({ title: "Submission rejected" });
+                          }}>
+                            <XCircle className="w-3 h-3" /> Reject
+                          </Button>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {!submissions?.length && <p className="text-center py-8 text-muted-foreground">No product submissions yet</p>}
+            </div>
           </TabsContent>
 
           {/* Orders Tab */}
