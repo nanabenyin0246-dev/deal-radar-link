@@ -2,6 +2,7 @@ import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import CategoriesSection from "@/components/CategoriesSection";
 import FeaturedProducts from "@/components/FeaturedProducts";
+import FeaturedVendors from "@/components/FeaturedVendors";
 import HowItWorks from "@/components/HowItWorks";
 import VendorCTA from "@/components/VendorCTA";
 import RegionalOnboarding from "@/components/RegionalOnboarding";
@@ -35,6 +36,7 @@ const Index = () => {
       <HeroSection />
       <CategoriesSection />
       <FeaturedProducts />
+      <FeaturedVendors />
       <HowItWorks />
       <VendorCTA />
       <RegionalOnboarding region={showFrancophone ? "francophone" : "ghana"} />
