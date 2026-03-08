@@ -199,6 +199,14 @@ const Auth = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       <div className="container max-w-md py-12">
+        {/* Referral welcome */}
+        {referrerName && (
+          <div className="bg-primary/10 border border-primary/20 rounded-xl p-4 mb-6 text-center animate-fade-in">
+            <p className="text-sm font-medium">
+              You were referred by <strong className="text-primary">{referrerName}</strong> — welcome to RobCompare! 🎉
+            </p>
+          </div>
+        )}
         {mode === "forgot-password" ? (
           <>
             <div className="text-center mb-8">
