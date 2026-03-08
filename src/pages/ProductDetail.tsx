@@ -1,5 +1,7 @@
 import { useParams, Link } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
+import { useRecentlyViewed } from "@/hooks/useRecentlyViewed";
+import RecentlyViewedSidebar from "@/components/RecentlyViewedSidebar";
 import { useProduct } from "@/hooks/useProducts";
 import { useProductTranslations } from "@/hooks/useTranslation";
 import Navbar from "@/components/Navbar";
