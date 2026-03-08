@@ -1,4 +1,4 @@
-import { Search, Menu, X, ShoppingBag, User, Store, Package } from "lucide-react";
+import { Search, Menu, X, ShoppingBag, User, Store, Package, Bell } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
