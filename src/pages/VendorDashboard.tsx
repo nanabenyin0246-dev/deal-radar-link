@@ -43,9 +43,58 @@ const VendorDashboard = () => {
   const uploadImage = useUploadProductImage();
   const { toast } = useToast();
   const [showForm, setShowForm] = useState(false);
+  const [showSubmitForm, setShowSubmitForm] = useState(false);
   const [expandedTranslation, setExpandedTranslation] = useState<string | null>(null);
   const [editingOffer, setEditingOffer] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Submission form state
+  const [subName, setSubName] = useState("");
+  const [subBrand, setSubBrand] = useState("");
+  const [subDescription, setSubDescription] = useState("");
+  const [subImageUrl, setSubImageUrl] = useState("");
+  const [subCategory, setSubCategory] = useState("");
+
+  // Fetch vendor's submissions
+  const { data: submissions } = useQuery({
+    queryKey: ["vendor-submissions", vendorId],
+    queryFn: async () => {
+      if (!vendorId) return [];
+      const { data, error } = await supabase
+        .from("product_submissions")
+        .select("*")
+        .eq("vendor_id", vendorId)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!vendorId,
+  });
+
+  const submitProduct = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.from("product_submissions").insert({
+        vendor_id: vendorId!,
+        name: subName,
+        brand: subBrand || null,
+        description: subDescription || null,
+        image_url: subImageUrl || null,
+        category: subCategory || null,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["vendor-submissions"] });
+      toast({ title: "Product submitted for review!" });
+      setShowSubmitForm(false);
+      setSubName(""); setSubBrand(""); setSubDescription(""); setSubImageUrl(""); setSubCategory("");
+    },
+    onError: (err: any) => {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    },
+  });
+
+  const queryClient = useQueryClient();
 
   // Form state
   const [name, setName] = useState("");
