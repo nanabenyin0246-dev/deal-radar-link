@@ -31,7 +31,7 @@ const VendorBadge = ({
         <span title="Verified vendor"><CheckCircle className="w-3.5 h-3.5 text-primary shrink-0" /></span>
       )}
       {verified === false && (
-        <span title="Pending verification"><Clock className="w-3.5 h-3.5 text-warning shrink-0" /></span>
+        <span title="Pending verification"><Clock className="w-3.5 h-3.5 text-amber shrink-0" /></span>
       )}
     </div>
   );
