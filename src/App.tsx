@@ -24,7 +24,22 @@ import VendorOnboardingConfirm from "./pages/VendorOnboardingConfirm";
 import MyAlerts from "./pages/MyAlerts";
 import NotFound from "./pages/NotFound";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: (failureCount, error) => {
+        // Auto-retry once on network errors
+        if (failureCount >= 1) return false;
+        const msg = (error as Error)?.message?.toLowerCase() || "";
+        return msg.includes("network") || msg.includes("fetch") || msg.includes("failed");
+      },
+      staleTime: 1000 * 60 * 2, // 2 min default
+    },
+    mutations: {
+      retry: 0,
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
