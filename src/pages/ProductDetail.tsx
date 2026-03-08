@@ -258,9 +258,10 @@ const ProductDetail = () => {
                       <th className="text-left p-4 font-medium text-muted-foreground">{t("detail.vendor")}</th>
                       <th className="text-left p-4 font-medium text-muted-foreground">{t("detail.price")}</th>
                       <th className="text-left p-4 font-medium text-muted-foreground hidden sm:table-cell">{t("detail.trust")}</th>
-                      <th className="text-left p-4 font-medium text-muted-foreground hidden sm:table-cell">{t("detail.shipping")}</th>
-                      <th className="text-left p-4 font-medium text-muted-foreground hidden md:table-cell">{t("detail.stock")}</th>
-                      <th className="text-right p-4 font-medium text-muted-foreground">{t("detail.action")}</th>
+                       <th className="text-left p-4 font-medium text-muted-foreground hidden sm:table-cell">{t("detail.shipping")}</th>
+                       <th className="text-left p-4 font-medium text-muted-foreground hidden md:table-cell">{t("detail.stock")}</th>
+                       <th className="text-left p-4 font-medium text-muted-foreground hidden md:table-cell">Deal</th>
+                       <th className="text-right p-4 font-medium text-muted-foreground">{t("detail.action")}</th>
                     </tr>
                   </thead>
                   <tbody>
