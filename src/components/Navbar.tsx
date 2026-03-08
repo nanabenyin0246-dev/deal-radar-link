@@ -32,6 +32,11 @@ const Navbar = () => {
               <Package className="w-3.5 h-3.5" /> {t("nav.myOrders")}
             </Link>
           )}
+          {user && (
+            <Link to="/alerts" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
+              <Bell className="w-3.5 h-3.5" /> Alerts
+            </Link>
+          )}
           {isVendor && (
             <Link to="/vendor/dashboard" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
               <Store className="w-3.5 h-3.5" /> {t("nav.dashboard")}
