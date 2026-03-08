@@ -18,6 +18,7 @@ import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import VendorAgreement from "./pages/VendorAgreement";
 import ResetPassword from "./pages/ResetPassword";
+import VendorOnboardingConfirm from "./pages/VendorOnboardingConfirm";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();

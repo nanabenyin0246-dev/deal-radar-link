@@ -85,8 +85,8 @@ const Auth = () => {
       email,
       password,
       options: {
-        emailRedirectTo: window.location.origin,
-        data: { display_name: businessName },
+        emailRedirectTo: `${window.location.origin}/vendor/onboarding/confirm`,
+        data: { display_name: businessName, role: "vendor" },
       },
     });
     if (authError) {
