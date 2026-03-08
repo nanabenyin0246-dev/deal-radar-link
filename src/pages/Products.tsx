@@ -343,6 +343,27 @@ const Products = () => {
               )}
             </div>
 
+            {/* Recently viewed suggestions when no query */}
+            {!debouncedQuery && recentProducts.length > 0 && (
+              <div className="mb-8">
+                <h3 className="font-['Space_Grotesk'] text-sm font-bold text-muted-foreground mb-3">Based on your recent views</h3>
+                <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
+                  {recentProducts.map((rp) => (
+                    <a
+                      key={rp.id}
+                      href={`/product/${rp.slug}`}
+                      className="shrink-0 flex items-center gap-2 px-3 py-2 rounded-lg border border-border bg-card hover:border-primary/30 transition-colors"
+                    >
+                      <div className="w-8 h-8 rounded bg-muted overflow-hidden">
+                        <img src={rp.image_url || "/placeholder-product.svg"} alt="" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.src = "/placeholder-product.svg"; }} />
+                      </div>
+                      <span className="text-sm text-foreground whitespace-nowrap">{rp.name}</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {isLoading ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
                 {[1, 2, 3, 4, 5, 6].map(i => <ProductCardSkeleton key={i} />)}
