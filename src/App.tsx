@@ -23,6 +23,7 @@ import VendorAgreement from "./pages/VendorAgreement";
 import ResetPassword from "./pages/ResetPassword";
 import VendorOnboardingConfirm from "./pages/VendorOnboardingConfirm";
 import MyAlerts from "./pages/MyAlerts";
+import BuyersLanding from "./pages/BuyersLanding";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient({
