@@ -93,9 +93,11 @@ const LiveProductCard = ({ product }: { product: LiveProduct }) => {
         </div>
 
         {/* Last updated timestamp */}
-        <p className="text-[10px] text-muted-foreground">
-          Updated {formatDistanceToNow(new Date(cheapest.updated_at), { addSuffix: true })}
-        </p>
+        {cheapest.updated_at && !isNaN(new Date(cheapest.updated_at).getTime()) && (
+          <p className="text-[10px] text-muted-foreground">
+            Updated {formatDistanceToNow(new Date(cheapest.updated_at), { addSuffix: true })}
+          </p>
+        )}
 
         <Button variant="whatsapp" className="w-full" asChild>
           <a href={whatsappLink} target="_blank" rel="noopener noreferrer" aria-label={`Buy ${product.name} on WhatsApp`}>
