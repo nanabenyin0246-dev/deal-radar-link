@@ -82,8 +82,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
         // Send welcome email
         if (info.email) {
-          const { subject, html } = emailTemplates.vendorWelcome(info.businessName);
-          sendEmail({ to: info.email, subject, html }).catch(console.error);
+          sendEmail({
+            to: info.email,
+            subject: "Welcome to RobCompare — You're a Founding Vendor! 🎉",
+            html: `
+              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px;">
+                <h1 style="color: #16a34a;">Welcome to RobCompare!</h1>
+                <p>You're officially a founding vendor.</p>
+                <p>You keep <strong>100% of your revenue</strong> until we hit 1,000 users.</p>
+                <a href="https://deal-radar-link.lovable.app/vendor/dashboard"
+                   style="display: inline-block; background: #16a34a; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin-top: 16px;">
+                  Go to My Dashboard →
+                </a>
+                <p style="color: #6b7280; margin-top: 24px;">Welcome to the family. 🚀<br/>The RobCompare Team</p>
+              </div>
+            `,
+          }).catch(console.error);
         }
       }
 
