@@ -72,7 +72,7 @@ const Auth = () => {
       email,
       password,
       options: {
-        emailRedirectTo: window.location.origin,
+        emailRedirectTo: "https://deal-radar-link.lovable.app",
         data: { display_name: displayName },
       },
     });
@@ -99,7 +99,7 @@ const Auth = () => {
       email,
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}/vendor/onboarding`,
+        emailRedirectTo: "https://deal-radar-link.lovable.app/vendor/onboarding",
         data: { display_name: businessName, role: "vendor" },
       },
     });
