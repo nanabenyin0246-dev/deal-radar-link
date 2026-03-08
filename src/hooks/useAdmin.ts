@@ -166,3 +166,64 @@ export const useToggleFraudFlag = () => {
     },
   });
 };
+
+// Product Submissions
+export const useAdminSubmissions = () => {
+  const { data: isAdmin } = useIsAdmin();
+  return useQuery({
+    queryKey: ["admin-submissions"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("product_submissions")
+        .select("*, vendor:vendors(business_name)")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!isAdmin,
+  });
+};
+
+export const useApproveSubmission = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ submission }: { submission: any }) => {
+      // Create product
+      const slug = submission.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") + "-" + Date.now();
+      const { error: pErr } = await supabase.from("products").insert({
+        name: submission.name,
+        slug,
+        brand: submission.brand,
+        description: submission.description,
+        image_url: submission.image_url,
+      });
+      if (pErr) throw pErr;
+      // Update submission status
+      const { error } = await supabase.from("product_submissions").update({
+        status: "approved",
+        reviewed_at: new Date().toISOString(),
+      }).eq("id", submission.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-submissions"] });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+    },
+  });
+};
+
+export const useRejectSubmission = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ submissionId }: { submissionId: string }) => {
+      const { error } = await supabase.from("product_submissions").update({
+        status: "rejected",
+        reviewed_at: new Date().toISOString(),
+      }).eq("id", submissionId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-submissions"] });
+    },
+  });
+};
