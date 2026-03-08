@@ -48,6 +48,26 @@ const ProductDetail = () => {
   const productName = activeTranslation?.name || product?.name || "";
   const productDescription = activeTranslation?.description || product?.description || "";
 
+  // Track recently viewed - must be before early returns
+  const lowestOffer = useMemo(() => {
+    if (!product?.vendor_offers) return null;
+    const visible = product.vendor_offers.filter((o: any) => o.is_visible);
+    return visible.length > 0 ? visible.reduce((a: any, b: any) => a.price < b.price ? a : b) : null;
+  }, [product]);
+
+  useEffect(() => {
+    if (product && lowestOffer) {
+      addProduct({
+        id: product.id,
+        name: product.name,
+        slug: product.slug,
+        image_url: product.image_url,
+        lowest_price: lowestOffer.price,
+        currency: lowestOffer.currency,
+      });
+    }
+  }, [product?.id]);
+
   const handlePaystackPay = async (offer: any) => {
     if (!user) {
       toast({ title: "Please sign in", description: "You need to be logged in to pay online.", variant: "destructive" });
