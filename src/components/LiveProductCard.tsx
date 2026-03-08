@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import ConvertedPrice from "@/components/ConvertedPrice";
 import VendorBadge from "@/components/VendorBadge";
+import DealScoreBadge from "@/components/DealScoreBadge";
 import { formatPrice } from "@/utils/currency";
 
 const LiveProductCard = ({ product }: { product: LiveProduct }) => {
