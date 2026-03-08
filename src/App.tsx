@@ -52,20 +52,20 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/products" element={<Products />} />
-              <Route path="/product/:slug" element={<ProductDetail />} />
-              <Route path="/:lang/products/:slug" element={<ProductDetail />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/orders" element={<BuyerOrders />} />
-              <Route path="/vendor/dashboard" element={<VendorDashboard />} />
-              <Route path="/admin" element={<AdminDashboard />} />
-              <Route path="/terms" element={<Terms />} />
-              <Route path="/privacy" element={<Privacy />} />
-              <Route path="/vendor-agreement" element={<VendorAgreement />} />
-              <Route path="/vendor/onboarding/confirm" element={<VendorOnboardingConfirm />} />
-              <Route path="/alerts" element={<MyAlerts />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/" element={<ErrorBoundary><Index /></ErrorBoundary>} />
+              <Route path="/products" element={<ErrorBoundary><Products /></ErrorBoundary>} />
+              <Route path="/product/:slug" element={<ErrorBoundary><ProductDetail /></ErrorBoundary>} />
+              <Route path="/:lang/products/:slug" element={<ErrorBoundary><ProductDetail /></ErrorBoundary>} />
+              <Route path="/auth" element={<ErrorBoundary><Auth /></ErrorBoundary>} />
+              <Route path="/orders" element={<ErrorBoundary><BuyerOrders /></ErrorBoundary>} />
+              <Route path="/vendor/dashboard" element={<ErrorBoundary><VendorDashboard /></ErrorBoundary>} />
+              <Route path="/admin" element={<ErrorBoundary><AdminDashboard /></ErrorBoundary>} />
+              <Route path="/terms" element={<ErrorBoundary><Terms /></ErrorBoundary>} />
+              <Route path="/privacy" element={<ErrorBoundary><Privacy /></ErrorBoundary>} />
+              <Route path="/vendor-agreement" element={<ErrorBoundary><VendorAgreement /></ErrorBoundary>} />
+              <Route path="/vendor/onboarding/confirm" element={<ErrorBoundary><VendorOnboardingConfirm /></ErrorBoundary>} />
+              <Route path="/alerts" element={<ErrorBoundary><MyAlerts /></ErrorBoundary>} />
+              <Route path="/reset-password" element={<ErrorBoundary><ResetPassword /></ErrorBoundary>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
             <CookieConsent />
