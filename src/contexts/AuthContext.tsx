@@ -96,11 +96,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
+      (_event, session) => {
         setSession(session);
         if (session?.user) {
-          await completePendingVendor(session.user.id);
-          await checkRoles(session.user.id);
+          // Use setTimeout to avoid blocking the auth state change callback
+          setTimeout(() => {
+            completePendingVendor(session.user.id).then(() => {
+              checkRoles(session.user.id);
+            });
+          }, 0);
         } else {
           setIsVendor(false);
           setIsAdmin(false);
@@ -113,7 +117,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       if (session?.user) {
-        checkRoles(session.user.id);
+        completePendingVendor(session.user.id).then(() => {
+          checkRoles(session.user.id);
+        });
       }
       setLoading(false);
     });

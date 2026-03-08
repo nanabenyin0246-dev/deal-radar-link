@@ -1,49 +1,69 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Loader2, CheckCircle } from "lucide-react";
 
 const VendorOnboardingConfirm = () => {
-  const { user, loading, isVendor } = useAuth();
+  const { user, loading } = useAuth();
   const navigate = useNavigate();
+  const [status, setStatus] = useState<"loading" | "confirmed">("loading");
+
+  useEffect(() => {
+    // Handle the hash fragment from email confirmation redirect
+    // Supabase appends tokens as hash params that need to be exchanged
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const accessToken = hashParams.get("access_token");
+    const refreshToken = hashParams.get("refresh_token");
+
+    if (accessToken && refreshToken) {
+      supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken }).then(({ error }) => {
+        if (error) {
+          console.error("Session recovery failed:", error);
+          navigate("/auth");
+        }
+      });
+    }
+  }, [navigate]);
 
   useEffect(() => {
     if (loading) return;
 
     if (!user) {
       // Not logged in yet — might still be processing the token
-      const timeout = setTimeout(() => navigate("/auth"), 5000);
+      const timeout = setTimeout(() => navigate("/auth"), 8000);
       return () => clearTimeout(timeout);
     }
 
+    setStatus("confirmed");
+
     // User is authenticated — pending_vendor will be processed by AuthContext
-    // Wait a moment for completePendingVendor to finish, then redirect
     const redirect = setTimeout(() => {
       localStorage.removeItem("vendor_onboarding_step");
       navigate("/vendor/dashboard", { replace: true });
-    }, 2000);
+    }, 2500);
 
     return () => clearTimeout(redirect);
-  }, [user, loading, isVendor, navigate]);
+  }, [user, loading, navigate]);
 
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
       <div className="container max-w-md py-20 text-center space-y-4">
         <div className="w-16 h-16 rounded-full bg-accent flex items-center justify-center mx-auto">
-          {loading ? (
+          {status === "loading" ? (
             <Loader2 className="w-8 h-8 text-primary animate-spin" />
           ) : (
             <CheckCircle className="w-8 h-8 text-primary" />
           )}
         </div>
         <h1 className="font-heading text-2xl font-bold">
-          {loading ? "Verifying your account..." : "Email confirmed!"}
+          {status === "loading" ? "Verifying your account..." : "Email confirmed!"}
         </h1>
         <p className="text-sm text-muted-foreground">
-          {loading
+          {status === "loading"
             ? "Please wait while we set up your vendor account."
             : "Setting up your vendor dashboard. You'll be redirected shortly."}
         </p>
