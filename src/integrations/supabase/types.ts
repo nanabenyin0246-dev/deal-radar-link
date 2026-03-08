@@ -639,6 +639,48 @@ export type Database = {
         }
         Relationships: []
       }
+      referrals: {
+        Row: {
+          created_at: string
+          id: string
+          referred_email: string | null
+          referred_vendor_id: string | null
+          referrer_vendor_id: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          referred_email?: string | null
+          referred_vendor_id?: string | null
+          referrer_vendor_id: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          referred_email?: string | null
+          referred_vendor_id?: string | null
+          referrer_vendor_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referrals_referred_vendor_id_fkey"
+            columns: ["referred_vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referrals_referrer_vendor_id_fkey"
+            columns: ["referrer_vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           id: string
