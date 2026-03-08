@@ -1,5 +1,7 @@
 import { useParams, Link } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
+import { useRecentlyViewed } from "@/hooks/useRecentlyViewed";
+import RecentlyViewedSidebar from "@/components/RecentlyViewedSidebar";
 import { useProduct } from "@/hooks/useProducts";
 import { useProductTranslations } from "@/hooks/useTranslation";
 import Navbar from "@/components/Navbar";
@@ -32,6 +34,7 @@ const ProductDetail = () => {
   const createOrder = useCreateOrder();
   const initPayment = useInitializePayment();
   const { toast } = useToast();
+  const { recentProducts, addProduct } = useRecentlyViewed();
 
   useEffect(() => {
     if (lang && SUPPORTED_LOCALES.some(l => l.code === lang) && lang !== locale) {
@@ -44,6 +47,26 @@ const ProductDetail = () => {
   );
   const productName = activeTranslation?.name || product?.name || "";
   const productDescription = activeTranslation?.description || product?.description || "";
+
+  // Track recently viewed - must be before early returns
+  const lowestOffer = useMemo(() => {
+    if (!product?.vendor_offers) return null;
+    const visible = product.vendor_offers.filter((o: any) => o.is_visible);
+    return visible.length > 0 ? visible.reduce((a: any, b: any) => a.price < b.price ? a : b) : null;
+  }, [product]);
+
+  useEffect(() => {
+    if (product && lowestOffer) {
+      addProduct({
+        id: product.id,
+        name: product.name,
+        slug: product.slug,
+        image_url: product.image_url,
+        lowest_price: lowestOffer.price,
+        currency: lowestOffer.currency,
+      });
+    }
+  }, [product?.id]);
 
   const handlePaystackPay = async (offer: any) => {
     if (!user) {
@@ -369,6 +392,13 @@ const ProductDetail = () => {
                 </table>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Recently Viewed Sidebar */}
+        {recentProducts.length > 1 && (
+          <div className="mb-12">
+            <RecentlyViewedSidebar products={recentProducts} currentProductId={product.id} />
           </div>
         )}
       </div>
