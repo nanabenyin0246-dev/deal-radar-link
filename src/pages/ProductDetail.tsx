@@ -6,7 +6,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MessageCircle, Shield, Star, ArrowLeft, Truck, ExternalLink, CreditCard } from "lucide-react";
+import { MessageCircle, Star, ArrowLeft, Truck, ExternalLink, CreditCard } from "lucide-react";
 import PriceHistoryChart from "@/components/PriceHistoryChart";
 import ConvertedPrice from "@/components/ConvertedPrice";
 import ProductSummary from "@/components/ProductSummary";
@@ -19,6 +19,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useI18n } from "@/i18n/I18nContext";
 import { SUPPORTED_LOCALES, Locale } from "@/i18n/translations";
 import { formatPrice } from "@/utils/currency";
+import VendorBadge from "@/components/VendorBadge";
 
 const ProductDetail = () => {
   const { slug, lang } = useParams<{ slug: string; lang?: string }>();
@@ -194,10 +195,12 @@ const ProductDetail = () => {
                   {formatPrice(cheapest.price, cheapest.currency)}
                 </p>
                 <ConvertedPrice amount={cheapest.price} currency={cheapest.currency} className="text-sm" />
-                <div className="flex items-center gap-1 mt-1">
-                  {cheapest.vendor.verified && <Shield className="w-3 h-3 text-primary" />}
-                  <span className="text-sm text-muted-foreground">{t("common.from")} {cheapest.vendor.business_name}</span>
-                </div>
+                <VendorBadge
+                  businessName={cheapest.vendor.business_name}
+                  country={cheapest.vendor.country}
+                  verified={cheapest.vendor.verified}
+                  className="text-sm text-muted-foreground mt-1"
+                />
                 <div className="flex gap-2 mt-4">
                   <Button variant="whatsapp" className="flex-1" asChild>
                     <a href={getWhatsAppLink(cheapest)} target="_blank" rel="noopener noreferrer">
@@ -258,13 +261,12 @@ const ProductDetail = () => {
                     {offers.map((offer, i) => (
                       <tr key={offer.id} className={`border-b border-border last:border-0 ${i === 0 ? "bg-accent/30" : ""}`}>
                         <td className="p-4">
-                          <div className="flex items-center gap-2">
-                            {offer.vendor.verified && <Shield className="w-3.5 h-3.5 text-primary shrink-0" />}
-                            <div>
-                              <p className="font-medium">{offer.vendor.business_name}</p>
-                              <p className="text-xs text-muted-foreground">{offer.vendor.country}</p>
-                            </div>
-                          </div>
+                          <VendorBadge
+                            businessName={offer.vendor.business_name}
+                            country={offer.vendor.country}
+                            verified={offer.vendor.verified}
+                            className="font-medium"
+                          />
                         </td>
                         <td className="p-4">
                           <p className={`font-heading font-bold ${i === 0 ? "text-primary" : ""}`}>
