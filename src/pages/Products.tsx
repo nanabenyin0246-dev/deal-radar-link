@@ -18,8 +18,11 @@ import BarcodeScanner from "@/components/BarcodeScanner";
 import ProductSummary from "@/components/ProductSummary";
 import { useDebounce } from "@/hooks/useDebounce";
 import { calculateDealScore } from "@/utils/dealScore";
+import SEOHead from "@/components/SEOHead";
+import { formatDistanceToNow } from "date-fns";
 
 type SortOption = "price_asc" | "price_desc" | "deal_score" | "newest";
+const ITEMS_PER_PAGE = 12;
 
 const SORT_LABELS: Record<SortOption, string> = {
   price_asc: "Price: Low to High",
@@ -47,6 +50,7 @@ const Products = () => {
   const [verifiedOnly, setVerifiedOnly] = useState(initialVerifiedOnly);
   const [priceRange, setPriceRange] = useState<[number, number]>([initialMinPrice, initialMaxPrice]);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const debouncedQuery = useDebounce(query, 300);
 
@@ -141,6 +145,12 @@ const Products = () => {
     return result;
   }, [products, selectedCategories, verifiedOnly, priceRange, sort]);
 
+  const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
+  const paginatedProducts = filteredProducts.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+
   const toggleCategory = (slug: string) => {
     const next = selectedCategories.includes(slug)
       ? selectedCategories.filter(c => c !== slug)
@@ -155,6 +165,7 @@ const Products = () => {
     setSort("deal_score");
     setVerifiedOnly(false);
     setPriceRange([0, 0]);
+    setCurrentPage(1);
     setSearchParams({});
   };
 
@@ -222,6 +233,11 @@ const Products = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title="Browse Products"
+        description="Compare prices across verified vendors in Africa. Find the best deals on electronics, fashion, beauty and more."
+        path="/products"
+      />
       <Navbar />
       <div className="container py-8">
         {/* Search bar + Sort */}
@@ -329,12 +345,57 @@ const Products = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
                 {[1, 2, 3, 4, 5, 6].map(i => <ProductCardSkeleton key={i} />)}
               </div>
-            ) : filteredProducts.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-                {filteredProducts.map(product => (
-                  <LiveProductCard key={product.id} product={product} />
-                ))}
-              </div>
+            ) : paginatedProducts.length > 0 ? (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                  {paginatedProducts.map(product => (
+                    <LiveProductCard key={product.id} product={product} />
+                  ))}
+                </div>
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="flex items-center justify-center gap-2 mt-10">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={currentPage === 1}
+                      onClick={() => { setCurrentPage(p => p - 1); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                    >
+                      Previous
+                    </Button>
+                    <div className="flex items-center gap-1">
+                      {Array.from({ length: totalPages }, (_, i) => i + 1)
+                        .filter(p => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1)
+                        .map((page, idx, arr) => {
+                          const prev = arr[idx - 1];
+                          const showEllipsis = prev && page - prev > 1;
+                          return (
+                            <span key={page} className="flex items-center gap-1">
+                              {showEllipsis && <span className="text-muted-foreground px-1">…</span>}
+                              <Button
+                                variant={page === currentPage ? "default" : "outline"}
+                                size="sm"
+                                className="w-9 h-9 p-0"
+                                onClick={() => { setCurrentPage(page); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                              >
+                                {page}
+                              </Button>
+                            </span>
+                          );
+                        })}
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={currentPage === totalPages}
+                      onClick={() => { setCurrentPage(p => p + 1); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                    >
+                      Next
+                    </Button>
+                  </div>
+                )}
+              </>
             ) : (
               <EmptyState onAction={clearFilters} />
             )}
