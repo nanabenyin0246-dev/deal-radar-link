@@ -124,6 +124,50 @@ const VendorDashboard = () => {
   const totalViews = products?.reduce((s, o) => s + (o.views || 0), 0) || 0;
   const totalClicks = products?.reduce((s, o) => s + (o.clicks || 0), 0) || 0;
 
+  // Fetch active price alerts for this vendor's products
+  const productIds = products?.map((o: any) => o.product_id).filter(Boolean) || [];
+  const { data: alertsCount } = useQuery({
+    queryKey: ["vendor-alerts-count", productIds],
+    queryFn: async () => {
+      if (!productIds.length) return 0;
+      const { count, error } = await supabase
+        .from("price_alerts")
+        .select("*", { count: "exact", head: true })
+        .in("product_id", productIds)
+        .eq("active", true);
+      if (error) throw error;
+      return count || 0;
+    },
+    enabled: productIds.length > 0,
+  });
+
+  // Fetch vendor rank
+  const { data: vendorRank } = useQuery({
+    queryKey: ["vendor-rank", vendorId],
+    queryFn: async () => {
+      if (!vendorId) return null;
+      const { data, error } = await supabase
+        .from("vendors")
+        .select("id")
+        .order("created_at", { ascending: true });
+      if (error) throw error;
+      const idx = data?.findIndex((v) => v.id === vendorId);
+      return idx !== undefined && idx >= 0 ? idx + 1 : null;
+    },
+    enabled: !!vendorId,
+  });
+
+  const totalVendors = useQuery({
+    queryKey: ["total-vendors-count"],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from("vendors")
+        .select("*", { count: "exact", head: true });
+      if (error) throw error;
+      return count || 0;
+    },
+  });
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -151,12 +195,24 @@ const VendorDashboard = () => {
         {/* Founding Vendor Banner */}
         <FoundingVendorBanner />
 
+        {/* Quick Stats Bar */}
+        {vendorRank && (
+          <div className="bg-primary/10 border border-primary/20 rounded-xl p-3 mb-6 flex items-center gap-3">
+            <Users className="w-5 h-5 text-primary shrink-0" />
+            <p className="text-sm font-medium">
+              You are vendor <span className="font-heading font-bold text-primary">#{vendorRank}</span> of{" "}
+              <span className="font-heading font-bold">{Math.max(totalVendors.data || 0, 100)}</span> founding vendors
+            </p>
+          </div>
+        )}
+
         {/* Stats */}
-        <div className="grid grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {[
             { icon: Package, label: "Products", value: products?.length || 0 },
             { icon: Eye, label: "Total Views", value: totalViews },
             { icon: MousePointer, label: "Total Clicks", value: totalClicks },
+            { icon: Bell, label: "Active Alerts", value: alertsCount ?? 0 },
           ].map((s) => (
             <div key={s.label} className="bg-card border border-border rounded-xl p-4 text-center">
               <s.icon className="w-5 h-5 mx-auto text-muted-foreground mb-2" />
