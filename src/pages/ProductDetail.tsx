@@ -261,13 +261,12 @@ const ProductDetail = () => {
                     {offers.map((offer, i) => (
                       <tr key={offer.id} className={`border-b border-border last:border-0 ${i === 0 ? "bg-accent/30" : ""}`}>
                         <td className="p-4">
-                          <div className="flex items-center gap-2">
-                            {offer.vendor.verified && <Shield className="w-3.5 h-3.5 text-primary shrink-0" />}
-                            <div>
-                              <p className="font-medium">{offer.vendor.business_name}</p>
-                              <p className="text-xs text-muted-foreground">{offer.vendor.country}</p>
-                            </div>
-                          </div>
+                          <VendorBadge
+                            businessName={offer.vendor.business_name}
+                            country={offer.vendor.country}
+                            verified={offer.vendor.verified}
+                            className="font-medium"
+                          />
                         </td>
                         <td className="p-4">
                           <p className={`font-heading font-bold ${i === 0 ? "text-primary" : ""}`}>
