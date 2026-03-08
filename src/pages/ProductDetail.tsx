@@ -6,7 +6,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MessageCircle, Shield, Star, ArrowLeft, Truck, ExternalLink, CreditCard } from "lucide-react";
+import { MessageCircle, Star, ArrowLeft, Truck, ExternalLink, CreditCard } from "lucide-react";
 import PriceHistoryChart from "@/components/PriceHistoryChart";
 import ConvertedPrice from "@/components/ConvertedPrice";
 import ProductSummary from "@/components/ProductSummary";
