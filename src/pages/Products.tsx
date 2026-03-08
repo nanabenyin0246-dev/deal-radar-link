@@ -54,6 +54,7 @@ const Products = () => {
   const [currentPage, setCurrentPage] = useState(1);
 
   const debouncedQuery = useDebounce(query, 300);
+  const { recentProducts } = useRecentlyViewed();
 
   const { data: products, isLoading } = useProducts(debouncedQuery || undefined);
   const { data: categories } = useCategories();
