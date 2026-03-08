@@ -79,7 +79,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           });
           localStorage.removeItem("robcompare_referrer");
         }
-      }
 
         // Send welcome email
         if (info.email) {
