@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { I18nProvider } from "@/i18n/I18nContext";
 import { CurrencyProvider } from "@/contexts/CurrencyContext";
+import { CountryProvider } from "@/contexts/CountryContext";
 import CookieConsent from "@/components/CookieConsent";
 import Index from "./pages/Index";
 import Products from "./pages/Products";
