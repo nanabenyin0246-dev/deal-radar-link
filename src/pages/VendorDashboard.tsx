@@ -555,6 +555,9 @@ const VendorDashboard = () => {
             </div>
           )}
         </div>
+
+        {/* Refer a Vendor Section */}
+        <ReferralSection vendorId={vendorId} />
       </div>
       <Footer />
     </div>
