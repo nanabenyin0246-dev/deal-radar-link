@@ -26,8 +26,8 @@ export const useExchangeRates = (baseCurrency: string = "ghs") => {
         return data.rates as ExchangeRates;
       }
     },
-    staleTime: 1000 * 60 * 30, // 30 min
-    gcTime: 1000 * 60 * 60 * 2,
+    staleTime: 1000 * 60 * 60 * 6, // 6 hours
+    gcTime: 1000 * 60 * 60 * 12,
     retry: 1,
   });
 };
