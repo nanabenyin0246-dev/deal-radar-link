@@ -86,6 +86,46 @@ const AdminDashboard = () => {
             <AnalyticsTab />
           </TabsContent>
 
+          {/* Submissions Tab */}
+          <TabsContent value="submissions">
+            <div className="space-y-3">
+              {submissions?.map((sub: any) => (
+                <div key={sub.id} className={`bg-card border rounded-xl p-4 ${sub.status === "pending" ? "border-secondary/50" : "border-border"}`}>
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1 min-w-0">
+                      <p className="font-heading font-semibold">{sub.name}</p>
+                      <p className="text-sm text-muted-foreground">{sub.brand} {sub.category ? `· ${sub.category}` : ""}</p>
+                      {sub.description && <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{sub.description}</p>}
+                      <p className="text-xs text-muted-foreground mt-2">
+                        Vendor: {(sub.vendor as any)?.business_name} · {new Date(sub.created_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <Badge variant={sub.status === "pending" ? "outline" : sub.status === "approved" ? "default" : "destructive"}>{sub.status}</Badge>
+                      {sub.status === "pending" && (
+                        <>
+                          <Button size="sm" variant="outline" onClick={() => {
+                            approveSubmission.mutate({ submission: sub });
+                            toast({ title: "Product approved and added" });
+                          }}>
+                            <CheckCircle className="w-3 h-3" /> Approve
+                          </Button>
+                          <Button size="sm" variant="destructive" onClick={() => {
+                            rejectSubmission.mutate({ submissionId: sub.id });
+                            toast({ title: "Submission rejected" });
+                          }}>
+                            <XCircle className="w-3 h-3" /> Reject
+                          </Button>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {!submissions?.length && <p className="text-center py-8 text-muted-foreground">No product submissions yet</p>}
+            </div>
+          </TabsContent>
+
           {/* Orders Tab */}
           <TabsContent value="orders">
             <div className="flex justify-end mb-3">
