@@ -24,6 +24,7 @@ import ResetPassword from "./pages/ResetPassword";
 import VendorOnboardingConfirm from "./pages/VendorOnboardingConfirm";
 import MyAlerts from "./pages/MyAlerts";
 import BuyersLanding from "./pages/BuyersLanding";
+import VendorsLanding from "./pages/VendorsLanding";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient({
@@ -69,6 +70,7 @@ const App = () => (
               <Route path="/vendor/onboarding/confirm" element={<ErrorBoundary><VendorOnboardingConfirm /></ErrorBoundary>} />
               <Route path="/alerts" element={<ErrorBoundary><MyAlerts /></ErrorBoundary>} />
               <Route path="/buyers" element={<ErrorBoundary><BuyersLanding /></ErrorBoundary>} />
+              <Route path="/vendors" element={<ErrorBoundary><VendorsLanding /></ErrorBoundary>} />
               <Route path="/reset-password" element={<ErrorBoundary><ResetPassword /></ErrorBoundary>} />
               <Route path="*" element={<NotFound />} />
               <Route path="*" element={<NotFound />} />
