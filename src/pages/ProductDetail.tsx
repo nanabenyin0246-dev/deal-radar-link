@@ -304,6 +304,15 @@ const ProductDetail = () => {
                             {offer.in_stock ? t("products.inStock") : t("products.outOfStock")}
                           </Badge>
                         </td>
+                        <td className="p-4 hidden md:table-cell">
+                          <DealScoreBadge
+                            price={offer.price}
+                            averagePrice={avgPrice}
+                            vendorVerified={offer.vendor.verified || false}
+                            updatedAt={offer.updated_at}
+                            showScore
+                          />
+                        </td>
                         <td className="p-4 text-right">
                           <div className="flex items-center justify-end gap-2">
                             <Button
