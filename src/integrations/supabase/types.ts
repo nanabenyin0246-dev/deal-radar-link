@@ -838,6 +838,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_country_count: { Args: never; Returns: number }
       get_orders_by_status: {
         Args: never
         Returns: {
@@ -848,6 +849,7 @@ export type Database = {
       }
       get_products_count: { Args: never; Returns: number }
       get_user_count: { Args: never; Returns: number }
+      get_vendor_count: { Args: never; Returns: number }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
