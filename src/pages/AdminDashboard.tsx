@@ -23,6 +23,9 @@ const AdminDashboard = () => {
   const updateVendorStatus = useUpdateVendorStatus();
   const resolveDispute = useResolveDispute();
   const toggleFraudFlag = useToggleFraudFlag();
+  const { data: submissions } = useAdminSubmissions();
+  const approveSubmission = useApproveSubmission();
+  const rejectSubmission = useRejectSubmission();
   const { toast } = useToast();
 
   if (authLoading || adminLoading) return <div className="min-h-screen flex items-center justify-center"><p>Loading...</p></div>;
