@@ -1,5 +1,6 @@
 import { useFeaturedProducts } from "@/hooks/useProducts";
 import LiveProductCard from "@/components/LiveProductCard";
+import ProductCardSkeleton from "@/components/ProductCardSkeleton";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
@@ -13,8 +14,8 @@ const FeaturedProducts = () => {
         <div className="container">
           <h2 className="font-heading text-2xl md:text-3xl font-bold mb-8">Trending Deals</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1,2,3].map(i => (
-              <div key={i} className="bg-card border border-border rounded-xl h-96 animate-pulse" />
+            {[1, 2, 3].map(i => (
+              <ProductCardSkeleton key={i} />
             ))}
           </div>
         </div>
