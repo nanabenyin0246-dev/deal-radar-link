@@ -28,10 +28,10 @@ const VendorBadge = ({
       )}
       <span className="truncate">{businessName}</span>
       {verified === true && (
-        <CheckCircle className="w-3.5 h-3.5 text-primary shrink-0" title="Verified vendor" />
+        <span title="Verified vendor"><CheckCircle className="w-3.5 h-3.5 text-primary shrink-0" /></span>
       )}
       {verified === false && (
-        <Clock className="w-3.5 h-3.5 text-warning shrink-0" title="Pending verification" />
+        <span title="Pending verification"><Clock className="w-3.5 h-3.5 text-warning shrink-0" /></span>
       )}
     </div>
   );
