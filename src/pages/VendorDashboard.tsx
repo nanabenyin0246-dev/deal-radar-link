@@ -18,7 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import {
   Package, Plus, Eye, MousePointer, Store, X, Languages,
-  Trash2, Pencil, Upload, Mail, Check, ImageIcon
+  Trash2, Pencil, Upload, Mail, Check, ImageIcon, Bell, Users
 } from "lucide-react";
 import FoundingVendorBanner from "@/components/FoundingVendorBanner";
 import TranslationManager from "@/components/vendor/TranslationManager";
