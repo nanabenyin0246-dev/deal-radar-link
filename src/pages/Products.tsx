@@ -50,6 +50,7 @@ const Products = () => {
   const [verifiedOnly, setVerifiedOnly] = useState(initialVerifiedOnly);
   const [priceRange, setPriceRange] = useState<[number, number]>([initialMinPrice, initialMaxPrice]);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const debouncedQuery = useDebounce(query, 300);
 
