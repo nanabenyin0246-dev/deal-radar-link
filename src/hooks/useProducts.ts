@@ -29,6 +29,7 @@ export interface LiveVendorOffer {
   variant_info: any;
   views: number | null;
   clicks: number | null;
+  updated_at: string;
   vendor: {
     id: string;
     business_name: string;
