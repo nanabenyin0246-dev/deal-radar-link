@@ -6,7 +6,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MessageCircle, Star, ArrowLeft, Truck, ExternalLink, CreditCard } from "lucide-react";
+import { MessageCircle, Star, ArrowLeft, Truck, ExternalLink, CreditCard, Share2, Copy, Twitter } from "lucide-react";
 import PriceHistoryChart from "@/components/PriceHistoryChart";
 import ConvertedPrice from "@/components/ConvertedPrice";
 import ProductSummary from "@/components/ProductSummary";
@@ -143,9 +143,9 @@ const ProductDetail = () => {
   return (
     <div className="min-h-screen bg-background">
       <SEOHead
-        title={productName}
-        description={productDescription || `Compare prices for ${productName} from ${offers.length} vendors`}
-        path={`/${locale}/products/${slug}`}
+        title={`Compare ${productName} prices`}
+        description={cheapest ? `Best price: ${formatPrice(cheapest.price, cheapest.currency)} from ${offers.length} vendor${offers.length !== 1 ? "s" : ""}` : `Compare prices for ${productName}`}
+        path={`/product/${slug}`}
         image={product.image_url || undefined}
         type="product"
         jsonLd={jsonLd}
@@ -181,6 +181,39 @@ const ProductDetail = () => {
               )}
               <h1 className="font-heading text-2xl md:text-3xl font-bold">{productName}</h1>
               {product.brand && <p className="text-muted-foreground mt-1">{product.brand}</p>}
+
+              {/* Share Buttons */}
+              <div className="flex items-center gap-2 mt-3">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-8 text-xs"
+                  onClick={() => {
+                    navigator.clipboard.writeText(window.location.href);
+                    toast({ title: "Link copied!" });
+                  }}
+                >
+                  <Copy className="w-3 h-3" /> Copy Link
+                </Button>
+                <Button variant="outline" size="sm" className="h-8 text-xs" asChild>
+                  <a
+                    href={`https://wa.me/?text=${encodeURIComponent(`Check out ${productName} on RobCompare — best price is ${cheapest ? formatPrice(cheapest.price, cheapest.currency) : "N/A"}! ${window.location.href}`)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <MessageCircle className="w-3 h-3" /> WhatsApp
+                  </a>
+                </Button>
+                <Button variant="outline" size="sm" className="h-8 text-xs" asChild>
+                  <a
+                    href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Compare ${productName} prices on @RobCompare`)}&url=${encodeURIComponent(window.location.href)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Share2 className="w-3 h-3" /> X
+                  </a>
+                </Button>
+              </div>
             </div>
 
             {product.rating && (
