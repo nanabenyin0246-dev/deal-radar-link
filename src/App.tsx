@@ -53,6 +53,7 @@ const App = () => (
             <CookieConsent />
           </BrowserRouter>
         </TooltipProvider>
+        </CountryProvider>
         </CurrencyProvider>
       </AuthProvider>
     </I18nProvider>

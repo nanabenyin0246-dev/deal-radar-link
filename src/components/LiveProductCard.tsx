@@ -72,10 +72,12 @@ const LiveProductCard = ({ product }: { product: LiveProduct }) => {
             <p className="text-xs text-muted-foreground">Best price from</p>
             <p className="font-heading text-xl font-bold truncate">{formatPrice(cheapest.price, cheapest.currency)}</p>
             <ConvertedPrice amount={cheapest.price} currency={cheapest.currency} />
-            <div className="flex items-center gap-1 mt-0.5 min-w-0">
-              {cheapest.vendor.verified && <Shield className="w-3 h-3 text-primary shrink-0" />}
-              <span className="text-xs text-muted-foreground truncate">{cheapest.vendor.business_name}</span>
-            </div>
+            <VendorBadge
+              businessName={cheapest.vendor.business_name}
+              country={cheapest.vendor.country}
+              verified={cheapest.vendor.verified}
+              className="text-xs text-muted-foreground mt-0.5"
+            />
           </div>
           <div className="[@media(min-width:375px)]:hidden">
             <Badge variant="outline" className="text-[10px]">
