@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,9 +26,23 @@ const Auth = () => {
   const [loading, setLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
   const [resetSent, setResetSent] = useState(false);
+  const [referrerName, setReferrerName] = useState<string | null>(null);
   const { isVendor } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
+
+  // Handle referral param
+  useEffect(() => {
+    const ref = searchParams.get("ref");
+    if (ref) {
+      localStorage.setItem("robcompare_referrer", ref);
+      // Fetch referrer name
+      supabase.from("vendors").select("business_name").eq("id", ref).maybeSingle().then(({ data }) => {
+        if (data) setReferrerName(data.business_name);
+      });
+    }
+  }, [searchParams]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -96,11 +110,13 @@ const Auth = () => {
     }
 
     if (authData.user) {
+      const referrer = localStorage.getItem("robcompare_referrer");
       localStorage.setItem("pending_vendor", JSON.stringify({
         businessName, whatsappNumber, city, country, email,
         agreement_version: "1.0",
         agreed_at: new Date().toISOString(),
         user_agent: navigator.userAgent,
+        referrer_vendor_id: referrer || null,
       }));
     }
 
@@ -183,6 +199,14 @@ const Auth = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       <div className="container max-w-md py-12">
+        {/* Referral welcome */}
+        {referrerName && (
+          <div className="bg-primary/10 border border-primary/20 rounded-xl p-4 mb-6 text-center animate-fade-in">
+            <p className="text-sm font-medium">
+              You were referred by <strong className="text-primary">{referrerName}</strong> — welcome to RobCompare! 🎉
+            </p>
+          </div>
+        )}
         {mode === "forgot-password" ? (
           <>
             <div className="text-center mb-8">

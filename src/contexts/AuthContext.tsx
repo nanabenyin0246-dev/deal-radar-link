@@ -67,6 +67,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           entity_id: vendorData.id,
           details: { agreement_version: info.agreement_version, business_name: info.businessName },
         });
+
+        // Record referral if exists
+        if (info.referrer_vendor_id) {
+          await supabase.from("referrals").insert({
+            referrer_vendor_id: info.referrer_vendor_id,
+            referred_email: info.email,
+            referred_vendor_id: vendorData.id,
+            status: "signed_up",
+          });
+          localStorage.removeItem("robcompare_referrer");
+        }
       }
 
       localStorage.removeItem("pending_vendor");
