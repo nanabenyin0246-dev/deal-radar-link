@@ -29,6 +29,7 @@ const App = () => (
     <I18nProvider>
       <AuthProvider>
         <CurrencyProvider>
+        <CountryProvider>
         <TooltipProvider>
           <Toaster />
           <Sonner />
