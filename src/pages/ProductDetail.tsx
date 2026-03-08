@@ -21,6 +21,7 @@ import { SUPPORTED_LOCALES, Locale } from "@/i18n/translations";
 import { formatPrice } from "@/utils/currency";
 import VendorBadge from "@/components/VendorBadge";
 import PriceAlertButton from "@/components/PriceAlertButton";
+import DealScoreBadge from "@/components/DealScoreBadge";
 
 const ProductDetail = () => {
   const { slug, lang } = useParams<{ slug: string; lang?: string }>();
