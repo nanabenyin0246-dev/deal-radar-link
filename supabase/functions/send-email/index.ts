@@ -32,7 +32,7 @@ Deno.serve(async (req) => {
     const resend = new Resend(apiKey);
 
     const { data, error } = await resend.emails.send({
-      from: "RobCompare <noreply@robcompare.com>",
+      from: "RobCompare <onboarding@resend.dev>",
       to: Array.isArray(to) ? to : [to],
       subject,
       html,
