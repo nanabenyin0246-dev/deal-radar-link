@@ -195,10 +195,12 @@ const ProductDetail = () => {
                   {formatPrice(cheapest.price, cheapest.currency)}
                 </p>
                 <ConvertedPrice amount={cheapest.price} currency={cheapest.currency} className="text-sm" />
-                <div className="flex items-center gap-1 mt-1">
-                  {cheapest.vendor.verified && <Shield className="w-3 h-3 text-primary" />}
-                  <span className="text-sm text-muted-foreground">{t("common.from")} {cheapest.vendor.business_name}</span>
-                </div>
+                <VendorBadge
+                  businessName={cheapest.vendor.business_name}
+                  country={cheapest.vendor.country}
+                  verified={cheapest.vendor.verified}
+                  className="text-sm text-muted-foreground mt-1"
+                />
                 <div className="flex gap-2 mt-4">
                   <Button variant="whatsapp" className="flex-1" asChild>
                     <a href={getWhatsAppLink(cheapest)} target="_blank" rel="noopener noreferrer">
