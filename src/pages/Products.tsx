@@ -18,8 +18,11 @@ import BarcodeScanner from "@/components/BarcodeScanner";
 import ProductSummary from "@/components/ProductSummary";
 import { useDebounce } from "@/hooks/useDebounce";
 import { calculateDealScore } from "@/utils/dealScore";
+import SEOHead from "@/components/SEOHead";
+import { formatDistanceToNow } from "date-fns";
 
 type SortOption = "price_asc" | "price_desc" | "deal_score" | "newest";
+const ITEMS_PER_PAGE = 12;
 
 const SORT_LABELS: Record<SortOption, string> = {
   price_asc: "Price: Low to High",
