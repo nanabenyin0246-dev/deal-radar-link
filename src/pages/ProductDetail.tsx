@@ -143,9 +143,9 @@ const ProductDetail = () => {
   return (
     <div className="min-h-screen bg-background">
       <SEOHead
-        title={productName}
-        description={productDescription || `Compare prices for ${productName} from ${offers.length} vendors`}
-        path={`/${locale}/products/${slug}`}
+        title={`Compare ${productName} prices`}
+        description={cheapest ? `Best price: ${formatPrice(cheapest.price, cheapest.currency)} from ${offers.length} vendor${offers.length !== 1 ? "s" : ""}` : `Compare prices for ${productName}`}
+        path={`/product/${slug}`}
         image={product.image_url || undefined}
         type="product"
         jsonLd={jsonLd}
