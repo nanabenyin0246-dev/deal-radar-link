@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import FoundingVendorBanner from "@/components/FoundingVendorBanner";
 import TranslationManager from "@/components/vendor/TranslationManager";
+import ReferralSection from "@/components/vendor/ReferralSection";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel,
   AlertDialogContent, AlertDialogDescription, AlertDialogFooter,
