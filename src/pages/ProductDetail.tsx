@@ -112,20 +112,6 @@ const ProductDetail = () => {
   const avgPrice = offers.length > 0 ? offers.reduce((sum, o) => sum + o.price, 0) / offers.length : 0;
   const cheapest = offers[0];
 
-  // Track recently viewed
-  useEffect(() => {
-    if (product && cheapest) {
-      addProduct({
-        id: product.id,
-        name: product.name,
-        slug: product.slug,
-        image_url: product.image_url,
-        lowest_price: cheapest.price,
-        currency: cheapest.currency,
-      });
-    }
-  }, [product?.id]);
-
   const getWhatsAppLink = (offer: typeof offers[0]) => {
     const msg = offer.whatsapp_message ||
       `Hi! I'm interested in ${product.name} for ${formatPrice(offer.price, offer.currency)}. Is it available?`;
