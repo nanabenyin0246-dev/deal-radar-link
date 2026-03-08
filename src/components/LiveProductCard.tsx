@@ -38,11 +38,14 @@ const LiveProductCard = ({ product }: { product: LiveProduct }) => {
             loading="lazy"
             onError={handleImgError}
           />
-          {savings && savings > 0 && (
-            <div className="absolute top-3 left-3">
-              <Badge className="bg-secondary text-secondary-foreground font-semibold text-xs">Save {savings}%</Badge>
-            </div>
-          )}
+          <div className="absolute top-3 left-3">
+            <DealScoreBadge
+              price={cheapest.price}
+              averagePrice={avgPrice}
+              vendorVerified={cheapest.vendor.verified || false}
+              updatedAt={cheapest.updated_at}
+            />
+          </div>
           <div className="absolute top-3 right-3">
             <Badge variant="outline" className="bg-card/80 backdrop-blur-sm text-xs">
               {offers.length} vendor{offers.length > 1 ? "s" : ""}
