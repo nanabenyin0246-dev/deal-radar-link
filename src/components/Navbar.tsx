@@ -1,4 +1,4 @@
-import { Search, Menu, X, ShoppingBag, User, Store, Package } from "lucide-react";
+import { Search, Menu, X, ShoppingBag, User, Store, Package, Bell } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -30,6 +30,11 @@ const Navbar = () => {
           {user && (
             <Link to="/orders" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
               <Package className="w-3.5 h-3.5" /> {t("nav.myOrders")}
+            </Link>
+          )}
+          {user && (
+            <Link to="/alerts" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
+              <Bell className="w-3.5 h-3.5" /> Alerts
             </Link>
           )}
           {isVendor && (
@@ -64,7 +69,10 @@ const Navbar = () => {
         <div className="md:hidden border-t border-border bg-card p-4 space-y-3 animate-fade-in">
           <Link to="/products" className="block text-sm font-medium text-muted-foreground py-2" onClick={() => setMobileOpen(false)}>{t("nav.browse")}</Link>
           {user && (
-            <Link to="/orders" className="block text-sm font-medium text-muted-foreground py-2" onClick={() => setMobileOpen(false)}>{t("nav.myOrders")}</Link>
+            <>
+              <Link to="/orders" className="block text-sm font-medium text-muted-foreground py-2" onClick={() => setMobileOpen(false)}>{t("nav.myOrders")}</Link>
+              <Link to="/alerts" className="block text-sm font-medium text-muted-foreground py-2" onClick={() => setMobileOpen(false)}>Alerts</Link>
+            </>
           )}
           {isVendor && (
             <Link to="/vendor/dashboard" className="block text-sm font-medium text-muted-foreground py-2" onClick={() => setMobileOpen(false)}>{t("nav.dashboard")}</Link>

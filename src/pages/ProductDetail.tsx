@@ -20,6 +20,7 @@ import { useI18n } from "@/i18n/I18nContext";
 import { SUPPORTED_LOCALES, Locale } from "@/i18n/translations";
 import { formatPrice } from "@/utils/currency";
 import VendorBadge from "@/components/VendorBadge";
+import PriceAlertButton from "@/components/PriceAlertButton";
 
 const ProductDetail = () => {
   const { slug, lang } = useParams<{ slug: string; lang?: string }>();
@@ -215,6 +216,9 @@ const ProductDetail = () => {
                     <CreditCard className="w-4 h-4" />
                     {createOrder.isPending || initPayment.isPending ? t("common.loading") : t("detail.payOnline")}
                   </Button>
+                </div>
+                <div className="mt-3">
+                  <PriceAlertButton productId={product.id} currentPrice={cheapest.price} currency={cheapest.currency} />
                 </div>
               </div>
             )}

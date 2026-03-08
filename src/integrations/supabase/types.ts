@@ -359,6 +359,44 @@ export type Database = {
         }
         Relationships: []
       }
+      price_alerts: {
+        Row: {
+          active: boolean
+          created_at: string
+          currency: string
+          id: string
+          product_id: string
+          target_price: number
+          user_id: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          currency?: string
+          id?: string
+          product_id: string
+          target_price: number
+          user_id: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          currency?: string
+          id?: string
+          product_id?: string
+          target_price?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "price_alerts_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       price_history: {
         Row: {
           currency: string
