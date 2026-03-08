@@ -21,6 +21,7 @@ import { SUPPORTED_LOCALES, Locale } from "@/i18n/translations";
 import { formatPrice } from "@/utils/currency";
 import VendorBadge from "@/components/VendorBadge";
 import PriceAlertButton from "@/components/PriceAlertButton";
+import DealScoreBadge from "@/components/DealScoreBadge";
 
 const ProductDetail = () => {
   const { slug, lang } = useParams<{ slug: string; lang?: string }>();
@@ -105,6 +106,7 @@ const ProductDetail = () => {
     .filter((o) => o.is_visible)
     .sort((a, b) => a.price - b.price);
 
+  const avgPrice = offers.length > 0 ? offers.reduce((sum, o) => sum + o.price, 0) / offers.length : 0;
   const cheapest = offers[0];
 
   const getWhatsAppLink = (offer: typeof offers[0]) => {
@@ -256,9 +258,10 @@ const ProductDetail = () => {
                       <th className="text-left p-4 font-medium text-muted-foreground">{t("detail.vendor")}</th>
                       <th className="text-left p-4 font-medium text-muted-foreground">{t("detail.price")}</th>
                       <th className="text-left p-4 font-medium text-muted-foreground hidden sm:table-cell">{t("detail.trust")}</th>
-                      <th className="text-left p-4 font-medium text-muted-foreground hidden sm:table-cell">{t("detail.shipping")}</th>
-                      <th className="text-left p-4 font-medium text-muted-foreground hidden md:table-cell">{t("detail.stock")}</th>
-                      <th className="text-right p-4 font-medium text-muted-foreground">{t("detail.action")}</th>
+                       <th className="text-left p-4 font-medium text-muted-foreground hidden sm:table-cell">{t("detail.shipping")}</th>
+                       <th className="text-left p-4 font-medium text-muted-foreground hidden md:table-cell">{t("detail.stock")}</th>
+                       <th className="text-left p-4 font-medium text-muted-foreground hidden md:table-cell">Deal</th>
+                       <th className="text-right p-4 font-medium text-muted-foreground">{t("detail.action")}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -300,6 +303,15 @@ const ProductDetail = () => {
                           <Badge variant={offer.in_stock ? "default" : "outline"} className={offer.in_stock ? "bg-success text-success-foreground" : ""}>
                             {offer.in_stock ? t("products.inStock") : t("products.outOfStock")}
                           </Badge>
+                        </td>
+                        <td className="p-4 hidden md:table-cell">
+                          <DealScoreBadge
+                            price={offer.price}
+                            averagePrice={avgPrice}
+                            vendorVerified={offer.vendor.verified || false}
+                            updatedAt={offer.updated_at}
+                            showScore
+                          />
                         </td>
                         <td className="p-4 text-right">
                           <div className="flex items-center justify-end gap-2">

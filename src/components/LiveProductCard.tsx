@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import ConvertedPrice from "@/components/ConvertedPrice";
 import VendorBadge from "@/components/VendorBadge";
+import DealScoreBadge from "@/components/DealScoreBadge";
 import { formatPrice } from "@/utils/currency";
 
 const LiveProductCard = ({ product }: { product: LiveProduct }) => {
@@ -16,6 +17,7 @@ const LiveProductCard = ({ product }: { product: LiveProduct }) => {
   const savings = mostExpensive && cheapest.currency === mostExpensive.currency
     ? Math.round(((mostExpensive.price - cheapest.price) / mostExpensive.price) * 100)
     : null;
+  const avgPrice = offers.reduce((sum, o) => sum + o.price, 0) / offers.length;
 
   const whatsappLink = `https://wa.me/${cheapest.vendor.whatsapp_number}?text=${encodeURIComponent(
     cheapest.whatsapp_message || `Hi! I'm interested in ${product.name} for ${formatPrice(cheapest.price, cheapest.currency)}. Is it available?`
@@ -36,11 +38,14 @@ const LiveProductCard = ({ product }: { product: LiveProduct }) => {
             loading="lazy"
             onError={handleImgError}
           />
-          {savings && savings > 0 && (
-            <div className="absolute top-3 left-3">
-              <Badge className="bg-secondary text-secondary-foreground font-semibold text-xs">Save {savings}%</Badge>
-            </div>
-          )}
+          <div className="absolute top-3 left-3">
+            <DealScoreBadge
+              price={cheapest.price}
+              averagePrice={avgPrice}
+              vendorVerified={cheapest.vendor.verified || false}
+              updatedAt={cheapest.updated_at}
+            />
+          </div>
           <div className="absolute top-3 right-3">
             <Badge variant="outline" className="bg-card/80 backdrop-blur-sm text-xs">
               {offers.length} vendor{offers.length > 1 ? "s" : ""}
