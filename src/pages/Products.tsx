@@ -165,6 +165,7 @@ const Products = () => {
     setSort("deal_score");
     setVerifiedOnly(false);
     setPriceRange([0, 0]);
+    setCurrentPage(1);
     setSearchParams({});
   };
 
