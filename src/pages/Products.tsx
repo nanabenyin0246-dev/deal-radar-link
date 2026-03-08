@@ -233,6 +233,11 @@ const Products = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title="Browse Products"
+        description="Compare prices across verified vendors in Africa. Find the best deals on electronics, fashion, beauty and more."
+        path="/products"
+      />
       <Navbar />
       <div className="container py-8">
         {/* Search bar + Sort */}
