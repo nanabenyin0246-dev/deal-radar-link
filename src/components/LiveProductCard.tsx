@@ -17,6 +17,7 @@ const LiveProductCard = ({ product }: { product: LiveProduct }) => {
   const savings = mostExpensive && cheapest.currency === mostExpensive.currency
     ? Math.round(((mostExpensive.price - cheapest.price) / mostExpensive.price) * 100)
     : null;
+  const avgPrice = offers.reduce((sum, o) => sum + o.price, 0) / offers.length;
 
   const whatsappLink = `https://wa.me/${cheapest.vendor.whatsapp_number}?text=${encodeURIComponent(
     cheapest.whatsapp_message || `Hi! I'm interested in ${product.name} for ${formatPrice(cheapest.price, cheapest.currency)}. Is it available?`
