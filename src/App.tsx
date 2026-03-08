@@ -8,6 +8,7 @@ import { I18nProvider } from "@/i18n/I18nContext";
 import { CurrencyProvider } from "@/contexts/CurrencyContext";
 import { CountryProvider } from "@/contexts/CountryContext";
 import CookieConsent from "@/components/CookieConsent";
+import PWAInstallBanner from "@/components/PWAInstallBanner";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import Index from "./pages/Index";
 import Products from "./pages/Products";
@@ -70,6 +71,7 @@ const App = () => (
               <Route path="*" element={<NotFound />} />
             </Routes>
             <CookieConsent />
+            <PWAInstallBanner />
           </BrowserRouter>
         </TooltipProvider>
         </CountryProvider>
