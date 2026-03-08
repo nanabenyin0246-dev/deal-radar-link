@@ -106,6 +106,7 @@ const ProductDetail = () => {
     .filter((o) => o.is_visible)
     .sort((a, b) => a.price - b.price);
 
+  const avgPrice = offers.length > 0 ? offers.reduce((sum, o) => sum + o.price, 0) / offers.length : 0;
   const cheapest = offers[0];
 
   const getWhatsAppLink = (offer: typeof offers[0]) => {
