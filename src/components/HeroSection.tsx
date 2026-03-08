@@ -128,13 +128,11 @@ const HeroSection = () => {
 
           <form onSubmit={handleSearch} className="animate-slide-up" style={{ animationDelay: "0.2s" }}>
             <div className="flex items-center max-w-xl mx-auto bg-card border border-border rounded-xl shadow-lg shadow-primary/5 p-1.5">
-              <Search className="w-5 h-5 text-muted-foreground ml-3 shrink-0" />
-              <input
-                type="text"
-                placeholder={t("hero.searchPlaceholder")}
+              <SearchAutocomplete
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="flex-1 px-3 py-2.5 bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none text-base"
+                onChange={setSearchQuery}
+                onSubmit={() => handleSearch({ preventDefault: () => {} } as React.FormEvent)}
+                placeholder={t("hero.searchPlaceholder")}
               />
               <Button type="submit" size="lg" className="shrink-0">
                 {t("hero.cta")}
