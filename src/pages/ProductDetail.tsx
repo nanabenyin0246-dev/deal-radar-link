@@ -394,6 +394,13 @@ const ProductDetail = () => {
             </div>
           </div>
         )}
+
+        {/* Recently Viewed Sidebar */}
+        {recentProducts.length > 1 && (
+          <div className="mb-12">
+            <RecentlyViewedSidebar products={recentProducts} currentProductId={product.id} />
+          </div>
+        )}
       </div>
       <Footer />
     </div>
