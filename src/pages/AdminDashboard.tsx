@@ -214,7 +214,17 @@ const AdminDashboard = () => {
                   <Badge variant={v.status === "approved" ? "default" : v.status === "suspended" ? "destructive" : "outline"}>{v.status}</Badge>
                   <div className="flex gap-2">
                     {v.status !== "approved" && (
-                      <Button size="sm" variant="outline" onClick={() => { updateVendorStatus.mutate({ vendorId: v.id, status: "approved" }); toast({ title: "Vendor approved" }); }}>Approve</Button>
+                      <Button size="sm" variant="outline" onClick={async () => {
+                        updateVendorStatus.mutate({ vendorId: v.id, status: "approved" });
+                        if (v.email) {
+                          sendEmail({
+                            to: v.email,
+                            subject: "You're approved — Welcome to RobCompare! 🎉",
+                            html: `<h2>Welcome to RobCompare!</h2><p>Your vendor account has been approved. You are one of our founding vendors with 0% commission.</p><p>Login now to add your first listing:</p><a href="https://deal-radar-link.lovable.app/vendor/dashboard" style="background:#16a34a;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold;">Go to My Dashboard</a><p>Welcome to the family. 🚀</p>`,
+                          }).catch(console.error);
+                        }
+                        toast({ title: "Vendor approved and notified" });
+                      }}>Approve</Button>
                     )}
                     {v.status !== "suspended" && (
                       <Button size="sm" variant="destructive" onClick={() => { updateVendorStatus.mutate({ vendorId: v.id, status: "suspended", suspensionReason: "Admin action" }); toast({ title: "Vendor suspended" }); }}>Suspend</Button>
