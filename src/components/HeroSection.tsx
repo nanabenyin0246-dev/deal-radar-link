@@ -1,4 +1,5 @@
-import { Search, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import SearchAutocomplete from "@/components/SearchAutocomplete";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
