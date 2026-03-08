@@ -12,8 +12,22 @@ const VendorOnboardingConfirm = () => {
   const [status, setStatus] = useState<"loading" | "confirmed">("loading");
 
   useEffect(() => {
-    // Handle the hash fragment from email confirmation redirect
-    // Supabase appends tokens as hash params that need to be exchanged
+    // Handle email confirmation via OTP token_hash (PKCE flow)
+    const params = new URLSearchParams(window.location.search);
+    const token_hash = params.get("token_hash");
+    const type = params.get("type");
+
+    if (token_hash && type === "signup") {
+      supabase.auth.verifyOtp({ token_hash, type: "signup" }).then(({ error }) => {
+        if (error) {
+          console.error("OTP verification failed:", error);
+          navigate("/auth");
+        }
+      });
+      return;
+    }
+
+    // Fallback: handle hash fragment tokens (legacy redirect flow)
     const hashParams = new URLSearchParams(window.location.hash.substring(1));
     const accessToken = hashParams.get("access_token");
     const refreshToken = hashParams.get("refresh_token");
