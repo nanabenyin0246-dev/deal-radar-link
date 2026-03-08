@@ -145,6 +145,12 @@ const Products = () => {
     return result;
   }, [products, selectedCategories, verifiedOnly, priceRange, sort]);
 
+  const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
+  const paginatedProducts = filteredProducts.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+
   const toggleCategory = (slug: string) => {
     const next = selectedCategories.includes(slug)
       ? selectedCategories.filter(c => c !== slug)
