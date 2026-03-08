@@ -1,11 +1,37 @@
 import { Search, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useI18n } from "@/i18n/I18nContext";
 import { useCommissionConfig, useUserCount } from "@/hooks/useCommissionConfig";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { Progress } from "@/components/ui/progress";
 import { PartyPopper } from "lucide-react";
+
+// Animated counter hook
+const useCountUp = (end: number, duration = 1500) => {
+  const [count, setCount] = useState(0);
+  const prevEnd = useRef(0);
+
+  useEffect(() => {
+    if (end === prevEnd.current) return;
+    prevEnd.current = end;
+    const start = 0;
+    const startTime = performance.now();
+    const animate = (now: number) => {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      // ease out cubic
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setCount(Math.round(start + (end - start) * eased));
+      if (progress < 1) requestAnimationFrame(animate);
+    };
+    requestAnimationFrame(animate);
+  }, [end, duration]);
+
+  return count;
+};
 
 const HeroSection = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -13,6 +39,36 @@ const HeroSection = () => {
   const { t } = useI18n();
   const { data: config } = useCommissionConfig();
   const { data: userCount } = useUserCount();
+
+  // Live stats
+  const { data: productCount } = useQuery({
+    queryKey: ["products-count"],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("get_products_count");
+      if (error) throw error;
+      return data as number;
+    },
+  });
+  const { data: vendorCount } = useQuery({
+    queryKey: ["vendor-count-live"],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("get_vendor_count");
+      if (error) throw error;
+      return data as number;
+    },
+  });
+  const { data: countryCount } = useQuery({
+    queryKey: ["country-count-live"],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("get_country_count");
+      if (error) throw error;
+      return data as number;
+    },
+  });
+
+  const animProducts = useCountUp(productCount || 0);
+  const animVendors = useCountUp(vendorCount || 0);
+  const animCountries = useCountUp(countryCount || 0);
 
   const showBanner = config && !config.commission_active;
   const threshold = config?.activation_threshold || 1000;
@@ -37,18 +93,20 @@ const HeroSection = () => {
 
       <div className="container relative">
         <div className="max-w-3xl mx-auto text-center space-y-8">
-          {/* Founding Vendor Banner - Above the fold */}
+          {/* Founding Vendor Banner */}
           {showBanner && (
             <div className="bg-gradient-to-r from-primary/10 via-secondary/10 to-primary/10 border border-primary/20 rounded-xl p-4 animate-fade-in">
               <div className="flex items-center justify-center gap-2 mb-1">
                 <PartyPopper className="w-4 h-4 text-secondary shrink-0" />
-                <p className="font-heading font-bold text-sm">{t("banner.foundingVendor")}</p>
+                <p className="font-heading font-bold text-sm">
+                  🔥 {vendorCount || 0}/100 Founding Vendors — 0% Commission Locked In Forever
+                </p>
               </div>
-              <p className="text-xs text-muted-foreground mb-3">{t("banner.foundingVendorSub")}</p>
+              <p className="text-xs text-muted-foreground mb-3">Join now and keep 100% of your revenue. Commission activates at 3% after 100 vendors.</p>
               <div className="flex items-center gap-3 max-w-xs mx-auto">
-                <Progress value={progress} className="h-2 flex-1" />
+                <Progress value={Math.min(((vendorCount || 0) / 100) * 100, 100)} className="h-2 flex-1" />
                 <span className="text-xs font-heading font-bold text-primary whitespace-nowrap">
-                  {current.toLocaleString()} / {threshold.toLocaleString()}
+                  {vendorCount || 0} / 100
                 </span>
               </div>
             </div>
@@ -98,16 +156,18 @@ const HeroSection = () => {
           </div>
         </div>
 
-        {/* Stats */}
+        {/* Live Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-20 max-w-3xl mx-auto animate-fade-in" style={{ animationDelay: "0.5s" }}>
           {[
-            { value: "10K+", label: t("hero.statProducts") },
-            { value: "2,500+", label: t("hero.statVendors") },
-            { value: "15+", label: t("hero.statCountries") },
-            { value: "₵0", label: t("hero.statFee") },
+            { value: animProducts, suffix: "+", label: t("hero.statProducts") },
+            { value: animVendors, suffix: "+", label: t("hero.statVendors") },
+            { value: animCountries, suffix: "+", label: t("hero.statCountries") },
+            { value: "₵0", suffix: "", label: t("hero.statFee") },
           ].map((stat) => (
             <div key={stat.label} className="text-center">
-              <div className="font-heading text-2xl md:text-3xl font-bold text-foreground">{stat.value}</div>
+              <div className="font-heading text-2xl md:text-3xl font-bold text-foreground">
+                {typeof stat.value === "number" ? `${stat.value.toLocaleString()}${stat.suffix}` : stat.value}
+              </div>
               <div className="text-sm text-muted-foreground mt-1">{stat.label}</div>
             </div>
           ))}
