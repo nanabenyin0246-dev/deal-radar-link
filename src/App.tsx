@@ -20,6 +20,7 @@ import Privacy from "./pages/Privacy";
 import VendorAgreement from "./pages/VendorAgreement";
 import ResetPassword from "./pages/ResetPassword";
 import VendorOnboardingConfirm from "./pages/VendorOnboardingConfirm";
+import MyAlerts from "./pages/MyAlerts";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
