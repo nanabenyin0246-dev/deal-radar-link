@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { useIsAdmin, useAdminOrders, useAdminDisputes, useAdminVendors, useUpdateVendorStatus, useResolveDispute, useAdminCommissions, useAdminAuditLog, useToggleFraudFlag } from "@/hooks/useAdmin";
+import { useIsAdmin, useAdminOrders, useAdminDisputes, useAdminVendors, useUpdateVendorStatus, useResolveDispute, useAdminCommissions, useAdminAuditLog, useToggleFraudFlag, useAdminSubmissions, useApproveSubmission, useRejectSubmission } from "@/hooks/useAdmin";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
