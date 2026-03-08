@@ -110,11 +110,13 @@ const Auth = () => {
     }
 
     if (authData.user) {
+      const referrer = localStorage.getItem("robcompare_referrer");
       localStorage.setItem("pending_vendor", JSON.stringify({
         businessName, whatsappNumber, city, country, email,
         agreement_version: "1.0",
         agreed_at: new Date().toISOString(),
         user_agent: navigator.userAgent,
+        referrer_vendor_id: referrer || null,
       }));
     }
 
