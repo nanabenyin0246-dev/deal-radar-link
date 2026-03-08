@@ -69,8 +69,10 @@ const Navbar = () => {
         <div className="md:hidden border-t border-border bg-card p-4 space-y-3 animate-fade-in">
           <Link to="/products" className="block text-sm font-medium text-muted-foreground py-2" onClick={() => setMobileOpen(false)}>{t("nav.browse")}</Link>
           {user && (
-            <Link to="/orders" className="block text-sm font-medium text-muted-foreground py-2" onClick={() => setMobileOpen(false)}>{t("nav.myOrders")}</Link>
-            <Link to="/alerts" className="block text-sm font-medium text-muted-foreground py-2" onClick={() => setMobileOpen(false)}>Alerts</Link>
+            <>
+              <Link to="/orders" className="block text-sm font-medium text-muted-foreground py-2" onClick={() => setMobileOpen(false)}>{t("nav.myOrders")}</Link>
+              <Link to="/alerts" className="block text-sm font-medium text-muted-foreground py-2" onClick={() => setMobileOpen(false)}>Alerts</Link>
+            </>
           )}
           {isVendor && (
             <Link to="/vendor/dashboard" className="block text-sm font-medium text-muted-foreground py-2" onClick={() => setMobileOpen(false)}>{t("nav.dashboard")}</Link>
