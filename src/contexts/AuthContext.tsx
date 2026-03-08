@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
+import { sendEmail, emailTemplates } from "@/utils/sendEmail";
 
 interface AuthContextType {
   session: Session | null;
@@ -77,6 +78,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             status: "signed_up",
           });
           localStorage.removeItem("robcompare_referrer");
+        }
+
+        // Send welcome email
+        if (info.email) {
+          const { subject, html } = emailTemplates.vendorWelcome(info.businessName);
+          sendEmail({ to: info.email, subject, html }).catch(console.error);
         }
       }
 
