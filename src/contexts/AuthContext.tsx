@@ -81,6 +81,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
       }
 
+        // Send welcome email
+        if (info.email) {
+          const { subject, html } = emailTemplates.vendorWelcome(info.businessName);
+          sendEmail({ to: info.email, subject, html }).catch(console.error);
+        }
+      }
+
       localStorage.removeItem("pending_vendor");
     } catch {}
   };
