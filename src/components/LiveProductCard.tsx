@@ -7,6 +7,7 @@ import ConvertedPrice from "@/components/ConvertedPrice";
 import VendorBadge from "@/components/VendorBadge";
 import DealScoreBadge from "@/components/DealScoreBadge";
 import { formatPrice } from "@/utils/currency";
+import { formatDistanceToNow } from "date-fns";
 
 const LiveProductCard = ({ product }: { product: LiveProduct }) => {
   const offers = product.vendor_offers.sort((a, b) => a.price - b.price);
