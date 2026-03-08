@@ -1,5 +1,5 @@
 import { useCurrency } from "@/contexts/CurrencyContext";
-import { getCurrencySymbol } from "@/hooks/useCurrencyConversion";
+import { formatNumber } from "@/utils/currency";
 
 interface ConvertedPriceProps {
   amount: number;
@@ -7,9 +7,6 @@ interface ConvertedPriceProps {
   className?: string;
 }
 
-/**
- * Shows the original price + a converted price in the user's local currency (if different).
- */
 const ConvertedPrice = ({ amount, currency = "GHS", className }: ConvertedPriceProps) => {
   const { convert, userCurrency } = useCurrency();
   const result = convert(amount, currency);
@@ -18,7 +15,7 @@ const ConvertedPrice = ({ amount, currency = "GHS", className }: ConvertedPriceP
 
   return (
     <span className={`text-xs text-muted-foreground ${className || ""}`}>
-      ≈ {result.symbol} {result.converted.toLocaleString()}
+      ≈ {result.symbol} {formatNumber(result.converted)}
     </span>
   );
 };

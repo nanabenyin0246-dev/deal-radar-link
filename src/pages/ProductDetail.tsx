@@ -18,6 +18,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { useI18n } from "@/i18n/I18nContext";
 import { SUPPORTED_LOCALES, Locale } from "@/i18n/translations";
+import { formatPrice } from "@/utils/currency";
 
 const ProductDetail = () => {
   const { slug, lang } = useParams<{ slug: string; lang?: string }>();
@@ -29,14 +30,12 @@ const ProductDetail = () => {
   const initPayment = useInitializePayment();
   const { toast } = useToast();
 
-  // If URL has a language prefix, sync locale
   useEffect(() => {
     if (lang && SUPPORTED_LOCALES.some(l => l.code === lang) && lang !== locale) {
       setLocale(lang as Locale);
     }
   }, [lang]);
 
-  // Get translated product content
   const activeTranslation = translations?.find(
     (tr: any) => tr.language_code === locale && tr.approved
   );
@@ -68,8 +67,17 @@ const ProductDetail = () => {
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
-        <div className="container py-20 text-center">
-          <p className="text-muted-foreground">Loading product...</p>
+        <div className="container py-8 max-w-5xl">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="aspect-square bg-muted rounded-xl animate-pulse" />
+            <div className="space-y-4">
+              <div className="h-4 bg-muted rounded w-1/4 animate-pulse" />
+              <div className="h-8 bg-muted rounded w-3/4 animate-pulse" />
+              <div className="h-4 bg-muted rounded w-1/3 animate-pulse" />
+              <div className="h-32 bg-muted rounded-xl animate-pulse" />
+              <div className="h-20 bg-muted rounded animate-pulse" />
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -99,8 +107,12 @@ const ProductDetail = () => {
 
   const getWhatsAppLink = (offer: typeof offers[0]) => {
     const msg = offer.whatsapp_message ||
-      `Hi! I'm interested in ${product.name} for ${offer.currency} ${offer.price.toLocaleString()}. Is it available?`;
+      `Hi! I'm interested in ${product.name} for ${formatPrice(offer.price, offer.currency)}. Is it available?`;
     return `https://wa.me/${offer.vendor.whatsapp_number}?text=${encodeURIComponent(msg)}`;
+  };
+
+  const handleImgError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    e.currentTarget.src = "/placeholder-product.svg";
   };
 
   const jsonLd = {
@@ -149,10 +161,11 @@ const ProductDetail = () => {
           {/* Image */}
           <div className="aspect-square bg-muted rounded-xl overflow-hidden">
             <img
-              src={product.image_url || "/placeholder.svg"}
+              src={product.image_url || "/placeholder-product.svg"}
               alt={productName}
               className="w-full h-full object-cover"
               loading="lazy"
+              onError={handleImgError}
             />
           </div>
 
@@ -178,7 +191,7 @@ const ProductDetail = () => {
               <div className="bg-accent rounded-xl p-4">
                 <p className="text-sm text-accent-foreground font-medium">{t("products.bestPrice")}</p>
                 <p className="font-heading text-3xl font-bold text-foreground mt-1">
-                  {cheapest.currency} {cheapest.price.toLocaleString()}
+                  {formatPrice(cheapest.price, cheapest.currency)}
                 </p>
                 <ConvertedPrice amount={cheapest.price} currency={cheapest.currency} className="text-sm" />
                 <div className="flex items-center gap-1 mt-1">
@@ -255,7 +268,7 @@ const ProductDetail = () => {
                         </td>
                         <td className="p-4">
                           <p className={`font-heading font-bold ${i === 0 ? "text-primary" : ""}`}>
-                            {offer.currency} {offer.price.toLocaleString()}
+                            {formatPrice(offer.price, offer.currency)}
                           </p>
                           <ConvertedPrice amount={offer.price} currency={offer.currency} />
                           {i === 0 && <Badge className="bg-secondary text-secondary-foreground text-[10px] mt-1">{t("detail.lowest")}</Badge>}

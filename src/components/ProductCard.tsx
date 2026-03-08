@@ -2,6 +2,7 @@ import { MessageCircle, Shield, Star } from "lucide-react";
 import { Product } from "@/types/product";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { formatPrice } from "@/utils/currency";
 
 const ProductCard = ({ product }: { product: Product }) => {
   const cheapest = product.vendors.reduce((a, b) => a.price < b.price ? a : b);
@@ -14,17 +15,22 @@ const ProductCard = ({ product }: { product: Product }) => {
     : null;
 
   const whatsappLink = `https://wa.me/${cheapest.whatsappNumber}?text=${encodeURIComponent(
-    `Hi! I'm interested in ${product.name} for ${cheapest.currency} ${cheapest.price.toLocaleString()}. Is it available?`
+    `Hi! I'm interested in ${product.name} for ${formatPrice(cheapest.price, cheapest.currency)}. Is it available?`
   )}`;
 
+  const handleImgError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    e.currentTarget.src = "/placeholder-product.svg";
+  };
+
   return (
-    <div className="group bg-card border border-border rounded-xl overflow-hidden hover:shadow-lg hover:border-primary/20 transition-all duration-300">
+    <div className="group bg-card border border-border rounded-xl overflow-hidden hover:shadow-lg hover:border-primary/20 transition-all duration-300 min-w-0">
       <div className="relative aspect-square bg-muted overflow-hidden">
         <img
           src={product.image}
           alt={product.name}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           loading="lazy"
+          onError={handleImgError}
         />
         {savings && savings > 0 && (
           <div className="absolute top-3 left-3">
@@ -40,29 +46,29 @@ const ProductCard = ({ product }: { product: Product }) => {
         </div>
       </div>
 
-      <div className="p-4 space-y-3">
-        <div>
-          <p className="text-xs text-muted-foreground font-medium">{product.brand} · {product.category}</p>
+      <div className="p-4 space-y-3 min-w-0">
+        <div className="min-w-0">
+          <p className="text-xs text-muted-foreground font-medium truncate">{product.brand} · {product.category}</p>
           <h3 className="font-heading font-semibold text-foreground mt-1 leading-snug line-clamp-2">
             {product.name}
           </h3>
         </div>
 
         <div className="flex items-center gap-1.5">
-          <Star className="w-3.5 h-3.5 fill-secondary text-secondary" />
+          <Star className="w-3.5 h-3.5 fill-secondary text-secondary shrink-0" />
           <span className="text-sm font-medium text-foreground">{product.rating}</span>
           <span className="text-xs text-muted-foreground">({product.reviewCount})</span>
         </div>
 
-        <div className="flex items-end justify-between">
-          <div>
+        <div className="flex flex-col [@media(min-width:375px)]:flex-row [@media(min-width:375px)]:items-end [@media(min-width:375px)]:justify-between gap-1">
+          <div className="min-w-0">
             <p className="text-xs text-muted-foreground">Best price from</p>
-            <p className="font-heading text-xl font-bold text-foreground">
-              {cheapest.currency} {cheapest.price.toLocaleString()}
+            <p className="font-heading text-xl font-bold text-foreground truncate">
+              {formatPrice(cheapest.price, cheapest.currency)}
             </p>
-            <div className="flex items-center gap-1 mt-0.5">
-              {cheapest.verified && <Shield className="w-3 h-3 text-primary" />}
-              <span className="text-xs text-muted-foreground">{cheapest.vendorName}</span>
+            <div className="flex items-center gap-1 mt-0.5 min-w-0">
+              {cheapest.verified && <Shield className="w-3 h-3 text-primary shrink-0" />}
+              <span className="text-xs text-muted-foreground truncate">{cheapest.vendorName}</span>
             </div>
           </div>
         </div>

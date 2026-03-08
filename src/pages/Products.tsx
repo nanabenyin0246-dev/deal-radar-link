@@ -3,11 +3,14 @@ import { useSearchParams } from "react-router-dom";
 import { Search, SlidersHorizontal, X } from "lucide-react";
 import { useProducts, useCategories } from "@/hooks/useProducts";
 import LiveProductCard from "@/components/LiveProductCard";
+import ProductCardSkeleton from "@/components/ProductCardSkeleton";
+import EmptyState from "@/components/EmptyState";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import BarcodeScanner from "@/components/BarcodeScanner";
 import ProductSummary from "@/components/ProductSummary";
+import { useDebounce } from "@/hooks/useDebounce";
 
 const Products = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -18,7 +21,9 @@ const Products = () => {
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const [showFilters, setShowFilters] = useState(false);
 
-  const { data: products, isLoading } = useProducts(query || undefined, selectedCategory || undefined);
+  const debouncedQuery = useDebounce(query, 300);
+
+  const { data: products, isLoading } = useProducts(debouncedQuery || undefined, selectedCategory || undefined);
   const { data: categories } = useCategories();
 
   const clearFilters = () => {
@@ -60,9 +65,9 @@ const Products = () => {
           <BarcodeScanner onProductFound={(p) => setQuery(p.title)} />
         </div>
 
-        {query && query.length >= 3 && (
+        {debouncedQuery && debouncedQuery.length >= 3 && (
           <div className="mb-6">
-            <ProductSummary productName={query} />
+            <ProductSummary productName={debouncedQuery} />
           </div>
         )}
 
@@ -99,8 +104,8 @@ const Products = () => {
 
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1,2,3].map(i => (
-              <div key={i} className="bg-card border border-border rounded-xl h-96 animate-pulse" />
+            {[1, 2, 3, 4, 5, 6].map(i => (
+              <ProductCardSkeleton key={i} />
             ))}
           </div>
         ) : products && products.length > 0 ? (
@@ -110,11 +115,7 @@ const Products = () => {
             ))}
           </div>
         ) : (
-          <div className="text-center py-20">
-            <p className="text-lg font-heading font-semibold">No products found</p>
-            <p className="text-sm text-muted-foreground mt-2">Try adjusting your search or filters</p>
-            <Button variant="outline" className="mt-4" onClick={clearFilters}>Clear Filters</Button>
-          </div>
+          <EmptyState onAction={clearFilters} />
         )}
       </div>
       <Footer />
