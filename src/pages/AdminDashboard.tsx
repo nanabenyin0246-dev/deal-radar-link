@@ -73,6 +73,7 @@ const AdminDashboard = () => {
         <Tabs defaultValue="analytics">
           <TabsList className="mb-4 flex-wrap">
             <TabsTrigger value="analytics"><BarChart3 className="w-3 h-3 mr-1" />Analytics</TabsTrigger>
+            <TabsTrigger value="submissions"><Inbox className="w-3 h-3 mr-1" />Submissions{submissions?.filter((s: any) => s.status === "pending").length ? ` (${submissions.filter((s: any) => s.status === "pending").length})` : ""}</TabsTrigger>
             <TabsTrigger value="orders">Orders</TabsTrigger>
             <TabsTrigger value="disputes">Disputes</TabsTrigger>
             <TabsTrigger value="vendors">Vendors</TabsTrigger>
