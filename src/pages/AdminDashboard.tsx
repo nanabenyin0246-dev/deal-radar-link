@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { sendEmail } from "@/utils/sendEmail";
+import { sendEmail, emailTemplates } from "@/utils/sendEmail";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useIsAdmin, useAdminOrders, useAdminDisputes, useAdminVendors, useUpdateVendorStatus, useResolveDispute, useAdminCommissions, useAdminAuditLog, useToggleFraudFlag, useAdminSubmissions, useApproveSubmission, useRejectSubmission } from "@/hooks/useAdmin";
@@ -217,11 +217,8 @@ const AdminDashboard = () => {
                       <Button size="sm" variant="outline" onClick={async () => {
                         updateVendorStatus.mutate({ vendorId: v.id, status: "approved" });
                         if (v.email) {
-                          sendEmail({
-                            to: v.email,
-                            subject: "You're approved — Welcome to RobCompare! 🎉",
-                            html: `<h2>Welcome to RobCompare!</h2><p>Your vendor account has been approved. You are one of our founding vendors with 0% commission.</p><p>Login now to add your first listing:</p><a href="https://deal-radar-link.lovable.app/vendor/dashboard" style="background:#16a34a;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold;">Go to My Dashboard</a><p>Welcome to the family. 🚀</p>`,
-                          }).catch(console.error);
+                          const { subject, html } = emailTemplates.vendorApproval(v.business_name);
+                          sendEmail({ to: v.email, subject, html }).catch(console.error);
                         }
                         toast({ title: "Vendor approved and notified" });
                       }}>Approve</Button>
