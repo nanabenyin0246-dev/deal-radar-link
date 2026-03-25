@@ -11,13 +11,12 @@ const PriceHistoryChart = ({ productId, currency = "GHS" }: PriceHistoryChartPro
   const { data: history, isLoading } = useQuery({
     queryKey: ["price-history", productId],
     queryFn: async () => {
-      // Get all vendor_offer IDs for this product
       const { data: offers } = await supabase
         .from("vendor_offers")
-        .select("id")
+        .select("id, price, created_at")
         .eq("product_id", productId);
 
-      if (!offers?.length) return [];
+      if (!offers?.length) return { history: [], offers };
 
       const offerIds = offers.map((o) => o.id);
       const { data, error } = await supabase
@@ -27,7 +26,7 @@ const PriceHistoryChart = ({ productId, currency = "GHS" }: PriceHistoryChartPro
         .order("recorded_at", { ascending: true });
 
       if (error) throw error;
-      return data || [];
+      return { history: data || [], offers };
     },
     enabled: !!productId,
   });
@@ -36,12 +35,32 @@ const PriceHistoryChart = ({ productId, currency = "GHS" }: PriceHistoryChartPro
     return <div className="h-48 bg-muted rounded-xl animate-pulse" />;
   }
 
-  if (!history?.length) return null;
+  const historyData = history?.history || [];
+  const currentOffers = history?.offers || [];
 
-  const chartData = history.map((h) => ({
-    date: new Date(h.recorded_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" }),
-    price: Number(h.price),
-  }));
+  // Build chart data - use real history, or synthetic baseline from current offers
+  let chartData: { date: string; price: number }[];
+  let isBaseline = false;
+
+  if (historyData.length > 0) {
+    chartData = historyData.map((h: any) => ({
+      date: new Date(h.recorded_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" }),
+      price: Number(h.price),
+    }));
+  } else if (currentOffers.length > 0) {
+    isBaseline = true;
+    chartData = currentOffers.map((offer: any, i: number) => ({
+      date: new Date(offer.created_at || Date.now() - i * 24 * 60 * 60 * 1000)
+        .toLocaleDateString("en-GB", { day: "numeric", month: "short" }),
+      price: Number(offer.price),
+    }));
+  } else {
+    return null;
+  }
+
+  const earliestDate = currentOffers.length > 0
+    ? new Date(currentOffers.reduce((earliest: any, o: any) => o.created_at < earliest ? o.created_at : earliest, currentOffers[0].created_at))
+    : null;
 
   return (
     <div>
@@ -81,6 +100,11 @@ const PriceHistoryChart = ({ productId, currency = "GHS" }: PriceHistoryChartPro
             />
           </LineChart>
         </ResponsiveContainer>
+        {isBaseline && (
+          <p className="text-xs text-muted-foreground mt-2 text-center">
+            Price tracking started {earliestDate ? earliestDate.toLocaleDateString() : "today"}
+          </p>
+        )}
       </div>
     </div>
   );

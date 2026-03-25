@@ -9,6 +9,7 @@ import { CurrencyProvider } from "@/contexts/CurrencyContext";
 import { CountryProvider } from "@/contexts/CountryContext";
 import CookieConsent from "@/components/CookieConsent";
 import PWAInstallBanner from "@/components/PWAInstallBanner";
+import ScrollToTop from "@/components/ScrollToTop";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import Index from "./pages/Index";
 import Products from "./pages/Products";
@@ -16,6 +17,7 @@ import ProductDetail from "./pages/ProductDetail";
 import Auth from "./pages/Auth";
 import BuyerOrders from "./pages/BuyerOrders";
 import VendorDashboard from "./pages/VendorDashboard";
+import VendorStorefront from "./pages/VendorStorefront";
 import AdminDashboard from "./pages/AdminDashboard";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
@@ -23,21 +25,21 @@ import VendorAgreement from "./pages/VendorAgreement";
 import ResetPassword from "./pages/ResetPassword";
 import VendorOnboardingConfirm from "./pages/VendorOnboardingConfirm";
 import MyAlerts from "./pages/MyAlerts";
+import SavedProducts from "./pages/SavedProducts";
 import BuyersLanding from "./pages/BuyersLanding";
 import VendorsLanding from "./pages/VendorsLanding";
-import NotFound from "./pages/NotFound";
 import TrustSafety from "./pages/TrustSafety";
+import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: (failureCount, error) => {
-        // Auto-retry once on network errors
         if (failureCount >= 1) return false;
         const msg = (error as Error)?.message?.toLowerCase() || "";
         return msg.includes("network") || msg.includes("fetch") || msg.includes("failed");
       },
-      staleTime: 1000 * 60 * 2, // 2 min default
+      staleTime: 1000 * 60 * 2,
     },
     mutations: {
       retry: 0,
@@ -63,6 +65,7 @@ const App = () => (
               <Route path="/auth" element={<ErrorBoundary><Auth /></ErrorBoundary>} />
               <Route path="/orders" element={<ErrorBoundary><BuyerOrders /></ErrorBoundary>} />
               <Route path="/vendor/dashboard" element={<ErrorBoundary><VendorDashboard /></ErrorBoundary>} />
+              <Route path="/store/:vendorId" element={<ErrorBoundary><VendorStorefront /></ErrorBoundary>} />
               <Route path="/admin" element={<ErrorBoundary><AdminDashboard /></ErrorBoundary>} />
               <Route path="/terms" element={<ErrorBoundary><Terms /></ErrorBoundary>} />
               <Route path="/privacy" element={<ErrorBoundary><Privacy /></ErrorBoundary>} />
@@ -71,6 +74,7 @@ const App = () => (
               <Route path="/vendor/onboarding/confirm" element={<ErrorBoundary><VendorOnboardingConfirm /></ErrorBoundary>} />
               <Route path="/auth/confirm" element={<ErrorBoundary><VendorOnboardingConfirm /></ErrorBoundary>} />
               <Route path="/alerts" element={<ErrorBoundary><MyAlerts /></ErrorBoundary>} />
+              <Route path="/saved" element={<ErrorBoundary><SavedProducts /></ErrorBoundary>} />
               <Route path="/buyers" element={<ErrorBoundary><BuyersLanding /></ErrorBoundary>} />
               <Route path="/vendors" element={<ErrorBoundary><VendorsLanding /></ErrorBoundary>} />
               <Route path="/reset-password" element={<ErrorBoundary><ResetPassword /></ErrorBoundary>} />
@@ -79,6 +83,7 @@ const App = () => (
             </Routes>
             <CookieConsent />
             <PWAInstallBanner />
+            <ScrollToTop />
           </BrowserRouter>
         </TooltipProvider>
         </CountryProvider>
