@@ -9,6 +9,12 @@ export interface PriceAlert {
   currency: string;
   active: boolean;
   created_at: string;
+  product?: {
+    id: string;
+    name: string;
+    slug: string;
+    image_url: string | null;
+  };
 }
 
 export const usePriceAlerts = (userId: string | undefined) => {
@@ -16,8 +22,8 @@ export const usePriceAlerts = (userId: string | undefined) => {
     queryKey: ["price-alerts", userId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("price_alerts" as any)
-        .select("*")
+        .from("price_alerts")
+        .select("*, product:products(id, name, slug, image_url)")
         .eq("user_id", userId!)
         .order("created_at", { ascending: false });
       if (error) throw error;
@@ -32,8 +38,8 @@ export const useCreatePriceAlert = () => {
   return useMutation({
     mutationFn: async (alert: { user_id: string; product_id: string; target_price: number; currency: string }) => {
       const { data, error } = await supabase
-        .from("price_alerts" as any)
-        .insert(alert as any)
+        .from("price_alerts")
+        .insert(alert)
         .select()
         .single();
       if (error) throw error;
@@ -50,7 +56,7 @@ export const useDeletePriceAlert = () => {
   return useMutation({
     mutationFn: async ({ id, userId }: { id: string; userId: string }) => {
       const { error } = await supabase
-        .from("price_alerts" as any)
+        .from("price_alerts")
         .delete()
         .eq("id", id);
       if (error) throw error;

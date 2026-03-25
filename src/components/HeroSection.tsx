@@ -12,20 +12,23 @@ import { useCategories } from "@/hooks/useProducts";
 const useCountUp = (end: number, duration = 1500) => {
   const [count, setCount] = useState(0);
   const prevEnd = useRef(0);
+  const frameRef = useRef<number>(0);
 
   useEffect(() => {
     if (end === prevEnd.current) return;
     prevEnd.current = end;
-    const start = 0;
     const startTime = performance.now();
     const animate = (now: number) => {
       const elapsed = now - startTime;
       const progress = Math.min(elapsed / duration, 1);
       const eased = 1 - Math.pow(1 - progress, 3);
-      setCount(Math.round(start + (end - start) * eased));
-      if (progress < 1) requestAnimationFrame(animate);
+      setCount(Math.round(end * eased));
+      if (progress < 1) {
+        frameRef.current = requestAnimationFrame(animate);
+      }
     };
-    requestAnimationFrame(animate);
+    frameRef.current = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(frameRef.current);
   }, [end, duration]);
 
   return count;

@@ -64,33 +64,40 @@ const MyAlerts = () => {
         ) : (
           <div className="space-y-3">
             {alerts.map((alert) => (
-              <div
-                key={alert.id}
-                className="flex items-center justify-between bg-card border border-border rounded-xl p-4"
-              >
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium truncate">Product ID: {alert.product_id.slice(0, 8)}…</p>
-                  <div className="flex items-center gap-2 mt-1">
-                    <span className="text-sm text-muted-foreground">
-                      Target: <strong>{formatPrice(alert.target_price, alert.currency)}</strong>
-                    </span>
-                    <Badge variant={alert.active ? "default" : "outline"} className={alert.active ? "bg-success text-success-foreground" : ""}>
-                      {alert.active ? "Active" : "Inactive"}
-                    </Badge>
-                  </div>
+              <div key={alert.id} className="flex items-center gap-3 bg-card border border-border rounded-xl p-4">
+                {/* Product image */}
+                <div className="w-14 h-14 rounded-lg bg-muted overflow-hidden shrink-0">
+                  <img
+                    src={alert.product?.image_url || "/placeholder-product.svg"}
+                    alt={alert.product?.name}
+                    className="w-full h-full object-cover"
+                    onError={(e) => { e.currentTarget.src = "/placeholder-product.svg"; }}
+                  />
+                </div>
+                {/* Alert details */}
+                <div className="flex-1 min-w-0">
+                  <Link to={`/product/${alert.product?.slug}`} className="hover:text-primary transition-colors">
+                    <p className="font-heading font-semibold text-sm truncate">
+                      {alert.product?.name || "Product"}
+                    </p>
+                  </Link>
+                  <p className="text-sm text-muted-foreground mt-0.5">
+                    Alert when price drops below <strong className="text-foreground">{formatPrice(alert.target_price, alert.currency)}</strong>
+                  </p>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Created {new Date(alert.created_at).toLocaleDateString()}
+                    Set {new Date(alert.created_at).toLocaleDateString()}
                   </p>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleDelete(alert.id)}
-                  disabled={deleteAlert.isPending}
-                  className="text-destructive hover:text-destructive shrink-0"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
+                {/* Status + actions */}
+                <div className="flex flex-col items-end gap-2 shrink-0">
+                  <Badge variant={alert.active ? "default" : "outline"} className={alert.active ? "bg-success text-success-foreground text-xs" : "text-xs"}>
+                    {alert.active ? "Active" : "Triggered"}
+                  </Badge>
+                  <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-destructive hover:text-destructive"
+                    onClick={() => handleDelete(alert.id)} disabled={deleteAlert.isPending}>
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </Button>
+                </div>
               </div>
             ))}
           </div>

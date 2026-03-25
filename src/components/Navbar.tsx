@@ -49,7 +49,7 @@ const Navbar = () => {
           <LanguageSwitcher />
           {user ? (
             <>
-              <span className="text-xs text-muted-foreground">{user.email}</span>
+              <span className="text-xs text-muted-foreground max-w-[140px] truncate" title={user.email}>{user.email}</span>
               <Button variant="ghost" size="sm" onClick={signOut}>{t("nav.signOut")}</Button>
             </>
           ) : (
