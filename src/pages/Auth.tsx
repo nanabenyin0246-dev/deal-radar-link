@@ -125,16 +125,18 @@ const Auth = () => {
     if (authData.user) {
       const referrer = localStorage.getItem("robcompare_referrer");
       localStorage.setItem("pending_vendor", JSON.stringify({
-        businessName, whatsappNumber, city, country, email,
+        businessName, whatsappNumber: phoneResult.formatted, city, country, email,
         agreement_version: "1.0",
         agreed_at: new Date().toISOString(),
         user_agent: navigator.userAgent,
         referrer_vendor_id: referrer || null,
       }));
-    }
 
-    setLoading(false);
-    setEmailSent(true);
+      // Run fraud check in background (non-blocking)
+      fraudCheck.mutateAsync(email).then((signals) => {
+        logFraudSignal(authData.user!.id, email, signals);
+      }).catch(() => { /* non-critical */ });
+    }
   };
 
   const handleForgotPassword = async (e: React.FormEvent) => {
