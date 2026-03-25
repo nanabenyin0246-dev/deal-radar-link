@@ -72,7 +72,7 @@ const Auth = () => {
       email,
       password,
       options: {
-        emailRedirectTo: "https://deal-radar-link.lovable.app",
+        emailRedirectTo: `${window.location.origin}/auth/confirm`,
         data: { display_name: displayName },
       },
     });

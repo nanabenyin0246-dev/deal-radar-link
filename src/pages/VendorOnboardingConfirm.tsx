@@ -53,10 +53,12 @@ const VendorOnboardingConfirm = () => {
 
     setStatus("confirmed");
 
-    // User is authenticated — pending_vendor will be processed by AuthContext
-    const redirect = setTimeout(() => {
+    // Check if user is a vendor before redirecting
+    const redirect = setTimeout(async () => {
       localStorage.removeItem("vendor_onboarding_step");
-      navigate("/vendor/dashboard", { replace: true });
+      const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", user.id);
+      const isVendor = roles?.some(r => r.role === "vendor");
+      navigate(isVendor ? "/vendor/dashboard" : "/", { replace: true });
     }, 2500);
 
     return () => clearTimeout(redirect);
