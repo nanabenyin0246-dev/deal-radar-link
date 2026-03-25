@@ -460,7 +460,44 @@ const Products = () => {
                 )}
               </>
             ) : (
-              <EmptyState onAction={clearFilters} />
+              <div className="flex flex-col items-center justify-center py-20 text-center">
+                <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
+                  <PackageSearch className="w-8 h-8 text-muted-foreground" />
+                </div>
+                <h3 className="font-heading text-lg font-semibold text-foreground">
+                  {debouncedQuery ? `No results for "${debouncedQuery}"` : "No products found"}
+                </h3>
+                <p className="text-sm text-muted-foreground mt-2 max-w-sm">
+                  Try adjusting your search or filters
+                </p>
+                {debouncedQuery && (
+                  <div className="mt-4 space-y-3">
+                    <p className="text-xs text-muted-foreground">Try searching for:</p>
+                    <div className="flex flex-wrap justify-center gap-2">
+                      {["iPhone", "Samsung", "Nike"].map(term => (
+                        <button
+                          key={term}
+                          onClick={() => { setQuery(term); updateUrl({ q: term }); }}
+                          className="px-3 py-1.5 rounded-full text-xs font-medium bg-accent text-accent-foreground border border-border hover:border-primary/40 transition-colors"
+                        >
+                          {term}
+                        </button>
+                      ))}
+                    </div>
+                    <Link
+                      to="/vendor/dashboard"
+                      className="inline-block mt-3 text-sm text-primary hover:underline font-medium"
+                    >
+                      Be the first vendor to list this product →
+                    </Link>
+                  </div>
+                )}
+                {hasFilters && (
+                  <Button variant="outline" className="mt-4" onClick={clearFilters}>
+                    Clear Filters
+                  </Button>
+                )}
+              </div>
             )}
           </div>
         </div>
