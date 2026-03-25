@@ -293,6 +293,51 @@ const VendorDashboard = () => {
               <h2 className="font-heading font-semibold text-lg">Add New Product</h2>
               <button onClick={() => setShowForm(false)}><X className="w-5 h-5 text-muted-foreground" /></button>
             </div>
+            {/* Barcode Auto-fill */}
+            <div className="mb-4 p-3 bg-muted/50 rounded-lg border border-border">
+              <Label className="text-xs text-muted-foreground mb-2 block">Auto-fill from barcode (food products)</Label>
+              <div className="flex gap-2">
+                <Input
+                  value={barcodeInput}
+                  onChange={(e) => setBarcodeInput(e.target.value)}
+                  placeholder="Enter barcode e.g. 7622300489434"
+                  className="flex-1"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  disabled={!barcodeInput || foodLookup.isPending}
+                  onClick={async () => {
+                    const result = await foodLookup.mutateAsync(barcodeInput);
+                    if (result) {
+                      setName(result.name || name);
+                      setBrand(result.brand || brand);
+                      setDescription(
+                        [result.ingredients && `Ingredients: ${result.ingredients}`, result.quantity && `Quantity: ${result.quantity}`, result.labels && `Labels: ${result.labels}`]
+                          .filter(Boolean).join("\n") || description
+                      );
+                      if (result.imageUrl) setImageUrl(result.imageUrl);
+                      toast({ title: "Product info loaded from barcode" });
+                    } else {
+                      toast({ title: "Product not found", description: "No match in Open Food Facts database", variant: "destructive" });
+                    }
+                  }}
+                >
+                  {foodLookup.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <ScanBarcode className="w-4 h-4" />}
+                  Lookup
+                </Button>
+              </div>
+              {foodLookup.data && foodLookup.data.nutritionGrade && (
+                <div className="mt-2 flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">Nutrition Grade:</span>
+                  <Badge className={nutritionGradeConfig[foodLookup.data.nutritionGrade]?.colorClass || "bg-muted"}>
+                    {foodLookup.data.nutritionGrade.toUpperCase()}
+                  </Badge>
+                </div>
+              )}
+            </div>
+
             <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Product Name *</Label>

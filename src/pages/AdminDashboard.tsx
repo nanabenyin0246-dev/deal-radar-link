@@ -272,6 +272,11 @@ const AdminDashboard = () => {
             </div>
           </TabsContent>
 
+          {/* Fraud Signals Tab */}
+          <TabsContent value="fraud">
+            <FraudSignalsTab />
+          </TabsContent>
+
           {/* Audit Log Tab */}
           <TabsContent value="audit">
             <div className="flex justify-end mb-3">
