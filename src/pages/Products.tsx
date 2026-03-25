@@ -38,7 +38,7 @@ const Products = () => {
   // Read all filter state from URL
   const initialQuery = searchParams.get("q") || "";
   const initialCategory = searchParams.get("category") || "";
-  const initialSort = (searchParams.get("sort") as SortOption) || "deal_score";
+  const initialSort = (searchParams.get("sort") as SortOption) || "newest";
   const initialVerifiedOnly = searchParams.get("verified") === "true";
   const initialMinPrice = Number(searchParams.get("min_price")) || 0;
   const initialMaxPrice = Number(searchParams.get("max_price")) || 0;
