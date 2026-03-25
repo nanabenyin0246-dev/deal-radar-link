@@ -123,12 +123,12 @@ const HeroSection = () => {
           </form>
 
           {/* Category Chips */}
-          <div className="flex flex-wrap items-center justify-center gap-2 animate-fade-in" style={{ animationDelay: "0.3s" }}>
-            {CATEGORY_CHIPS.map((chip) => (
+          <div className="flex flex-wrap items-center justify-center gap-2 -mx-4 px-4 overflow-x-auto scrollbar-hide animate-fade-in" style={{ animationDelay: "0.3s" }}>
+            {categoryChips.map((chip) => (
               <button
                 key={chip.slug}
                 onClick={() => navigate(`/products?category=${chip.slug}`)}
-                className="px-3 py-1.5 rounded-full bg-card border border-border text-sm font-medium text-muted-foreground hover:text-foreground hover:border-primary/40 transition-all"
+                className="rounded-full border border-border bg-card hover:bg-accent hover:border-primary/30 px-3 py-1.5 text-xs font-medium transition-colors whitespace-nowrap"
               >
                 {chip.label}
               </button>
