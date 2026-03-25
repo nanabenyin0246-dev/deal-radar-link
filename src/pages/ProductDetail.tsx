@@ -398,6 +398,11 @@ const ProductDetail = () => {
           </div>
         )}
 
+        {/* Similar Products */}
+        {product.category_id && (
+          <SimilarProducts categoryId={product.category_id} currentProductId={product.id} />
+        )}
+
         {/* Recently Viewed Sidebar */}
         {recentProducts.length > 1 && (
           <div className="mb-12">
