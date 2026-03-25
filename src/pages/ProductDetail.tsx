@@ -24,6 +24,7 @@ import { formatPrice } from "@/utils/currency";
 import VendorBadge from "@/components/VendorBadge";
 import PriceAlertButton from "@/components/PriceAlertButton";
 import DealScoreBadge from "@/components/DealScoreBadge";
+import QRCodeButton from "@/components/QRCodeButton";
 
 const ProductDetail = () => {
   const { slug, lang } = useParams<{ slug: string; lang?: string }>();
@@ -236,6 +237,7 @@ const ProductDetail = () => {
                     <Share2 className="w-3 h-3" /> X
                   </a>
                 </Button>
+                <QRCodeButton url={window.location.href} productName={productName} />
               </div>
             </div>
 

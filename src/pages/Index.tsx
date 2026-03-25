@@ -1,6 +1,7 @@
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import RecentlyViewedSection from "@/components/RecentlyViewedSection";
+import NearbyVendors from "@/components/NearbyVendors";
 import CategoriesSection from "@/components/CategoriesSection";
 import FeaturedProducts from "@/components/FeaturedProducts";
 import FeaturedVendors from "@/components/FeaturedVendors";
@@ -39,6 +40,9 @@ const Index = () => {
       <CategoriesSection />
       <FeaturedProducts />
       <FeaturedVendors />
+      <section className="container py-8">
+        <NearbyVendors />
+      </section>
       <HowItWorks />
       <VendorCTA />
       <RegionalOnboarding region={showFrancophone ? "francophone" : "ghana"} />

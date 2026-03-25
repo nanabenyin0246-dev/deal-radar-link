@@ -10,6 +10,8 @@ import Footer from "@/components/Footer";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { ShoppingBag, Mail, Lock, User, Phone, MapPin, Store } from "lucide-react";
+import { useIPFraudCheck, logFraudSignal } from "@/hooks/useFraudDetection";
+import { validatePhoneFormat } from "@/hooks/useValidation";
 
 type AuthMode = "login" | "signup" | "vendor-signup" | "forgot-password";
 
@@ -31,6 +33,7 @@ const Auth = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
+  const fraudCheck = useIPFraudCheck();
 
   // Handle referral param
   useEffect(() => {
@@ -90,6 +93,16 @@ const Auth = () => {
       toast({ title: "Missing fields", description: "Business name and WhatsApp number are required.", variant: "destructive" });
       return;
     }
+    // Validate phone format
+    const phoneResult = validatePhoneFormat(whatsappNumber);
+    if (!phoneResult.valid) {
+      toast({ title: "Invalid phone", description: phoneResult.error || "Please enter a valid phone number.", variant: "destructive" });
+      return;
+    }
+    if (phoneResult.error) {
+      // Non-blocking warning for non-African prefix
+      toast({ title: "Phone warning", description: phoneResult.error });
+    }
     if (!agreedToTerms) {
       toast({ title: "Agreement required", description: "You must accept the Vendor Agreement to register.", variant: "destructive" });
       return;
@@ -112,12 +125,17 @@ const Auth = () => {
     if (authData.user) {
       const referrer = localStorage.getItem("robcompare_referrer");
       localStorage.setItem("pending_vendor", JSON.stringify({
-        businessName, whatsappNumber, city, country, email,
+        businessName, whatsappNumber: phoneResult.formatted, city, country, email,
         agreement_version: "1.0",
         agreed_at: new Date().toISOString(),
         user_agent: navigator.userAgent,
         referrer_vendor_id: referrer || null,
       }));
+
+      // Run fraud check in background (non-blocking)
+      fraudCheck.mutateAsync(email).then((signals) => {
+        logFraudSignal(authData.user!.id, email, signals);
+      }).catch(() => { /* non-critical */ });
     }
 
     setLoading(false);
