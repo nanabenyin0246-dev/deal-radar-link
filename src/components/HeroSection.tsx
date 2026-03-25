@@ -49,35 +49,19 @@ const HeroSection = () => {
     slug: c.slug,
   }));
 
-  // Live stats
-  const { data: productCount } = useQuery({
-    queryKey: ["products-count"],
+  // Batch platform stats
+  const { data: stats } = useQuery({
+    queryKey: ["platform-stats"],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc("get_products_count");
-      if (error) throw error;
-      return data as number;
+      const { data } = await supabase.rpc("get_platform_stats");
+      return data as { products: number; vendors: number; countries: number };
     },
-  });
-  const { data: vendorCount } = useQuery({
-    queryKey: ["vendor-count-live"],
-    queryFn: async () => {
-      const { data, error } = await supabase.rpc("get_vendor_count");
-      if (error) throw error;
-      return data as number;
-    },
-  });
-  const { data: countryCount } = useQuery({
-    queryKey: ["country-count-live"],
-    queryFn: async () => {
-      const { data, error } = await supabase.rpc("get_country_count");
-      if (error) throw error;
-      return data as number;
-    },
+    staleTime: 1000 * 60 * 5,
   });
 
-  const animProducts = useCountUp(productCount || 0);
-  const animVendors = useCountUp(vendorCount || 0);
-  const animCountries = useCountUp(countryCount || 0);
+  const animProducts = useCountUp(stats?.products || 0);
+  const animVendors = useCountUp(stats?.vendors || 0);
+  const animCountries = useCountUp(stats?.countries || 0);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
