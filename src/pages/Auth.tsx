@@ -33,6 +33,7 @@ const Auth = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
+  const fraudCheck = useIPFraudCheck();
 
   // Handle referral param
   useEffect(() => {
