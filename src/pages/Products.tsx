@@ -106,6 +106,13 @@ const Products = () => {
       );
     }
 
+    // In stock filter
+    if (inStockOnly) {
+      result = result.filter(p =>
+        p.vendor_offers.some(o => o.in_stock !== false)
+      );
+    }
+
     // Price range filter
     if (priceRange[0] > 0 || priceRange[1] > 0) {
       result = result.filter(p => {
