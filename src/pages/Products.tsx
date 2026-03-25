@@ -155,7 +155,7 @@ const Products = () => {
     }
 
     return result;
-  }, [products, selectedCategories, verifiedOnly, priceRange, sort]);
+  }, [products, selectedCategories, verifiedOnly, inStockOnly, priceRange, sort]);
 
   const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
   const paginatedProducts = filteredProducts.slice(
