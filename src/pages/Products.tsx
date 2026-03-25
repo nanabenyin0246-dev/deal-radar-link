@@ -67,13 +67,15 @@ const Products = () => {
     const cats = overrides.category ?? selectedCategories.join(",");
     const s = overrides.sort ?? sort;
     const v = overrides.verified ?? (verifiedOnly ? "true" : "");
+    const inS = overrides.in_stock ?? (inStockOnly ? "true" : "");
     const minP = overrides.min_price ?? (priceRange[0] > 0 ? String(priceRange[0]) : "");
     const maxP = overrides.max_price ?? (priceRange[1] > 0 ? String(priceRange[1]) : "");
 
     if (q) params.q = q;
     if (cats) params.category = cats;
-    if (s && s !== "deal_score") params.sort = s;
+    if (s && s !== "newest") params.sort = s;
     if (v) params.verified = v;
+    if (inS) params.in_stock = inS;
     if (minP) params.min_price = minP;
     if (maxP) params.max_price = maxP;
 
