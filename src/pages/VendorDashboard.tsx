@@ -20,8 +20,9 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import {
   Package, Plus, Eye, MousePointer, Store, X, Languages,
-  Trash2, Pencil, Upload, Mail, Check, ImageIcon, Bell, Users, Copy, MessageCircle, Gift
+  Trash2, Pencil, Upload, Mail, Check, ImageIcon, Bell, Users, Copy, MessageCircle, Gift, ScanBarcode, Loader2
 } from "lucide-react";
+import { useFoodProductLookup, nutritionGradeConfig } from "@/hooks/useFoodProduct";
 import FoundingVendorBanner from "@/components/FoundingVendorBanner";
 import TranslationManager from "@/components/vendor/TranslationManager";
 import ReferralSection from "@/components/vendor/ReferralSection";
