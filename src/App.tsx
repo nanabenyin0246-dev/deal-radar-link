@@ -26,6 +26,7 @@ import MyAlerts from "./pages/MyAlerts";
 import BuyersLanding from "./pages/BuyersLanding";
 import VendorsLanding from "./pages/VendorsLanding";
 import NotFound from "./pages/NotFound";
+import TrustSafety from "./pages/TrustSafety";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -73,7 +74,7 @@ const App = () => (
               <Route path="/buyers" element={<ErrorBoundary><BuyersLanding /></ErrorBoundary>} />
               <Route path="/vendors" element={<ErrorBoundary><VendorsLanding /></ErrorBoundary>} />
               <Route path="/reset-password" element={<ErrorBoundary><ResetPassword /></ErrorBoundary>} />
-              <Route path="*" element={<NotFound />} />
+              <Route path="/trust" element={<ErrorBoundary><TrustSafety /></ErrorBoundary>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
             <CookieConsent />

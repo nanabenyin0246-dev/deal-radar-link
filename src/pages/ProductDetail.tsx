@@ -25,6 +25,7 @@ import VendorBadge from "@/components/VendorBadge";
 import PriceAlertButton from "@/components/PriceAlertButton";
 import DealScoreBadge from "@/components/DealScoreBadge";
 import QRCodeButton from "@/components/QRCodeButton";
+import SimilarProducts from "@/components/SimilarProducts";
 
 const ProductDetail = () => {
   const { slug, lang } = useParams<{ slug: string; lang?: string }>();
@@ -395,6 +396,11 @@ const ProductDetail = () => {
               </div>
             </div>
           </div>
+        )}
+
+        {/* Similar Products */}
+        {product.category_id && (
+          <SimilarProducts categoryId={product.category_id} currentProductId={product.id} />
         )}
 
         {/* Recently Viewed Sidebar */}

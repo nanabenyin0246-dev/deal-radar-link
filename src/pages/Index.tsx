@@ -6,7 +6,9 @@ import CategoriesSection from "@/components/CategoriesSection";
 import FeaturedProducts from "@/components/FeaturedProducts";
 import FeaturedVendors from "@/components/FeaturedVendors";
 import HowItWorks from "@/components/HowItWorks";
+import HowToSell from "@/components/HowToSell";
 import VendorCTA from "@/components/VendorCTA";
+import LiveTicker from "@/components/LiveTicker";
 import RegionalOnboarding from "@/components/RegionalOnboarding";
 import Footer from "@/components/Footer";
 import { useI18n } from "@/i18n/I18nContext";
@@ -35,6 +37,7 @@ const Index = () => {
         }}
       />
       <Navbar />
+      <LiveTicker />
       <HeroSection />
       <RecentlyViewedSection />
       <CategoriesSection />
@@ -43,6 +46,7 @@ const Index = () => {
       <section className="container py-8">
         <NearbyVendors />
       </section>
+      <HowToSell />
       <HowItWorks />
       <VendorCTA />
       <RegionalOnboarding region={showFrancophone ? "francophone" : "ghana"} />
