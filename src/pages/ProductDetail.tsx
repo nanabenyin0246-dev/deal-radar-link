@@ -240,6 +240,15 @@ const ProductDetail = () => {
                     <Share2 className="w-3 h-3" /> X
                   </a>
                 </Button>
+                <Button variant="outline" size="sm" className="h-8 text-xs" asChild>
+                  <a
+                    href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <span className="text-[#1877F2] font-bold">f</span> Share
+                  </a>
+                </Button>
                 <QRCodeButton url={window.location.href} productName={productName} />
               </div>
             </div>
