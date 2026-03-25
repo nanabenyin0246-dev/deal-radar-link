@@ -36,7 +36,7 @@ import {
   AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { formatPrice } from "@/utils/currency";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 const VendorDashboard = () => {
   const { user, isVendor, vendorId, loading: authLoading } = useAuth();
@@ -701,44 +701,60 @@ const VendorDashboard = () => {
 
           {/* Analytics Tab */}
           <TabsContent value="analytics">
-            <div className="space-y-6">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {[
-                  { label: "Total Views", value: totalViews },
-                  { label: "WhatsApp Clicks", value: totalClicks },
-                  { label: "Click-through Rate", value: `${ctr}%` },
-                  { label: "Products Listed", value: products?.length || 0 },
-                ].map((s) => (
-                  <div key={s.label} className="bg-card border border-border rounded-xl p-4 text-center">
-                    <div className="font-heading text-xl font-bold">{s.value}</div>
-                    <div className="text-xs text-muted-foreground">{s.label}</div>
-                  </div>
-                ))}
+            {(!products || products.length === 0) ? (
+              <div className="flex flex-col items-center justify-center py-20 text-center">
+                <BarChart3 className="w-12 h-12 text-muted-foreground mb-4" />
+                <h3 className="font-heading text-lg font-semibold">No analytics yet</h3>
+                <p className="text-sm text-muted-foreground mt-1 max-w-sm">Your stats will appear once buyers start viewing your products</p>
               </div>
-
-              {bestProduct && (
-                <div className="bg-card border border-border rounded-xl p-4">
-                  <p className="text-sm text-muted-foreground">Best performing product</p>
-                  <p className="font-heading font-bold">{bestProduct.product?.name}</p>
-                  <p className="text-xs text-muted-foreground">{bestProduct.clicks || 0} clicks · {bestProduct.views || 0} views</p>
+            ) : (
+              <div className="space-y-6">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {[
+                    { label: "Total Views", value: totalViews },
+                    { label: "Total Clicks", value: totalClicks },
+                    { label: "Click Rate", value: `${ctr}%` },
+                    { label: "Active Products", value: products?.filter((o: any) => o.is_visible).length || 0 },
+                  ].map((s) => (
+                    <div key={s.label} className="bg-card border border-border rounded-xl p-4 text-center">
+                      <div className="font-heading text-xl font-bold">{s.value}</div>
+                      <div className="text-xs text-muted-foreground">{s.label}</div>
+                    </div>
+                  ))}
                 </div>
-              )}
 
-              {chartData.length > 0 && (
-                <div className="bg-card border border-border rounded-xl p-4">
-                  <h3 className="font-heading font-semibold mb-4">Views vs Clicks per Product</h3>
-                  <ResponsiveContainer width="100%" height={250}>
-                    <BarChart data={chartData}>
-                      <XAxis dataKey="name" tick={{ fontSize: 11 }} />
-                      <YAxis tick={{ fontSize: 11 }} />
-                      <Tooltip />
-                      <Bar dataKey="views" fill="hsl(var(--primary))" name="Views" radius={[4, 4, 0, 0]} />
-                      <Bar dataKey="clicks" fill="hsl(var(--secondary))" name="Clicks" radius={[4, 4, 0, 0]} />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              )}
-            </div>
+                {chartData.length > 0 && (
+                  <div className="bg-card border border-border rounded-xl p-4">
+                    <h3 className="font-heading font-semibold mb-4">Views vs Clicks per Product</h3>
+                    <ResponsiveContainer width="100%" height={220}>
+                      <BarChart data={chartData}>
+                        <XAxis dataKey="name" tick={{ fontSize: 11 }} />
+                        <YAxis tick={{ fontSize: 11 }} />
+                        <Tooltip />
+                        <Legend />
+                        <Bar dataKey="views" fill="hsl(var(--primary))" name="Views" radius={[4, 4, 0, 0]} />
+                        <Bar dataKey="clicks" fill="hsl(var(--secondary))" name="Clicks" radius={[4, 4, 0, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                )}
+
+                {bestProduct && (
+                  <div className="bg-card border border-border rounded-xl p-4 flex items-start gap-4">
+                    {bestProduct.product?.image_url && (
+                      <img src={bestProduct.product.image_url} alt="" className="w-14 h-14 rounded-lg object-cover border border-border" />
+                    )}
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">⭐ Your Best Performer</p>
+                      <p className="font-heading font-bold">{bestProduct.product?.name}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {bestProduct.views || 0} views · {bestProduct.clicks || 0} clicks · {((bestProduct.views || 0) > 0 ? ((bestProduct.clicks || 0) / (bestProduct.views || 1) * 100).toFixed(1) : "0")}% CTR
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </TabsContent>
 
           {/* Profile Tab */}
