@@ -1,4 +1,4 @@
-import { Search, Menu, X, ShoppingBag, User, Store, Package, Bell } from "lucide-react";
+import { Search, Menu, X, ShoppingBag, User, Store, Package, Bell, Heart } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -37,6 +37,11 @@ const Navbar = () => {
               <Bell className="w-3.5 h-3.5" /> Alerts
             </Link>
           )}
+          {user && (
+            <Link to="/saved" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
+              <Heart className="w-3.5 h-3.5" /> Saved
+            </Link>
+          )}
           {isVendor && (
             <Link to="/vendor/dashboard" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
               <Store className="w-3.5 h-3.5" /> {t("nav.dashboard")}
@@ -49,7 +54,7 @@ const Navbar = () => {
           <LanguageSwitcher />
           {user ? (
             <>
-              <span className="text-xs text-muted-foreground">{user.email}</span>
+              <span className="text-xs text-muted-foreground max-w-[140px] truncate" title={user.email}>{user.email}</span>
               <Button variant="ghost" size="sm" onClick={signOut}>{t("nav.signOut")}</Button>
             </>
           ) : (
@@ -77,6 +82,9 @@ const Navbar = () => {
               </Link>
               <Link to="/alerts" className="block text-sm font-medium text-muted-foreground py-2 flex items-center gap-2" onClick={() => setMobileOpen(false)}>
                 <Bell className="w-4 h-4" /> Price Alerts
+              </Link>
+              <Link to="/saved" className="block text-sm font-medium text-muted-foreground py-2 flex items-center gap-2" onClick={() => setMobileOpen(false)}>
+                <Heart className="w-4 h-4" /> Saved Products
               </Link>
             </>
           )}

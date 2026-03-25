@@ -166,10 +166,21 @@ const VendorDashboard = () => {
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp", "image/gif"];
+    if (!allowedTypes.includes(file.type)) {
+      toast({ title: "Invalid file type", description: "Please upload JPG, PNG, WebP or GIF only.", variant: "destructive" });
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: "File too large", description: "Image must be under 5MB.", variant: "destructive" });
+      return;
+    }
+
     try {
       const url = await uploadImage.mutateAsync(file);
       setImageUrl(url);
-      toast({ title: "Image uploaded" });
+      toast({ title: "Image uploaded ✓" });
     } catch (err: any) {
       toast({ title: "Upload failed", description: err.message, variant: "destructive" });
     }
@@ -306,9 +317,16 @@ const VendorDashboard = () => {
               {vendor?.verified && <Badge className="ml-2 bg-primary text-primary-foreground">Verified</Badge>}
             </p>
           </div>
-          <Button onClick={() => setShowForm(true)}>
-            <Plus className="w-4 h-4" /> Add Product
-          </Button>
+          <div className="flex gap-2">
+            {vendorId && (
+              <Button variant="outline" size="sm" asChild>
+                <a href={`/store/${vendorId}`}>View My Store →</a>
+              </Button>
+            )}
+            <Button onClick={() => setShowForm(true)}>
+              <Plus className="w-4 h-4" /> Add Product
+            </Button>
+          </div>
         </div>
 
         <FoundingVendorBanner />

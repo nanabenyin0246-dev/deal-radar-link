@@ -12,20 +12,23 @@ import { useCategories } from "@/hooks/useProducts";
 const useCountUp = (end: number, duration = 1500) => {
   const [count, setCount] = useState(0);
   const prevEnd = useRef(0);
+  const frameRef = useRef<number>(0);
 
   useEffect(() => {
     if (end === prevEnd.current) return;
     prevEnd.current = end;
-    const start = 0;
     const startTime = performance.now();
     const animate = (now: number) => {
       const elapsed = now - startTime;
       const progress = Math.min(elapsed / duration, 1);
       const eased = 1 - Math.pow(1 - progress, 3);
-      setCount(Math.round(start + (end - start) * eased));
-      if (progress < 1) requestAnimationFrame(animate);
+      setCount(Math.round(end * eased));
+      if (progress < 1) {
+        frameRef.current = requestAnimationFrame(animate);
+      }
     };
-    requestAnimationFrame(animate);
+    frameRef.current = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(frameRef.current);
   }, [end, duration]);
 
   return count;
@@ -46,35 +49,19 @@ const HeroSection = () => {
     slug: c.slug,
   }));
 
-  // Live stats
-  const { data: productCount } = useQuery({
-    queryKey: ["products-count"],
+  // Batch platform stats
+  const { data: stats } = useQuery({
+    queryKey: ["platform-stats"],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc("get_products_count");
-      if (error) throw error;
-      return data as number;
+      const { data } = await supabase.rpc("get_platform_stats");
+      return data as { products: number; vendors: number; countries: number };
     },
-  });
-  const { data: vendorCount } = useQuery({
-    queryKey: ["vendor-count-live"],
-    queryFn: async () => {
-      const { data, error } = await supabase.rpc("get_vendor_count");
-      if (error) throw error;
-      return data as number;
-    },
-  });
-  const { data: countryCount } = useQuery({
-    queryKey: ["country-count-live"],
-    queryFn: async () => {
-      const { data, error } = await supabase.rpc("get_country_count");
-      if (error) throw error;
-      return data as number;
-    },
+    staleTime: 1000 * 60 * 5,
   });
 
-  const animProducts = useCountUp(productCount || 0);
-  const animVendors = useCountUp(vendorCount || 0);
-  const animCountries = useCountUp(countryCount || 0);
+  const animProducts = useCountUp(stats?.products || 0);
+  const animVendors = useCountUp(stats?.vendors || 0);
+  const animCountries = useCountUp(stats?.countries || 0);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();

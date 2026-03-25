@@ -8,7 +8,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MessageCircle, Star, ArrowLeft, Truck, ExternalLink, CreditCard, Share2, Copy, Twitter, Shield, Info } from "lucide-react";
+import { MessageCircle, Star, ArrowLeft, Truck, ExternalLink, CreditCard, Share2, Copy, Twitter, Shield, Info, Store } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import PriceHistoryChart from "@/components/PriceHistoryChart";
 import ConvertedPrice from "@/components/ConvertedPrice";
@@ -27,6 +27,7 @@ import PriceAlertButton from "@/components/PriceAlertButton";
 import DealScoreBadge from "@/components/DealScoreBadge";
 import QRCodeButton from "@/components/QRCodeButton";
 import SimilarProducts from "@/components/SimilarProducts";
+import ProductReviews from "@/components/ProductReviews";
 
 const ProductDetail = () => {
   const { slug, lang } = useParams<{ slug: string; lang?: string }>();
@@ -239,6 +240,15 @@ const ProductDetail = () => {
                     <Share2 className="w-3 h-3" /> X
                   </a>
                 </Button>
+                <Button variant="outline" size="sm" className="h-8 text-xs" asChild>
+                  <a
+                    href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <span className="text-[#1877F2] font-bold">f</span> Share
+                  </a>
+                </Button>
                 <QRCodeButton url={window.location.href} productName={productName} />
               </div>
             </div>
@@ -356,6 +366,9 @@ const ProductDetail = () => {
                                 </div>
                               </TooltipContent>
                             </Tooltip>
+                            <Link to={`/store/${offer.vendor.id}`} className="text-[10px] text-primary hover:underline flex items-center gap-0.5">
+                              <Store className="w-3 h-3" /> Store
+                            </Link>
                           </div>
                         </td>
                         <td className="p-4">
@@ -421,6 +434,11 @@ const ProductDetail = () => {
             </div>
           </div>
         )}
+
+        {/* Product Reviews */}
+        <div className="mb-12">
+          <ProductReviews productId={product.id} productName={productName} />
+        </div>
 
         {/* Similar Products */}
         {product.category_id && (

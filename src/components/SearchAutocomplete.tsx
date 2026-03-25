@@ -159,8 +159,33 @@ const SearchAutocomplete = ({ value, onChange, onSubmit, placeholder }: SearchAu
         />
       </div>
 
+      {/* Trending searches on empty focus */}
+      {open && value.trim().length === 0 && (
+        <div className="absolute top-full left-0 right-0 mt-1 bg-card border border-border rounded-xl shadow-xl z-50 p-3">
+          <p className="text-xs font-medium text-muted-foreground mb-2">🔥 Trending</p>
+          <div className="flex flex-wrap gap-2">
+            {["iPhone 15", "Shea Butter", "Samsung TV", "Nike Air Max", "Gas Cylinder"].map(term => (
+              <button
+                key={term}
+                onMouseDown={() => { onChange(term); onSubmit(); setOpen(false); }}
+                className="px-2.5 py-1 rounded-full bg-accent text-accent-foreground text-xs hover:bg-primary/10 hover:text-primary transition-colors"
+              >
+                {term}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {showDropdown && (
         <div className="absolute top-full left-0 right-0 mt-1 bg-card border border-border rounded-xl shadow-xl z-50 overflow-hidden">
+          {items.length > 0 && (
+            <div className="px-4 py-2 border-b border-border bg-muted/30">
+              <p className="text-xs text-muted-foreground">
+                {isFetching ? "Searching..." : `${items.length} product${items.length !== 1 ? "s" : ""} found`}
+              </p>
+            </div>
+          )}
           {items.map((item, i) => (
             <button
               key={item.slug}

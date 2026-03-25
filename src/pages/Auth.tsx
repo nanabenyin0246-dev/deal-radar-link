@@ -112,7 +112,7 @@ const Auth = () => {
       email,
       password,
       options: {
-        emailRedirectTo: "https://deal-radar-link.lovable.app/vendor/onboarding",
+        emailRedirectTo: `${window.location.origin}/vendor/onboarding`,
         data: { display_name: businessName, role: "vendor" },
       },
     });
