@@ -40,6 +40,9 @@ const Index = () => {
       <CategoriesSection />
       <FeaturedProducts />
       <FeaturedVendors />
+      <section className="container py-8">
+        <NearbyVendors />
+      </section>
       <HowItWorks />
       <VendorCTA />
       <RegionalOnboarding region={showFrancophone ? "francophone" : "ghana"} />

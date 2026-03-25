@@ -237,6 +237,7 @@ const ProductDetail = () => {
                     <Share2 className="w-3 h-3" /> X
                   </a>
                 </Button>
+                <QRCodeButton url={window.location.href} productName={productName} />
               </div>
             </div>
 
