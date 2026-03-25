@@ -182,7 +182,7 @@ const Products = () => {
     setSearchParams({});
   };
 
-  const hasFilters = query || selectedCategories.length > 0 || verifiedOnly || priceRange[0] > 0 || priceRange[1] > 0;
+  const hasFilters = query || selectedCategories.length > 0 || verifiedOnly || inStockOnly || priceRange[0] > 0 || priceRange[1] > 0;
 
   const filterContent = (
     <div className="space-y-6">
