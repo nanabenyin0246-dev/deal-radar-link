@@ -137,6 +137,9 @@ const Auth = () => {
         logFraudSignal(authData.user!.id, email, signals);
       }).catch(() => { /* non-critical */ });
     }
+
+    setLoading(false);
+    setEmailSent(true);
   };
 
   const handleForgotPassword = async (e: React.FormEvent) => {
