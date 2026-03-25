@@ -222,6 +222,19 @@ const Products = () => {
         </div>
       </div>
 
+      {/* In Stock Only Toggle */}
+      <div className="flex items-center justify-between">
+        <Label htmlFor="instock-toggle" className="text-sm">In Stock only</Label>
+        <Switch
+          id="instock-toggle"
+          checked={inStockOnly}
+          onCheckedChange={(v) => {
+            setInStockOnly(v);
+            updateUrl({ in_stock: v ? "true" : "" });
+          }}
+        />
+      </div>
+
       {/* Verified Toggle */}
       <div className="flex items-center justify-between">
         <Label htmlFor="verified-toggle" className="text-sm">Verified vendors only</Label>
