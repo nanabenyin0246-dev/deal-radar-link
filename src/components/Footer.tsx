@@ -9,6 +9,7 @@ const Footer = () => {
     { label: t("footer.terms"), to: "/terms" },
     { label: t("footer.privacy"), to: "/privacy" },
     { label: t("footer.vendorAgreement"), to: "/vendor-agreement" },
+    { label: "Trust & Safety", to: "/trust" },
   ];
 
   return (

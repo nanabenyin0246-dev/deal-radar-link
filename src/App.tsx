@@ -74,6 +74,7 @@ const App = () => (
               <Route path="/buyers" element={<ErrorBoundary><BuyersLanding /></ErrorBoundary>} />
               <Route path="/vendors" element={<ErrorBoundary><VendorsLanding /></ErrorBoundary>} />
               <Route path="/reset-password" element={<ErrorBoundary><ResetPassword /></ErrorBoundary>} />
+              <Route path="/trust" element={<ErrorBoundary><TrustSafety /></ErrorBoundary>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
             <CookieConsent />
