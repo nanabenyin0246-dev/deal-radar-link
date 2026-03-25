@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback } from "react";
 import { useRecentlyViewed } from "@/hooks/useRecentlyViewed";
-import { useSearchParams } from "react-router-dom";
-import { Search, SlidersHorizontal, X, ArrowUpDown, Filter } from "lucide-react";
+import { useSearchParams, Link } from "react-router-dom";
+import { Search, SlidersHorizontal, X, ArrowUpDown, Filter, PackageSearch } from "lucide-react";
 import { useProducts, useCategories, LiveProduct } from "@/hooks/useProducts";
 import LiveProductCard from "@/components/LiveProductCard";
 import ProductCardSkeleton from "@/components/ProductCardSkeleton";
