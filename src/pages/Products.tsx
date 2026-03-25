@@ -80,7 +80,7 @@ const Products = () => {
     if (maxP) params.max_price = maxP;
 
     setSearchParams(params, { replace: true });
-  }, [query, selectedCategories, sort, verifiedOnly, priceRange, setSearchParams]);
+  }, [query, selectedCategories, sort, verifiedOnly, inStockOnly, priceRange, setSearchParams]);
 
   // Compute price bounds for slider
   const priceBounds = useMemo(() => {
