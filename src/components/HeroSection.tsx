@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useI18n } from "@/i18n/I18nContext";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useCategories } from "@/hooks/useProducts";
 
 // Animated counter hook
 const useCountUp = (end: number, duration = 1500) => {
@@ -30,17 +31,20 @@ const useCountUp = (end: number, duration = 1500) => {
   return count;
 };
 
-const CATEGORY_CHIPS = [
-  { label: "Electronics 📱", slug: "electronics" },
-  { label: "Fashion 👗", slug: "fashion" },
-  { label: "Food 🛒", slug: "food" },
-  { label: "Beauty 💄", slug: "beauty" },
-];
+const CATEGORY_ICON_MAP: Record<string, string> = {
+  electronics: "📱", fashion: "👗", food: "🛒", beauty: "💄", home: "🏠", auto: "🚗",
+};
 
 const HeroSection = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
   const { t } = useI18n();
+  const { data: categories } = useCategories();
+
+  const categoryChips = (categories || []).slice(0, 6).map((c) => ({
+    label: `${CATEGORY_ICON_MAP[c.slug] || c.icon || "📦"} ${c.name}`,
+    slug: c.slug,
+  }));
 
   // Live stats
   const { data: productCount } = useQuery({
@@ -119,12 +123,12 @@ const HeroSection = () => {
           </form>
 
           {/* Category Chips */}
-          <div className="flex flex-wrap items-center justify-center gap-2 animate-fade-in" style={{ animationDelay: "0.3s" }}>
-            {CATEGORY_CHIPS.map((chip) => (
+          <div className="flex flex-wrap items-center justify-center gap-2 -mx-4 px-4 overflow-x-auto scrollbar-hide animate-fade-in" style={{ animationDelay: "0.3s" }}>
+            {categoryChips.map((chip) => (
               <button
                 key={chip.slug}
                 onClick={() => navigate(`/products?category=${chip.slug}`)}
-                className="px-3 py-1.5 rounded-full bg-card border border-border text-sm font-medium text-muted-foreground hover:text-foreground hover:border-primary/40 transition-all"
+                className="rounded-full border border-border bg-card hover:bg-accent hover:border-primary/30 px-3 py-1.5 text-xs font-medium transition-colors whitespace-nowrap"
               >
                 {chip.label}
               </button>

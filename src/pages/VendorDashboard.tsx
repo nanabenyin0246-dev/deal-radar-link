@@ -151,7 +151,15 @@ const VendorDashboard = () => {
     enabled: productIds.length > 0,
   });
 
-  if (authLoading) return <div className="min-h-screen flex items-center justify-center"><p>Loading...</p></div>;
+  if (authLoading) return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="space-y-3 w-full max-w-md px-4">
+        {[1, 2, 3].map(i => (
+          <div key={i} className="h-24 bg-card border border-border rounded-xl animate-pulse" />
+        ))}
+      </div>
+    </div>
+  );
   if (!user) return <Navigate to="/auth" />;
   if (!isVendor) return <Navigate to="/" />;
 

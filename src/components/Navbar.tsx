@@ -67,15 +67,23 @@ const Navbar = () => {
 
       {mobileOpen && (
         <div className="md:hidden border-t border-border bg-card p-4 space-y-3 animate-fade-in">
-          <Link to="/products" className="block text-sm font-medium text-muted-foreground py-2" onClick={() => setMobileOpen(false)}>{t("nav.browse")}</Link>
+          <Link to="/products" className="block text-sm font-medium text-muted-foreground py-2 flex items-center gap-2" onClick={() => setMobileOpen(false)}>
+            <Search className="w-4 h-4" /> {t("nav.browse")}
+          </Link>
           {user && (
             <>
-              <Link to="/orders" className="block text-sm font-medium text-muted-foreground py-2" onClick={() => setMobileOpen(false)}>{t("nav.myOrders")}</Link>
-              <Link to="/alerts" className="block text-sm font-medium text-muted-foreground py-2" onClick={() => setMobileOpen(false)}>Alerts</Link>
+              <Link to="/orders" className="block text-sm font-medium text-muted-foreground py-2 flex items-center gap-2" onClick={() => setMobileOpen(false)}>
+                <Package className="w-4 h-4" /> {t("nav.myOrders")}
+              </Link>
+              <Link to="/alerts" className="block text-sm font-medium text-muted-foreground py-2 flex items-center gap-2" onClick={() => setMobileOpen(false)}>
+                <Bell className="w-4 h-4" /> Price Alerts
+              </Link>
             </>
           )}
           {isVendor && (
-            <Link to="/vendor/dashboard" className="block text-sm font-medium text-muted-foreground py-2" onClick={() => setMobileOpen(false)}>{t("nav.dashboard")}</Link>
+            <Link to="/vendor/dashboard" className="block text-sm font-medium text-muted-foreground py-2 flex items-center gap-2" onClick={() => setMobileOpen(false)}>
+              <Store className="w-4 h-4" /> {t("nav.dashboard")}
+            </Link>
           )}
           <div className="flex items-center gap-2 py-2">
             <CurrencySelector />
