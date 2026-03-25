@@ -9,9 +9,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Shield, Package, AlertTriangle, Users, DollarSign, FileText, Download, Flag, BarChart3, Inbox, CheckCircle, XCircle } from "lucide-react";
+import { Shield, Package, AlertTriangle, Users, DollarSign, FileText, Download, Flag, BarChart3, Inbox, CheckCircle, XCircle, ShieldAlert } from "lucide-react";
 import AnalyticsTab from "@/components/admin/AnalyticsTab";
 import MilestoneProgress from "@/components/admin/MilestoneProgress";
+import FraudSignalsTab from "@/components/admin/FraudSignalsTab";
 
 const AdminDashboard = () => {
   const { user, loading: authLoading } = useAuth();
