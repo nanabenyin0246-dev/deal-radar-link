@@ -317,9 +317,16 @@ const VendorDashboard = () => {
               {vendor?.verified && <Badge className="ml-2 bg-primary text-primary-foreground">Verified</Badge>}
             </p>
           </div>
-          <Button onClick={() => setShowForm(true)}>
-            <Plus className="w-4 h-4" /> Add Product
-          </Button>
+          <div className="flex gap-2">
+            {vendorId && (
+              <Button variant="outline" size="sm" asChild>
+                <a href={`/store/${vendorId}`}>View My Store →</a>
+              </Button>
+            )}
+            <Button onClick={() => setShowForm(true)}>
+              <Plus className="w-4 h-4" /> Add Product
+            </Button>
+          </div>
         </div>
 
         <FoundingVendorBanner />

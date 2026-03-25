@@ -369,6 +369,7 @@ const ProductDetail = () => {
                             <Link to={`/store/${offer.vendor.id}`} className="text-[10px] text-primary hover:underline flex items-center gap-0.5">
                               <Store className="w-3 h-3" /> Store
                             </Link>
+                          </div>
                         </td>
                         <td className="p-4">
                           <p className={`font-heading font-bold ${i === 0 ? "text-primary" : ""}`}>
