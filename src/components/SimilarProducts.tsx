@@ -21,7 +21,7 @@ const SimilarProducts = ({ categoryId, currentProductId }: SimilarProductsProps)
             id, price, currency, in_stock, is_visible, shipping_days,
             whatsapp_message, payment_link, variant_info, views, clicks,
             created_at, updated_at,
-            vendor:vendors(id, business_name, country, whatsapp_number, verified, trust_score)
+            vendor:vendors(id, business_name, country, whatsapp_number, verified, trust_score, logo_url)
           )
         `)
         .eq("is_active", true)
