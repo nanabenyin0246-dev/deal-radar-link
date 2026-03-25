@@ -10,6 +10,8 @@ import Footer from "@/components/Footer";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { ShoppingBag, Mail, Lock, User, Phone, MapPin, Store } from "lucide-react";
+import { useIPFraudCheck, logFraudSignal } from "@/hooks/useFraudDetection";
+import { validatePhoneFormat } from "@/hooks/useValidation";
 
 type AuthMode = "login" | "signup" | "vendor-signup" | "forgot-password";
 
