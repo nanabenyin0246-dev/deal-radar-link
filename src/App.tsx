@@ -26,6 +26,7 @@ import MyAlerts from "./pages/MyAlerts";
 import BuyersLanding from "./pages/BuyersLanding";
 import VendorsLanding from "./pages/VendorsLanding";
 import NotFound from "./pages/NotFound";
+import TrustSafety from "./pages/TrustSafety";
 
 const queryClient = new QueryClient({
   defaultOptions: {
