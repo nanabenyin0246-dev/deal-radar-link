@@ -109,6 +109,8 @@ const VendorDashboard = () => {
   const [whatsappMsg, setWhatsappMsg] = useState("");
   const [paymentLink, setPaymentLink] = useState("");
   const [inStock, setInStock] = useState(true);
+  const [barcodeInput, setBarcodeInput] = useState("");
+  const foodLookup = useFoodProductLookup();
 
   // Edit state
   const [editPrice, setEditPrice] = useState("");
