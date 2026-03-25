@@ -9,9 +9,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Shield, Package, AlertTriangle, Users, DollarSign, FileText, Download, Flag, BarChart3, Inbox, CheckCircle, XCircle } from "lucide-react";
+import { Shield, Package, AlertTriangle, Users, DollarSign, FileText, Download, Flag, BarChart3, Inbox, CheckCircle, XCircle, ShieldAlert } from "lucide-react";
 import AnalyticsTab from "@/components/admin/AnalyticsTab";
 import MilestoneProgress from "@/components/admin/MilestoneProgress";
+import FraudSignalsTab from "@/components/admin/FraudSignalsTab";
 
 const AdminDashboard = () => {
   const { user, loading: authLoading } = useAuth();
@@ -79,6 +80,7 @@ const AdminDashboard = () => {
             <TabsTrigger value="disputes">Disputes</TabsTrigger>
             <TabsTrigger value="vendors">Vendors</TabsTrigger>
             <TabsTrigger value="commissions">Commissions</TabsTrigger>
+            <TabsTrigger value="fraud"><ShieldAlert className="w-3 h-3 mr-1" />Fraud Signals</TabsTrigger>
             <TabsTrigger value="audit">Audit Log</TabsTrigger>
           </TabsList>
 
@@ -268,6 +270,11 @@ const AdminDashboard = () => {
               </div>
               {!commissions?.length && <p className="text-center py-8 text-muted-foreground">No commissions yet</p>}
             </div>
+          </TabsContent>
+
+          {/* Fraud Signals Tab */}
+          <TabsContent value="fraud">
+            <FraudSignalsTab />
           </TabsContent>
 
           {/* Audit Log Tab */}
