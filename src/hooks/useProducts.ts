@@ -37,6 +37,7 @@ export interface LiveVendorOffer {
     trust_score: number | null;
     verified: boolean | null;
     country: string;
+    city: string | null;
     logo_url: string | null;
   };
 }
