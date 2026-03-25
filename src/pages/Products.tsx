@@ -50,6 +50,7 @@ const Products = () => {
   const [sort, setSort] = useState<SortOption>(initialSort);
   const [verifiedOnly, setVerifiedOnly] = useState(initialVerifiedOnly);
   const [priceRange, setPriceRange] = useState<[number, number]>([initialMinPrice, initialMaxPrice]);
+  const [inStockOnly, setInStockOnly] = useState(searchParams.get("in_stock") === "true");
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
