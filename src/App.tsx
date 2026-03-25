@@ -74,7 +74,6 @@ const App = () => (
               <Route path="/vendors" element={<ErrorBoundary><VendorsLanding /></ErrorBoundary>} />
               <Route path="/reset-password" element={<ErrorBoundary><ResetPassword /></ErrorBoundary>} />
               <Route path="*" element={<NotFound />} />
-              <Route path="*" element={<NotFound />} />
             </Routes>
             <CookieConsent />
             <PWAInstallBanner />

@@ -4,11 +4,8 @@ import { Button } from "@/components/ui/button";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useI18n } from "@/i18n/I18nContext";
-import { useCommissionConfig, useUserCount } from "@/hooks/useCommissionConfig";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Progress } from "@/components/ui/progress";
-import { PartyPopper } from "lucide-react";
 
 // Animated counter hook
 const useCountUp = (end: number, duration = 1500) => {
@@ -23,7 +20,6 @@ const useCountUp = (end: number, duration = 1500) => {
     const animate = (now: number) => {
       const elapsed = now - startTime;
       const progress = Math.min(elapsed / duration, 1);
-      // ease out cubic
       const eased = 1 - Math.pow(1 - progress, 3);
       setCount(Math.round(start + (end - start) * eased));
       if (progress < 1) requestAnimationFrame(animate);
@@ -34,12 +30,17 @@ const useCountUp = (end: number, duration = 1500) => {
   return count;
 };
 
+const CATEGORY_CHIPS = [
+  { label: "Electronics 📱", slug: "electronics" },
+  { label: "Fashion 👗", slug: "fashion" },
+  { label: "Food 🛒", slug: "food" },
+  { label: "Beauty 💄", slug: "beauty" },
+];
+
 const HeroSection = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
   const { t } = useI18n();
-  const { data: config } = useCommissionConfig();
-  const { data: userCount } = useUserCount();
 
   // Live stats
   const { data: productCount } = useQuery({
@@ -71,11 +72,6 @@ const HeroSection = () => {
   const animVendors = useCountUp(vendorCount || 0);
   const animCountries = useCountUp(countryCount || 0);
 
-  const showBanner = config && !config.commission_active;
-  const threshold = config?.activation_threshold || 1000;
-  const current = userCount || 0;
-  const progress = Math.min((current / threshold) * 100, 100);
-
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
@@ -94,25 +90,6 @@ const HeroSection = () => {
 
       <div className="container relative">
         <div className="max-w-3xl mx-auto text-center space-y-8">
-          {/* Founding Vendor Banner */}
-          {showBanner && (
-            <div className="bg-gradient-to-r from-primary/10 via-secondary/10 to-primary/10 border border-primary/20 rounded-xl p-4 animate-fade-in">
-              <div className="flex items-center justify-center gap-2 mb-1">
-                <PartyPopper className="w-4 h-4 text-secondary shrink-0" />
-                <p className="font-heading font-bold text-sm">
-                  🔥 {vendorCount || 0}/100 Founding Vendors — 0% Commission Locked In Forever
-                </p>
-              </div>
-              <p className="text-xs text-muted-foreground mb-3">Join now and keep 100% of your revenue. Commission activates at 3% after 100 vendors.</p>
-              <div className="flex items-center gap-3 max-w-xs mx-auto">
-                <Progress value={Math.min(((vendorCount || 0) / 100) * 100, 100)} className="h-2 flex-1" />
-                <span className="text-xs font-heading font-bold text-primary whitespace-nowrap">
-                  {vendorCount || 0} / 100
-                </span>
-              </div>
-            </div>
-          )}
-
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent text-accent-foreground text-sm font-medium animate-fade-in">
             <span className="w-2 h-2 rounded-full bg-primary animate-pulse-soft" />
             {t("hero.badge")}
@@ -141,6 +118,19 @@ const HeroSection = () => {
             </div>
           </form>
 
+          {/* Category Chips */}
+          <div className="flex flex-wrap items-center justify-center gap-2 animate-fade-in" style={{ animationDelay: "0.3s" }}>
+            {CATEGORY_CHIPS.map((chip) => (
+              <button
+                key={chip.slug}
+                onClick={() => navigate(`/products?category=${chip.slug}`)}
+                className="px-3 py-1.5 rounded-full bg-card border border-border text-sm font-medium text-muted-foreground hover:text-foreground hover:border-primary/40 transition-all"
+              >
+                {chip.label}
+              </button>
+            ))}
+          </div>
+
           <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground animate-fade-in" style={{ animationDelay: "0.4s" }}>
             <span>{t("hero.popular")}</span>
             {["iPhone 15", "Nike Air Max", "Samsung TV", "Shea Butter"].map((term) => (
@@ -156,16 +146,15 @@ const HeroSection = () => {
         </div>
 
         {/* Live Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-20 max-w-3xl mx-auto animate-fade-in" style={{ animationDelay: "0.5s" }}>
+        <div className="grid grid-cols-3 gap-6 mt-20 max-w-2xl mx-auto animate-fade-in" style={{ animationDelay: "0.5s" }}>
           {[
             { value: animProducts, suffix: "+", label: t("hero.statProducts") },
             { value: animVendors, suffix: "+", label: t("hero.statVendors") },
             { value: animCountries, suffix: "+", label: t("hero.statCountries") },
-            { value: "₵0", suffix: "", label: t("hero.statFee") },
           ].map((stat) => (
             <div key={stat.label} className="text-center">
               <div className="font-heading text-2xl md:text-3xl font-bold text-foreground">
-                {typeof stat.value === "number" ? `${stat.value.toLocaleString()}${stat.suffix}` : stat.value}
+                {stat.value.toLocaleString()}{stat.suffix}
               </div>
               <div className="text-sm text-muted-foreground mt-1">{stat.label}</div>
             </div>
