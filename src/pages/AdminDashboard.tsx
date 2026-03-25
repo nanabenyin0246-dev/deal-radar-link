@@ -80,6 +80,7 @@ const AdminDashboard = () => {
             <TabsTrigger value="disputes">Disputes</TabsTrigger>
             <TabsTrigger value="vendors">Vendors</TabsTrigger>
             <TabsTrigger value="commissions">Commissions</TabsTrigger>
+            <TabsTrigger value="fraud"><ShieldAlert className="w-3 h-3 mr-1" />Fraud Signals</TabsTrigger>
             <TabsTrigger value="audit">Audit Log</TabsTrigger>
           </TabsList>
 
