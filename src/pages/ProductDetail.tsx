@@ -8,7 +8,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MessageCircle, Star, ArrowLeft, Truck, ExternalLink, CreditCard, Share2, Copy, Twitter, Shield, Info } from "lucide-react";
+import { MessageCircle, Star, ArrowLeft, Truck, ExternalLink, CreditCard, Share2, Copy, Twitter, Shield, Info, Store } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import PriceHistoryChart from "@/components/PriceHistoryChart";
 import ConvertedPrice from "@/components/ConvertedPrice";
@@ -27,6 +27,7 @@ import PriceAlertButton from "@/components/PriceAlertButton";
 import DealScoreBadge from "@/components/DealScoreBadge";
 import QRCodeButton from "@/components/QRCodeButton";
 import SimilarProducts from "@/components/SimilarProducts";
+import ProductReviews from "@/components/ProductReviews";
 
 const ProductDetail = () => {
   const { slug, lang } = useParams<{ slug: string; lang?: string }>();
