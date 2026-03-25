@@ -39,6 +39,12 @@ const HeroSection = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
   const { t } = useI18n();
+  const { data: categories } = useCategories();
+
+  const categoryChips = (categories || []).slice(0, 6).map((c) => ({
+    label: `${CATEGORY_ICON_MAP[c.slug] || c.icon || "📦"} ${c.name}`,
+    slug: c.slug,
+  }));
 
   // Live stats
   const { data: productCount } = useQuery({
