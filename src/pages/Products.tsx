@@ -358,6 +358,22 @@ const Products = () => {
 
           {/* Products grid */}
           <div className="flex-1 min-w-0">
+            {/* Quick filter chips */}
+            <div className="flex flex-wrap items-center gap-2 mb-4">
+              <button
+                onClick={() => { setInStockOnly(!inStockOnly); updateUrl({ in_stock: !inStockOnly ? "true" : "" }); }}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${inStockOnly ? "bg-primary text-primary-foreground border-primary" : "bg-card border-border text-muted-foreground hover:border-primary/40"}`}
+              >
+                ✓ In Stock Only
+              </button>
+              {selectedCategories.map(cat => (
+                <span key={cat} className="px-3 py-1.5 rounded-full text-xs font-medium bg-accent text-accent-foreground border border-border flex items-center gap-1">
+                  {cat}
+                  <button onClick={() => toggleCategory(cat)} className="hover:text-destructive"><X className="w-3 h-3" /></button>
+                </span>
+              ))}
+            </div>
+
             <div className="flex items-center justify-between mb-6">
               <p className="text-sm text-muted-foreground">
                 {isLoading ? "Searching..." : `${filteredProducts.length} product${filteredProducts.length !== 1 ? "s" : ""} found`}
