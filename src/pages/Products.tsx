@@ -174,8 +174,9 @@ const Products = () => {
   const clearFilters = () => {
     setQuery("");
     setSelectedCategories([]);
-    setSort("deal_score");
+    setSort("newest");
     setVerifiedOnly(false);
+    setInStockOnly(false);
     setPriceRange([0, 0]);
     setCurrentPage(1);
     setSearchParams({});
