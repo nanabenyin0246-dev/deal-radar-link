@@ -135,7 +135,7 @@ export const useFeaturedProducts = () => {
           vendor_offers(
             id, price, currency, in_stock, is_visible, shipping_days,
             whatsapp_message, payment_link, variant_info, views, clicks,
-            vendor:vendors(id, business_name, whatsapp_number, trust_score, verified, country, logo_url)
+            vendor:vendors(id, business_name, whatsapp_number, trust_score, verified, country, city, logo_url)
           )
         `)
         .eq("is_active", true)
