@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback } from "react";
 import { useRecentlyViewed } from "@/hooks/useRecentlyViewed";
-import { useSearchParams } from "react-router-dom";
-import { Search, SlidersHorizontal, X, ArrowUpDown, Filter } from "lucide-react";
+import { useSearchParams, Link } from "react-router-dom";
+import { Search, SlidersHorizontal, X, ArrowUpDown, Filter, PackageSearch } from "lucide-react";
 import { useProducts, useCategories, LiveProduct } from "@/hooks/useProducts";
 import LiveProductCard from "@/components/LiveProductCard";
 import ProductCardSkeleton from "@/components/ProductCardSkeleton";
@@ -38,7 +38,7 @@ const Products = () => {
   // Read all filter state from URL
   const initialQuery = searchParams.get("q") || "";
   const initialCategory = searchParams.get("category") || "";
-  const initialSort = (searchParams.get("sort") as SortOption) || "deal_score";
+  const initialSort = (searchParams.get("sort") as SortOption) || "newest";
   const initialVerifiedOnly = searchParams.get("verified") === "true";
   const initialMinPrice = Number(searchParams.get("min_price")) || 0;
   const initialMaxPrice = Number(searchParams.get("max_price")) || 0;
@@ -50,6 +50,7 @@ const Products = () => {
   const [sort, setSort] = useState<SortOption>(initialSort);
   const [verifiedOnly, setVerifiedOnly] = useState(initialVerifiedOnly);
   const [priceRange, setPriceRange] = useState<[number, number]>([initialMinPrice, initialMaxPrice]);
+  const [inStockOnly, setInStockOnly] = useState(searchParams.get("in_stock") === "true");
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -66,18 +67,20 @@ const Products = () => {
     const cats = overrides.category ?? selectedCategories.join(",");
     const s = overrides.sort ?? sort;
     const v = overrides.verified ?? (verifiedOnly ? "true" : "");
+    const inS = overrides.in_stock ?? (inStockOnly ? "true" : "");
     const minP = overrides.min_price ?? (priceRange[0] > 0 ? String(priceRange[0]) : "");
     const maxP = overrides.max_price ?? (priceRange[1] > 0 ? String(priceRange[1]) : "");
 
     if (q) params.q = q;
     if (cats) params.category = cats;
-    if (s && s !== "deal_score") params.sort = s;
+    if (s && s !== "newest") params.sort = s;
     if (v) params.verified = v;
+    if (inS) params.in_stock = inS;
     if (minP) params.min_price = minP;
     if (maxP) params.max_price = maxP;
 
     setSearchParams(params, { replace: true });
-  }, [query, selectedCategories, sort, verifiedOnly, priceRange, setSearchParams]);
+  }, [query, selectedCategories, sort, verifiedOnly, inStockOnly, priceRange, setSearchParams]);
 
   // Compute price bounds for slider
   const priceBounds = useMemo(() => {
@@ -100,6 +103,13 @@ const Products = () => {
     if (verifiedOnly) {
       result = result.filter(p =>
         p.vendor_offers.some(o => o.vendor.verified)
+      );
+    }
+
+    // In stock filter
+    if (inStockOnly) {
+      result = result.filter(p =>
+        p.vendor_offers.some(o => o.in_stock !== false)
       );
     }
 
@@ -145,7 +155,7 @@ const Products = () => {
     }
 
     return result;
-  }, [products, selectedCategories, verifiedOnly, priceRange, sort]);
+  }, [products, selectedCategories, verifiedOnly, inStockOnly, priceRange, sort]);
 
   const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
   const paginatedProducts = filteredProducts.slice(
@@ -164,14 +174,15 @@ const Products = () => {
   const clearFilters = () => {
     setQuery("");
     setSelectedCategories([]);
-    setSort("deal_score");
+    setSort("newest");
     setVerifiedOnly(false);
+    setInStockOnly(false);
     setPriceRange([0, 0]);
     setCurrentPage(1);
     setSearchParams({});
   };
 
-  const hasFilters = query || selectedCategories.length > 0 || verifiedOnly || priceRange[0] > 0 || priceRange[1] > 0;
+  const hasFilters = query || selectedCategories.length > 0 || verifiedOnly || inStockOnly || priceRange[0] > 0 || priceRange[1] > 0;
 
   const filterContent = (
     <div className="space-y-6">
@@ -209,6 +220,19 @@ const Products = () => {
           <span>GHS {priceRange[0] || priceBounds.min}</span>
           <span>GHS {priceRange[1] || priceBounds.max}</span>
         </div>
+      </div>
+
+      {/* In Stock Only Toggle */}
+      <div className="flex items-center justify-between">
+        <Label htmlFor="instock-toggle" className="text-sm">In Stock only</Label>
+        <Switch
+          id="instock-toggle"
+          checked={inStockOnly}
+          onCheckedChange={(v) => {
+            setInStockOnly(v);
+            updateUrl({ in_stock: v ? "true" : "" });
+          }}
+        />
       </div>
 
       {/* Verified Toggle */}
@@ -334,6 +358,22 @@ const Products = () => {
 
           {/* Products grid */}
           <div className="flex-1 min-w-0">
+            {/* Quick filter chips */}
+            <div className="flex flex-wrap items-center gap-2 mb-4">
+              <button
+                onClick={() => { setInStockOnly(!inStockOnly); updateUrl({ in_stock: !inStockOnly ? "true" : "" }); }}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${inStockOnly ? "bg-primary text-primary-foreground border-primary" : "bg-card border-border text-muted-foreground hover:border-primary/40"}`}
+              >
+                ✓ In Stock Only
+              </button>
+              {selectedCategories.map(cat => (
+                <span key={cat} className="px-3 py-1.5 rounded-full text-xs font-medium bg-accent text-accent-foreground border border-border flex items-center gap-1">
+                  {cat}
+                  <button onClick={() => toggleCategory(cat)} className="hover:text-destructive"><X className="w-3 h-3" /></button>
+                </span>
+              ))}
+            </div>
+
             <div className="flex items-center justify-between mb-6">
               <p className="text-sm text-muted-foreground">
                 {isLoading ? "Searching..." : `${filteredProducts.length} product${filteredProducts.length !== 1 ? "s" : ""} found`}
@@ -420,7 +460,44 @@ const Products = () => {
                 )}
               </>
             ) : (
-              <EmptyState onAction={clearFilters} />
+              <div className="flex flex-col items-center justify-center py-20 text-center">
+                <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
+                  <PackageSearch className="w-8 h-8 text-muted-foreground" />
+                </div>
+                <h3 className="font-heading text-lg font-semibold text-foreground">
+                  {debouncedQuery ? `No results for "${debouncedQuery}"` : "No products found"}
+                </h3>
+                <p className="text-sm text-muted-foreground mt-2 max-w-sm">
+                  Try adjusting your search or filters
+                </p>
+                {debouncedQuery && (
+                  <div className="mt-4 space-y-3">
+                    <p className="text-xs text-muted-foreground">Try searching for:</p>
+                    <div className="flex flex-wrap justify-center gap-2">
+                      {["iPhone", "Samsung", "Nike"].map(term => (
+                        <button
+                          key={term}
+                          onClick={() => { setQuery(term); updateUrl({ q: term }); }}
+                          className="px-3 py-1.5 rounded-full text-xs font-medium bg-accent text-accent-foreground border border-border hover:border-primary/40 transition-colors"
+                        >
+                          {term}
+                        </button>
+                      ))}
+                    </div>
+                    <Link
+                      to="/vendor/dashboard"
+                      className="inline-block mt-3 text-sm text-primary hover:underline font-medium"
+                    >
+                      Be the first vendor to list this product →
+                    </Link>
+                  </div>
+                )}
+                {hasFilters && (
+                  <Button variant="outline" className="mt-4" onClick={clearFilters}>
+                    Clear Filters
+                  </Button>
+                )}
+              </div>
             )}
           </div>
         </div>

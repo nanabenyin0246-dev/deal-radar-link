@@ -8,7 +8,8 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MessageCircle, Star, ArrowLeft, Truck, ExternalLink, CreditCard, Share2, Copy, Twitter } from "lucide-react";
+import { MessageCircle, Star, ArrowLeft, Truck, ExternalLink, CreditCard, Share2, Copy, Twitter, Shield, Info } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import PriceHistoryChart from "@/components/PriceHistoryChart";
 import ConvertedPrice from "@/components/ConvertedPrice";
 import ProductSummary from "@/components/ProductSummary";
@@ -327,12 +328,35 @@ const ProductDetail = () => {
                     {offers.map((offer, i) => (
                       <tr key={offer.id} className={`border-b border-border last:border-0 ${i === 0 ? "bg-accent/30" : ""}`}>
                         <td className="p-4">
-                          <VendorBadge
-                            businessName={offer.vendor.business_name}
-                            country={offer.vendor.country}
-                            verified={offer.vendor.verified}
-                            className="font-medium"
-                          />
+                          <div className="flex items-center gap-1.5">
+                            <VendorBadge
+                              businessName={offer.vendor.business_name}
+                              country={offer.vendor.country}
+                              verified={offer.vendor.verified}
+                              className="font-medium"
+                            />
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <button className="text-muted-foreground hover:text-foreground transition-colors">
+                                  <Info className="w-3.5 h-3.5" />
+                                </button>
+                              </TooltipTrigger>
+                              <TooltipContent side="right" className="max-w-[220px] space-y-2 p-3">
+                                <p className="font-heading font-semibold text-sm flex items-center gap-1">
+                                  {offer.vendor.business_name}
+                                  {offer.vendor.verified && <Shield className="w-3 h-3 text-primary" />}
+                                </p>
+                                <p className="text-xs text-muted-foreground">{offer.vendor.city ? `${offer.vendor.city}, ` : ""}{offer.vendor.country}</p>
+                                <div className="flex items-center gap-1.5">
+                                  <span className="text-xs text-muted-foreground">Trust:</span>
+                                  <div className="w-12 h-1.5 rounded-full bg-muted overflow-hidden">
+                                    <div className="h-full bg-primary rounded-full" style={{ width: `${offer.vendor.trust_score || 50}%` }} />
+                                  </div>
+                                  <span className="text-xs font-medium">{offer.vendor.trust_score || 50}%</span>
+                                </div>
+                              </TooltipContent>
+                            </Tooltip>
+                          </div>
                         </td>
                         <td className="p-4">
                           <p className={`font-heading font-bold ${i === 0 ? "text-primary" : ""}`}>
