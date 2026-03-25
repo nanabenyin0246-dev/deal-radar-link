@@ -93,6 +93,16 @@ const Auth = () => {
       toast({ title: "Missing fields", description: "Business name and WhatsApp number are required.", variant: "destructive" });
       return;
     }
+    // Validate phone format
+    const phoneResult = validatePhoneFormat(whatsappNumber);
+    if (!phoneResult.valid) {
+      toast({ title: "Invalid phone", description: phoneResult.error || "Please enter a valid phone number.", variant: "destructive" });
+      return;
+    }
+    if (phoneResult.error) {
+      // Non-blocking warning for non-African prefix
+      toast({ title: "Phone warning", description: phoneResult.error });
+    }
     if (!agreedToTerms) {
       toast({ title: "Agreement required", description: "You must accept the Vendor Agreement to register.", variant: "destructive" });
       return;
