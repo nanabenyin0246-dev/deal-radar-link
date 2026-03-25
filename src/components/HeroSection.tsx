@@ -31,12 +31,9 @@ const useCountUp = (end: number, duration = 1500) => {
   return count;
 };
 
-const CATEGORY_CHIPS = [
-  { label: "Electronics 📱", slug: "electronics" },
-  { label: "Fashion 👗", slug: "fashion" },
-  { label: "Food 🛒", slug: "food" },
-  { label: "Beauty 💄", slug: "beauty" },
-];
+const CATEGORY_ICON_MAP: Record<string, string> = {
+  electronics: "📱", fashion: "👗", food: "🛒", beauty: "💄", home: "🏠", auto: "🚗",
+};
 
 const HeroSection = () => {
   const [searchQuery, setSearchQuery] = useState("");
