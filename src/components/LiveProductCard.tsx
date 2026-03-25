@@ -1,23 +1,28 @@
-import { MessageCircle, Star } from "lucide-react";
+import { MessageCircle, Star, Heart } from "lucide-react";
 import { LiveProduct } from "@/hooks/useProducts";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import ConvertedPrice from "@/components/ConvertedPrice";
 import VendorBadge from "@/components/VendorBadge";
 import DealScoreBadge from "@/components/DealScoreBadge";
 import { formatPrice } from "@/utils/currency";
 import { formatDistanceToNow } from "date-fns";
+import { useAuth } from "@/contexts/AuthContext";
+import { useWishlist, useToggleWishlist } from "@/hooks/useWishlist";
 
 const LiveProductCard = ({ product }: { product: LiveProduct }) => {
+  const { user } = useAuth();
+  const { data: wishlist } = useWishlist(user?.id);
+  const toggleWishlist = useToggleWishlist();
+  const navigate = useNavigate();
+  const isSaved = wishlist?.has(product.id) || false;
+
   const offers = product.vendor_offers.sort((a, b) => a.price - b.price);
   const cheapest = offers[0];
   if (!cheapest) return null;
 
   const mostExpensive = offers.length > 1 ? offers[offers.length - 1] : null;
-  const savings = mostExpensive && cheapest.currency === mostExpensive.currency
-    ? Math.round(((mostExpensive.price - cheapest.price) / mostExpensive.price) * 100)
-    : null;
   const avgPrice = offers.reduce((sum, o) => sum + o.price, 0) / offers.length;
 
   const whatsappLink = `https://wa.me/${cheapest.vendor.whatsapp_number}?text=${encodeURIComponent(
@@ -27,6 +32,9 @@ const LiveProductCard = ({ product }: { product: LiveProduct }) => {
   const handleImgError = (e: React.SyntheticEvent<HTMLImageElement>) => {
     e.currentTarget.src = "/placeholder-product.svg";
   };
+
+  // Group offers by variant
+  const variantOffers = offers.filter(o => o.variant_info && (o.variant_info as any)?.value);
 
   return (
     <div className="group bg-card border border-border rounded-xl overflow-hidden hover:shadow-lg hover:border-primary/20 transition-all duration-300 min-w-0">
@@ -47,11 +55,19 @@ const LiveProductCard = ({ product }: { product: LiveProduct }) => {
               updatedAt={cheapest.updated_at}
             />
           </div>
-          <div className="absolute top-3 right-3">
-            <Badge variant="outline" className="bg-card/80 backdrop-blur-sm text-xs">
-              {offers.length} vendor{offers.length > 1 ? "s" : ""}
-            </Badge>
-          </div>
+          {/* Wishlist heart */}
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (!user) { navigate("/auth"); return; }
+              toggleWishlist.mutate({ userId: user.id, productId: product.id, isSaved });
+            }}
+            className={`absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center transition-all
+              ${isSaved ? "bg-red-500 text-white shadow-lg" : "bg-card/80 backdrop-blur-sm text-muted-foreground hover:text-red-500"}`}
+          >
+            <Heart className={`w-4 h-4 ${isSaved ? "fill-current" : ""}`} />
+          </button>
         </div>
       </Link>
 
@@ -70,6 +86,17 @@ const LiveProductCard = ({ product }: { product: LiveProduct }) => {
             <Star className="w-3.5 h-3.5 fill-secondary text-secondary shrink-0" />
             <span className="text-sm font-medium">{product.rating}</span>
             <span className="text-xs text-muted-foreground">({product.review_count || 0})</span>
+          </div>
+        )}
+
+        {/* Variant chips */}
+        {variantOffers.length > 1 && (
+          <div className="flex flex-wrap gap-1">
+            {variantOffers.slice(0, 3).map((vo) => (
+              <Badge key={vo.id} variant="outline" className="text-[10px] px-1.5 py-0">
+                {(vo.variant_info as any)?.value} — {formatPrice(vo.price, vo.currency)}
+              </Badge>
+            ))}
           </div>
         )}
 
@@ -92,7 +119,6 @@ const LiveProductCard = ({ product }: { product: LiveProduct }) => {
           </div>
         </div>
 
-        {/* Last updated timestamp */}
         {cheapest.updated_at && !isNaN(new Date(cheapest.updated_at).getTime()) && (
           <p className="text-[10px] text-muted-foreground">
             Updated {formatDistanceToNow(new Date(cheapest.updated_at), { addSuffix: true })}

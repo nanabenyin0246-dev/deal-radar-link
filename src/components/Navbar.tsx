@@ -1,4 +1,4 @@
-import { Search, Menu, X, ShoppingBag, User, Store, Package, Bell } from "lucide-react";
+import { Search, Menu, X, ShoppingBag, User, Store, Package, Bell, Heart } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -35,6 +35,11 @@ const Navbar = () => {
           {user && (
             <Link to="/alerts" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
               <Bell className="w-3.5 h-3.5" /> Alerts
+            </Link>
+          )}
+          {user && (
+            <Link to="/saved" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
+              <Heart className="w-3.5 h-3.5" /> Saved
             </Link>
           )}
           {isVendor && (
@@ -77,6 +82,9 @@ const Navbar = () => {
               </Link>
               <Link to="/alerts" className="block text-sm font-medium text-muted-foreground py-2 flex items-center gap-2" onClick={() => setMobileOpen(false)}>
                 <Bell className="w-4 h-4" /> Price Alerts
+              </Link>
+              <Link to="/saved" className="block text-sm font-medium text-muted-foreground py-2 flex items-center gap-2" onClick={() => setMobileOpen(false)}>
+                <Heart className="w-4 h-4" /> Saved Products
               </Link>
             </>
           )}
