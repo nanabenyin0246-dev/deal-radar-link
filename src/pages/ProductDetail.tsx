@@ -432,6 +432,11 @@ const ProductDetail = () => {
           </div>
         )}
 
+        {/* Product Reviews */}
+        <div className="mb-12">
+          <ProductReviews productId={product.id} productName={productName} />
+        </div>
+
         {/* Similar Products */}
         {product.category_id && (
           <SimilarProducts categoryId={product.category_id} currentProductId={product.id} />
