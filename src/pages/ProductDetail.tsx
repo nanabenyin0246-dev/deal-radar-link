@@ -24,6 +24,7 @@ import { formatPrice } from "@/utils/currency";
 import VendorBadge from "@/components/VendorBadge";
 import PriceAlertButton from "@/components/PriceAlertButton";
 import DealScoreBadge from "@/components/DealScoreBadge";
+import QRCodeButton from "@/components/QRCodeButton";
 
 const ProductDetail = () => {
   const { slug, lang } = useParams<{ slug: string; lang?: string }>();
