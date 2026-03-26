@@ -4,12 +4,24 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { Button } from "@/components/ui/button";
 import { Loader2, CheckCircle } from "lucide-react";
 
 const VendorOnboardingConfirm = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const [status, setStatus] = useState<"loading" | "confirmed">("loading");
+  const [pendingVendorName, setPendingVendorName] = useState("");
+
+  useEffect(() => {
+    const pending = localStorage.getItem("pending_vendor");
+    if (pending) {
+      try {
+        const data = JSON.parse(pending);
+        setPendingVendorName(data.businessName || "");
+      } catch {}
+    }
+  }, []);
 
   useEffect(() => {
     // Handle email confirmation via OTP token_hash (PKCE flow)
@@ -52,38 +64,41 @@ const VendorOnboardingConfirm = () => {
     }
 
     setStatus("confirmed");
-
-    // Check if user is a vendor before redirecting
-    const redirect = setTimeout(async () => {
-      localStorage.removeItem("vendor_onboarding_step");
-      const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", user.id);
-      const isVendor = roles?.some(r => r.role === "vendor");
-      navigate(isVendor ? "/vendor/dashboard" : "/", { replace: true });
-    }, 2500);
-
-    return () => clearTimeout(redirect);
+    // No auto-redirect — vendor clicks button themselves
   }, [user, loading, navigate]);
 
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <div className="container max-w-md py-20 text-center space-y-4">
-        <div className="w-16 h-16 rounded-full bg-accent flex items-center justify-center mx-auto">
-          {status === "loading" ? (
+      {status === "loading" ? (
+        <div className="container max-w-md py-20 text-center space-y-4">
+          <div className="w-16 h-16 rounded-full bg-accent flex items-center justify-center mx-auto">
             <Loader2 className="w-8 h-8 text-primary animate-spin" />
-          ) : (
-            <CheckCircle className="w-8 h-8 text-primary" />
-          )}
+          </div>
+          <h1 className="font-heading text-2xl font-bold">Verifying your account...</h1>
+          <p className="text-sm text-muted-foreground">
+            Please wait while we set up your vendor account.
+          </p>
         </div>
-        <h1 className="font-heading text-2xl font-bold">
-          {status === "loading" ? "Verifying your account..." : "Email confirmed!"}
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          {status === "loading"
-            ? "Please wait while we set up your vendor account."
-            : "Setting up your vendor dashboard. You'll be redirected shortly."}
-        </p>
-      </div>
+      ) : (
+        <div className="container max-w-md py-20 text-center space-y-5 animate-fade-in">
+          <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
+            <CheckCircle className="w-10 h-10 text-primary" />
+          </div>
+          <h1 className="font-heading text-3xl font-bold">You're in! 🎉</h1>
+          <p className="text-muted-foreground">
+            Your vendor account for <strong>{pendingVendorName || "your store"}</strong> is now active.
+          </p>
+          <div className="bg-accent/50 rounded-xl p-4 text-left space-y-2">
+            <p className="text-sm font-medium">✓ Account verified</p>
+            <p className="text-sm font-medium">✓ Vendor profile created</p>
+            <p className="text-sm text-muted-foreground">Next: Add your first product to go live</p>
+          </div>
+          <Button size="lg" className="w-full" onClick={() => navigate("/vendor/dashboard", { replace: true })}>
+            Go to My Dashboard →
+          </Button>
+        </div>
+      )}
       <Footer />
     </div>
   );

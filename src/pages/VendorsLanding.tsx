@@ -1,12 +1,20 @@
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
 import { Button } from "@/components/ui/button";
 import { UserPlus, Package, MessageCircle, ShieldCheck, Eye, Zap, ChevronDown } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 
 const VendorsLanding = () => {
+  const { user, isVendor } = useAuth();
+
+  // Vendors already have an account — send them to dashboard
+  if (isVendor) return <Navigate to="/vendor/dashboard" replace />;
+
+  const showBuyerMessage = user && !isVendor;
+
   return (
     <>
       <SEOHead
@@ -15,6 +23,18 @@ const VendorsLanding = () => {
       />
       <Navbar />
       <main className="min-h-screen bg-background">
+
+        {/* Buyer message banner */}
+        {showBuyerMessage && (
+          <div className="bg-accent border-b border-border py-3 text-center">
+            <p className="text-sm text-muted-foreground">
+              You're signed in as a buyer.{" "}
+              <a href="/auth" className="text-primary font-medium hover:underline">
+                Create a separate vendor account →
+              </a>
+            </p>
+          </div>
+        )}
 
         {/* ── HERO ── */}
         <section className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-background to-secondary/5 py-20 md:py-32">
@@ -52,26 +72,11 @@ const VendorsLanding = () => {
             </h2>
             <div className="grid gap-8 md:grid-cols-3">
               {[
-                {
-                  icon: Eye,
-                  title: "Free Exposure",
-                  desc: "Get discovered by buyers actively searching for your products. No ad spend needed.",
-                },
-                {
-                  icon: MessageCircle,
-                  title: "Direct WhatsApp Inquiries",
-                  desc: "Buyers message you directly on WhatsApp. No middleman, no delays.",
-                },
-                {
-                  icon: ShieldCheck,
-                  title: "Verified Badge",
-                  desc: "Stand out with a verified vendor badge that builds buyer trust instantly.",
-                },
+                { icon: Eye, title: "Free Exposure", desc: "Get discovered by buyers actively searching for your products. No ad spend needed." },
+                { icon: MessageCircle, title: "Direct WhatsApp Inquiries", desc: "Buyers message you directly on WhatsApp. No middleman, no delays." },
+                { icon: ShieldCheck, title: "Verified Badge", desc: "Stand out with a verified vendor badge that builds buyer trust instantly." },
               ].map(({ icon: Icon, title, desc }, i) => (
-                <div
-                  key={i}
-                  className="flex flex-col items-center text-center gap-4 p-8 rounded-2xl border border-border bg-background shadow-sm hover:shadow-md transition-shadow"
-                >
+                <div key={i} className="flex flex-col items-center text-center gap-4 p-8 rounded-2xl border border-border bg-background shadow-sm hover:shadow-md transition-shadow">
                   <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center">
                     <Icon className="w-7 h-7 text-primary" />
                   </div>
@@ -119,9 +124,7 @@ const VendorsLanding = () => {
               <p className="text-xl md:text-2xl text-foreground italic leading-relaxed">
                 "RobCompare got me my first 3 orders in a week."
               </p>
-              <p className="mt-4 text-muted-foreground font-heading font-semibold">
-                — Founding Vendor
-              </p>
+              <p className="mt-4 text-muted-foreground font-heading font-semibold">— Founding Vendor</p>
             </div>
           </div>
         </section>
@@ -134,18 +137,9 @@ const VendorsLanding = () => {
             </h2>
             <div className="space-y-4">
               {[
-                {
-                  q: "Is it really free?",
-                  a: "Yes. Listing your products on RobCompare is completely free. Start selling today with no upfront costs.",
-                },
-                {
-                  q: "How do buyers contact me?",
-                  a: "Directly via WhatsApp. No fees, no delays, no middleman. You keep the full relationship with your customer.",
-                },
-                {
-                  q: "How long does approval take?",
-                  a: "Within 24 hours. Most vendors are approved the same day.",
-                },
+                { q: "Is it really free?", a: "Yes. Listing your products on RobCompare is completely free. Start selling today with no upfront costs." },
+                { q: "How do buyers contact me?", a: "Directly via WhatsApp. No fees, no delays, no middleman. You keep the full relationship with your customer." },
+                { q: "How long does approval take?", a: "Within 24 hours. Most vendors are approved the same day." },
               ].map(({ q, a }, i) => (
                 <FAQItem key={i} question={q} answer={a} />
               ))}
@@ -180,10 +174,7 @@ const FAQItem = ({ question, answer }: { question: string; answer: string }) => 
   const [open, setOpen] = useState(false);
   return (
     <div className="border border-border rounded-xl overflow-hidden">
-      <button
-        onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between p-5 text-left bg-card hover:bg-muted/50 transition-colors"
-      >
+      <button onClick={() => setOpen(!open)} className="w-full flex items-center justify-between p-5 text-left bg-card hover:bg-muted/50 transition-colors">
         <span className="font-heading font-semibold text-foreground">{question}</span>
         <ChevronDown className={`w-5 h-5 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
