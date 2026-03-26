@@ -1,4 +1,4 @@
-import { Search, Menu, X, ShoppingBag, User, Store, Package, Bell, Heart } from "lucide-react";
+import { Search, Menu, X, ShoppingBag, User, Store, Package, Bell, Heart, Plus } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -43,9 +43,16 @@ const Navbar = () => {
             </Link>
           )}
           {isVendor && (
-            <Link to="/vendor/dashboard" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
-              <Store className="w-3.5 h-3.5" /> {t("nav.dashboard")}
-            </Link>
+            <>
+              <Link to="/vendor/dashboard" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
+                <Store className="w-3.5 h-3.5" /> {t("nav.dashboard")}
+              </Link>
+              <Button size="sm" asChild className="gap-1.5 h-8">
+                <Link to="/vendor/dashboard?action=add">
+                  <Plus className="w-3.5 h-3.5" /> Add Product
+                </Link>
+              </Button>
+            </>
           )}
         </div>
 
@@ -89,9 +96,16 @@ const Navbar = () => {
             </>
           )}
           {isVendor && (
-            <Link to="/vendor/dashboard" className="block text-sm font-medium text-muted-foreground py-2 flex items-center gap-2" onClick={() => setMobileOpen(false)}>
-              <Store className="w-4 h-4" /> {t("nav.dashboard")}
-            </Link>
+            <>
+              <Link to="/vendor/dashboard" className="block text-sm font-medium text-muted-foreground py-2 flex items-center gap-2" onClick={() => setMobileOpen(false)}>
+                <Store className="w-4 h-4" /> 🏪 Vendor Dashboard
+              </Link>
+              <Link to="/vendor/dashboard?action=add" className="block py-2" onClick={() => setMobileOpen(false)}>
+                <Button size="sm" className="w-full gap-2">
+                  <Plus className="w-4 h-4" /> Add Product
+                </Button>
+              </Link>
+            </>
           )}
           <div className="flex items-center gap-2 py-2">
             <CurrencySelector />
