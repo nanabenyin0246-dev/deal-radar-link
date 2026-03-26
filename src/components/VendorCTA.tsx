@@ -4,9 +4,10 @@ import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 
 const VendorCTA = () => {
-  const { isVendor } = useAuth();
+  const { isVendor, user } = useAuth();
 
-  if (isVendor) return null;
+  // Hide if: already a vendor OR already has any account (buyer)
+  if (isVendor || user) return null;
 
   return (
     <section id="vendors" className="py-20 bg-background">

@@ -51,7 +51,8 @@ const Index = () => {
       <HowToSell />
       <HowItWorks />
       <VendorCTA />
-      <RegionalOnboarding region={showFrancophone ? "francophone" : "ghana"} />
+      {/* Only show regional vendor onboarding to visitors without an account */}
+      {!user && <RegionalOnboarding region={showFrancophone ? "francophone" : "ghana"} />}
       <Footer />
     </div>
   );

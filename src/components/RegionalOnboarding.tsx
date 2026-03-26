@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { ArrowRight, Smartphone, MessageCircle, Globe, Shield } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface RegionalOnboardingProps {
   region: "ghana" | "francophone";
