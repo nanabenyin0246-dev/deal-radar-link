@@ -12,10 +12,12 @@ import LiveTicker from "@/components/LiveTicker";
 import RegionalOnboarding from "@/components/RegionalOnboarding";
 import Footer from "@/components/Footer";
 import { useI18n } from "@/i18n/I18nContext";
+import { useAuth } from "@/contexts/AuthContext";
 import SEOHead from "@/components/SEOHead";
 
 const Index = () => {
   const { locale } = useI18n();
+  const { user } = useAuth();
   const showFrancophone = locale === "fr";
 
   return (
