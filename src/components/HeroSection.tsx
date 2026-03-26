@@ -7,6 +7,9 @@ import { useI18n } from "@/i18n/I18nContext";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useCategories } from "@/hooks/useProducts";
+import { useAuth } from "@/contexts/AuthContext";
+import { useCommissionConfig } from "@/hooks/useCommissionConfig";
+import FoundingVendorBanner from "@/components/FoundingVendorBanner";
 
 // Animated counter hook
 const useCountUp = (end: number, duration = 1500) => {
@@ -42,12 +45,27 @@ const HeroSection = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
   const { t } = useI18n();
+  const { user } = useAuth();
   const { data: categories } = useCategories();
+  const { data: config } = useCommissionConfig();
+
+  // Only show founding vendor banner to non-logged-in visitors
+  const showBanner = config && !config.commission_active && !user;
 
   const categoryChips = (categories || []).slice(0, 6).map((c) => ({
     label: `${CATEGORY_ICON_MAP[c.slug] || c.icon || "📦"} ${c.name}`,
     slug: c.slug,
   }));
+
+  // Get user's display name from profile if available
+  const { data: profile } = useQuery({
+    queryKey: ["user-profile-name", user?.id],
+    queryFn: async () => {
+      const { data } = await supabase.from("profiles").select("display_name").eq("user_id", user!.id).maybeSingle();
+      return data?.display_name || null;
+    },
+    enabled: !!user,
+  });
 
   // Batch platform stats
   const { data: stats } = useQuery({
@@ -86,9 +104,18 @@ const HeroSection = () => {
             {t("hero.badge")}
           </div>
 
-          <h1 className="font-heading text-4xl md:text-6xl lg:text-7xl font-bold leading-tight tracking-tight animate-slide-up">
-            {t("hero.titleStart")}<span className="text-gradient">{t("hero.titleHighlight")}</span>{t("hero.titleEnd")}
-          </h1>
+          {/* Personalised heading for logged-in buyers */}
+          {user ? (
+            <h1 className="font-heading text-4xl md:text-6xl lg:text-7xl font-bold leading-tight tracking-tight animate-slide-up">
+              Welcome back{profile ? `, ${profile.split(" ")[0]}` : ""}! 👋
+              <br />
+              <span className="text-gradient">Find the best prices</span>
+            </h1>
+          ) : (
+            <h1 className="font-heading text-4xl md:text-6xl lg:text-7xl font-bold leading-tight tracking-tight animate-slide-up">
+              {t("hero.titleStart")}<span className="text-gradient">{t("hero.titleHighlight")}</span>{t("hero.titleEnd")}
+            </h1>
+          )}
 
           <p className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto animate-slide-up" style={{ animationDelay: "0.1s" }}>
             {t("hero.subtitle")}
@@ -135,6 +162,13 @@ const HeroSection = () => {
             ))}
           </div>
         </div>
+
+        {/* Founding Vendor Banner - only for non-signed-in visitors */}
+        {showBanner && (
+          <div className="mt-12">
+            <FoundingVendorBanner />
+          </div>
+        )}
 
         {/* Live Stats */}
         <div className="grid grid-cols-3 gap-6 mt-20 max-w-2xl mx-auto animate-fade-in" style={{ animationDelay: "0.5s" }}>
