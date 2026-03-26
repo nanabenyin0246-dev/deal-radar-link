@@ -34,6 +34,11 @@ const francophoneContent = {
 };
 
 const RegionalOnboarding = ({ region }: RegionalOnboardingProps) => {
+  const { user, isVendor } = useAuth();
+
+  // Don't show vendor recruitment to anyone already signed in
+  if (user || isVendor) return null;
+
   const content = region === "ghana" ? ghanaContent : francophoneContent;
 
   return (
