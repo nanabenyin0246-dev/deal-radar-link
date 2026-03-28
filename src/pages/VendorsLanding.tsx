@@ -3,7 +3,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
 import { Button } from "@/components/ui/button";
-import { UserPlus, Package, MessageCircle, ShieldCheck, Eye, Zap, ChevronDown } from "lucide-react";
+import { UserPlus, Package, MessageCircle, ShieldCheck, Eye, Zap, ChevronDown, Store } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 
