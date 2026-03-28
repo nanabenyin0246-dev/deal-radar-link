@@ -22,7 +22,8 @@ import {
   Package, Plus, Eye, MousePointer, Store, X, Languages,
   Trash2, Pencil, Upload, Mail, Check, ImageIcon, Bell, Users,
   ScanBarcode, Loader2, QrCode, BarChart3, UserCircle, Save,
-  PartyPopper, Share2, MessageCircle, ShoppingBag, User
+  PartyPopper, Share2, MessageCircle, ShoppingBag, User, ShieldCheck,
+  FileUp
 } from "lucide-react";
 import { useFoodProductLookup, nutritionGradeConfig } from "@/hooks/useFoodProduct";
 import FoundingVendorBanner from "@/components/FoundingVendorBanner";
