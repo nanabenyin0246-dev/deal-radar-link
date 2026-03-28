@@ -22,7 +22,8 @@ import {
   Package, Plus, Eye, MousePointer, Store, X, Languages,
   Trash2, Pencil, Upload, Mail, Check, ImageIcon, Bell, Users,
   ScanBarcode, Loader2, QrCode, BarChart3, UserCircle, Save,
-  PartyPopper, Share2, MessageCircle, ShoppingBag, User
+  PartyPopper, Share2, MessageCircle, ShoppingBag, User, ShieldCheck,
+  FileUp
 } from "lucide-react";
 import { useFoodProductLookup, nutritionGradeConfig } from "@/hooks/useFoodProduct";
 import FoundingVendorBanner from "@/components/FoundingVendorBanner";
@@ -36,6 +37,66 @@ import {
 } from "@/components/ui/alert-dialog";
 import { formatPrice } from "@/utils/currency";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from "recharts";
+
+const KycUploadField = ({ vendorId, fieldKey, label, hint }: { vendorId: string; fieldKey: string; label: string; hint: string }) => {
+  const [uploading, setUploading] = useState(false);
+  const [uploadedUrl, setUploadedUrl] = useState<string | null>(null);
+  const { toast } = useToast();
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
+    if (!allowedTypes.includes(file.type)) {
+      toast({ title: "Invalid file type", description: "Please upload JPG, PNG, WebP, or PDF.", variant: "destructive" });
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: "File too large", description: "Max 5MB.", variant: "destructive" });
+      return;
+    }
+    setUploading(true);
+    try {
+      const ext = file.name.split(".").pop();
+      const path = `kyc/${vendorId}/${fieldKey}-${Date.now()}.${ext}`;
+      const { error: uploadErr } = await supabase.storage.from("product-images").upload(path, file, { upsert: true });
+      if (uploadErr) throw uploadErr;
+      const { data: urlData } = supabase.storage.from("product-images").getPublicUrl(path);
+      setUploadedUrl(urlData.publicUrl);
+
+      await supabase.from("audit_log").insert({
+        action: "kyc_document_uploaded",
+        entity_type: "vendor",
+        entity_id: vendorId,
+        details: { field: fieldKey, path },
+      });
+
+      toast({ title: `${label} uploaded ✓` });
+    } catch (err: any) {
+      toast({ title: "Upload failed", description: err.message, variant: "destructive" });
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <div className="bg-card border border-border rounded-xl p-4">
+      <Label className="font-medium text-sm">{label}</Label>
+      <p className="text-xs text-muted-foreground mb-3">{hint}</p>
+      {uploadedUrl ? (
+        <div className="flex items-center gap-2 text-sm text-success">
+          <Check className="w-4 h-4" /> Document uploaded
+        </div>
+      ) : (
+        <label className="flex items-center gap-3 cursor-pointer border-2 border-dashed border-border rounded-lg p-4 hover:border-primary/40 transition-colors">
+          {uploading ? <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" /> : <FileUp className="w-5 h-5 text-muted-foreground" />}
+          <span className="text-sm text-muted-foreground">{uploading ? "Uploading..." : "Tap to upload (JPG, PNG, PDF — max 5MB)"}</span>
+          <input type="file" className="hidden" accept="image/jpeg,image/png,image/webp,application/pdf" onChange={handleUpload} />
+        </label>
+      )}
+    </div>
+  );
+};
 
 const VendorDashboard = () => {
   const { user, isVendor, vendorId, loading: authLoading } = useAuth();
@@ -56,7 +117,7 @@ const VendorDashboard = () => {
   const [showSubmitForm, setShowSubmitForm] = useState(false);
   const [expandedTranslation, setExpandedTranslation] = useState<string | null>(null);
   const [editingOffer, setEditingOffer] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"products" | "orders" | "profile" | "analytics">("products");
+  const [activeTab, setActiveTab] = useState<"products" | "orders" | "profile" | "analytics" | "verify">("products");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Form state
@@ -731,6 +792,7 @@ const VendorDashboard = () => {
                 { id: "orders" as const, label: "Orders", icon: ShoppingBag, count: vendorOrders?.length },
                 { id: "profile" as const, label: "My Profile", icon: User },
                 { id: "analytics" as const, label: "Analytics", icon: BarChart3 },
+                { id: "verify" as const, label: "Get Verified", icon: ShieldCheck },
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -1169,7 +1231,67 @@ const VendorDashboard = () => {
                       </div>
                     )}
                   </div>
+               )}
+              </div>
+            )}
+
+            {/* Verify Tab */}
+            {activeTab === "verify" && (
+              <div className="space-y-6">
+                {/* Status Banner */}
+                {vendor?.verified ? (
+                  <div className="bg-success/10 border border-success/30 rounded-xl p-4 flex items-center gap-3">
+                    <ShieldCheck className="w-6 h-6 text-success" />
+                    <div>
+                      <p className="font-heading font-bold text-success">Verified ✓</p>
+                      <p className="text-sm text-muted-foreground">Your account has been verified. You enjoy higher trust and priority placement.</p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4 flex items-center gap-3">
+                    <ShieldCheck className="w-6 h-6 text-amber-600" />
+                    <div>
+                      <p className="font-heading font-bold text-amber-700 dark:text-amber-400">Get Your Verified Badge</p>
+                      <p className="text-sm text-amber-600 dark:text-amber-500">Upload your documents below to earn a verified badge on your listings.</p>
+                    </div>
+                  </div>
                 )}
+
+                {/* Benefits */}
+                <div className="flex flex-wrap gap-2">
+                  {["Higher trust score ⭐", "Verified badge on listings ✓", "Priority in search results 🔝"].map((b) => (
+                    <span key={b} className="bg-primary/10 text-primary text-sm px-3 py-1.5 rounded-full font-medium">{b}</span>
+                  ))}
+                </div>
+
+                {/* KYC Upload Fields */}
+                {!vendor?.verified && (
+                  <div className="space-y-4">
+                    <KycUploadField
+                      vendorId={vendorId!}
+                      fieldKey="government-id"
+                      label="Government-Issued ID"
+                      hint="Ghana Card, Passport, or Voter ID"
+                    />
+                    <KycUploadField
+                      vendorId={vendorId!}
+                      fieldKey="business-proof"
+                      label="Business Proof (optional)"
+                      hint="Business registration, trade certificate, or shop photo"
+                    />
+
+                    <div className="bg-muted/50 border border-border rounded-xl p-4 flex items-start gap-3">
+                      <MessageCircle className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                      <p className="text-sm text-muted-foreground">
+                        Your WhatsApp number ({vendor?.whatsapp_number}) will be confirmed when a buyer contacts you.
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                <p className="text-xs text-muted-foreground text-center pt-2">
+                  Documents reviewed within 24 hours. Stored securely, never shared publicly.
+                </p>
               </div>
             )}
           </>
