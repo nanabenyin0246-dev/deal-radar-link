@@ -35,12 +35,18 @@ const Auth = () => {
   const [searchParams] = useSearchParams();
   const fraudCheck = useIPFraudCheck();
 
+  // Redirect already-logged-in users
+  useEffect(() => {
+    if (user) {
+      navigate(isVendor ? "/vendor/dashboard" : "/", { replace: true });
+    }
+  }, [user, isVendor, navigate]);
+
   // Handle referral param
   useEffect(() => {
     const ref = searchParams.get("ref");
     if (ref) {
       localStorage.setItem("robcompare_referrer", ref);
-      // Fetch referrer name
       supabase.from("vendors").select("business_name").eq("id", ref).maybeSingle().then(({ data }) => {
         if (data) setReferrerName(data.business_name);
       });

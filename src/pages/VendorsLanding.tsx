@@ -172,6 +172,8 @@ const VendorsLanding = () => {
           </div>
         </section>
 
+        </>
+        )}
       </main>
       <Footer />
     </>

@@ -4,8 +4,8 @@ import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 
 const HowToSell = () => {
-  const { isVendor } = useAuth();
-  if (isVendor) return null;
+  const { isVendor, user } = useAuth();
+  if (isVendor || user) return null;
 
   const steps = [
     { icon: UserPlus, title: "Register", desc: "Create a free vendor account in 1 minute" },
