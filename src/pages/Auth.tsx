@@ -29,7 +29,7 @@ const Auth = () => {
   const [emailSent, setEmailSent] = useState(false);
   const [resetSent, setResetSent] = useState(false);
   const [referrerName, setReferrerName] = useState<string | null>(null);
-  const { isVendor } = useAuth();
+  const { isVendor, user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
