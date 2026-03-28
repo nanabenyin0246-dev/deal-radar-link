@@ -1171,7 +1171,67 @@ const VendorDashboard = () => {
                       </div>
                     )}
                   </div>
+               )}
+              </div>
+            )}
+
+            {/* Verify Tab */}
+            {activeTab === "verify" && (
+              <div className="space-y-6">
+                {/* Status Banner */}
+                {vendor?.verified ? (
+                  <div className="bg-success/10 border border-success/30 rounded-xl p-4 flex items-center gap-3">
+                    <ShieldCheck className="w-6 h-6 text-success" />
+                    <div>
+                      <p className="font-heading font-bold text-success">Verified ✓</p>
+                      <p className="text-sm text-muted-foreground">Your account has been verified. You enjoy higher trust and priority placement.</p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4 flex items-center gap-3">
+                    <ShieldCheck className="w-6 h-6 text-amber-600" />
+                    <div>
+                      <p className="font-heading font-bold text-amber-700 dark:text-amber-400">Get Your Verified Badge</p>
+                      <p className="text-sm text-amber-600 dark:text-amber-500">Upload your documents below to earn a verified badge on your listings.</p>
+                    </div>
+                  </div>
                 )}
+
+                {/* Benefits */}
+                <div className="flex flex-wrap gap-2">
+                  {["Higher trust score ⭐", "Verified badge on listings ✓", "Priority in search results 🔝"].map((b) => (
+                    <span key={b} className="bg-primary/10 text-primary text-sm px-3 py-1.5 rounded-full font-medium">{b}</span>
+                  ))}
+                </div>
+
+                {/* KYC Upload Fields */}
+                {!vendor?.verified && (
+                  <div className="space-y-4">
+                    <KycUploadField
+                      vendorId={vendorId!}
+                      fieldKey="government-id"
+                      label="Government-Issued ID"
+                      hint="Ghana Card, Passport, or Voter ID"
+                    />
+                    <KycUploadField
+                      vendorId={vendorId!}
+                      fieldKey="business-proof"
+                      label="Business Proof (optional)"
+                      hint="Business registration, trade certificate, or shop photo"
+                    />
+
+                    <div className="bg-muted/50 border border-border rounded-xl p-4 flex items-start gap-3">
+                      <MessageCircle className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                      <p className="text-sm text-muted-foreground">
+                        Your WhatsApp number ({vendor?.whatsapp_number}) will be confirmed when a buyer contacts you.
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                <p className="text-xs text-muted-foreground text-center pt-2">
+                  Documents reviewed within 24 hours. Stored securely, never shared publicly.
+                </p>
               </div>
             )}
           </>
