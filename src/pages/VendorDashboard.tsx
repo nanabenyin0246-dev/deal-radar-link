@@ -38,6 +38,66 @@ import {
 import { formatPrice } from "@/utils/currency";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
+const KycUploadField = ({ vendorId, fieldKey, label, hint }: { vendorId: string; fieldKey: string; label: string; hint: string }) => {
+  const [uploading, setUploading] = useState(false);
+  const [uploadedUrl, setUploadedUrl] = useState<string | null>(null);
+  const { toast } = useToast();
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
+    if (!allowedTypes.includes(file.type)) {
+      toast({ title: "Invalid file type", description: "Please upload JPG, PNG, WebP, or PDF.", variant: "destructive" });
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: "File too large", description: "Max 5MB.", variant: "destructive" });
+      return;
+    }
+    setUploading(true);
+    try {
+      const ext = file.name.split(".").pop();
+      const path = `kyc/${vendorId}/${fieldKey}-${Date.now()}.${ext}`;
+      const { error: uploadErr } = await supabase.storage.from("product-images").upload(path, file, { upsert: true });
+      if (uploadErr) throw uploadErr;
+      const { data: urlData } = supabase.storage.from("product-images").getPublicUrl(path);
+      setUploadedUrl(urlData.publicUrl);
+
+      await supabase.from("audit_log").insert({
+        action: "kyc_document_uploaded",
+        entity_type: "vendor",
+        entity_id: vendorId,
+        details: { field: fieldKey, path },
+      });
+
+      toast({ title: `${label} uploaded ✓` });
+    } catch (err: any) {
+      toast({ title: "Upload failed", description: err.message, variant: "destructive" });
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <div className="bg-card border border-border rounded-xl p-4">
+      <Label className="font-medium text-sm">{label}</Label>
+      <p className="text-xs text-muted-foreground mb-3">{hint}</p>
+      {uploadedUrl ? (
+        <div className="flex items-center gap-2 text-sm text-success">
+          <Check className="w-4 h-4" /> Document uploaded
+        </div>
+      ) : (
+        <label className="flex items-center gap-3 cursor-pointer border-2 border-dashed border-border rounded-lg p-4 hover:border-primary/40 transition-colors">
+          {uploading ? <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" /> : <FileUp className="w-5 h-5 text-muted-foreground" />}
+          <span className="text-sm text-muted-foreground">{uploading ? "Uploading..." : "Tap to upload (JPG, PNG, PDF — max 5MB)"}</span>
+          <input type="file" className="hidden" accept="image/jpeg,image/png,image/webp,application/pdf" onChange={handleUpload} />
+        </label>
+      )}
+    </div>
+  );
+};
+
 const VendorDashboard = () => {
   const { user, isVendor, vendorId, loading: authLoading } = useAuth();
   const { data: products, isLoading } = useVendorProducts();
