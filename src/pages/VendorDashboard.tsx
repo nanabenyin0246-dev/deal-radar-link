@@ -732,6 +732,7 @@ const VendorDashboard = () => {
                 { id: "orders" as const, label: "Orders", icon: ShoppingBag, count: vendorOrders?.length },
                 { id: "profile" as const, label: "My Profile", icon: User },
                 { id: "analytics" as const, label: "Analytics", icon: BarChart3 },
+                { id: "verify" as const, label: "Get Verified", icon: ShieldCheck },
               ].map((tab) => (
                 <button
                   key={tab.id}
