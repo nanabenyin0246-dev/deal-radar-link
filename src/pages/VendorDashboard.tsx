@@ -57,7 +57,7 @@ const VendorDashboard = () => {
   const [showSubmitForm, setShowSubmitForm] = useState(false);
   const [expandedTranslation, setExpandedTranslation] = useState<string | null>(null);
   const [editingOffer, setEditingOffer] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"products" | "orders" | "profile" | "analytics">("products");
+  const [activeTab, setActiveTab] = useState<"products" | "orders" | "profile" | "analytics" | "verify">("products");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Form state
